@@ -30,7 +30,9 @@ class GameManager{
         void init(Config* cfg, Assets* assets);
 
         void events(double dt);
+        void preUpdateInteractions(double dt);
         void update(double dt);
+        void postUpdateInteractions(double dt);
         void render();
         //also increases ticknumber
         void fixFramerate();

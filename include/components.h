@@ -25,6 +25,7 @@ class RigidBody{
         void setPos(double x, double y);
         //displace should be avoided for constant movement as it doesnt depend on dt (hence will vary with fps)
         void displace(double dx, double dy);
+        void fixedDisplace(double vx,double vy, double dt);
 
         void setVel(double vx, double vy);
         void applyForce(double fx, double fy,double dt);
@@ -58,22 +59,34 @@ class Screen{
 
         //inc or dec by zoomVel*dt 
         void changeZoom(double zoomVel, double dt);
+        
+        void keys(const Uint8* keys,double dt);
 
 };
 
-
+class Point{
+    private:
+        uint8_t red;
+        uint8_t green;
+        uint8_t blue;
+        float diameter;
+    public:
+        void init(uint8_t r,uint8_t g,uint8_t b,float diameter);
+        void render(Screen* screen,RigidBody* rb);
+};
 class Polygon{
     private:
         uint8_t red;
         uint8_t green;
         uint8_t blue;
+        float thickness;
 
-        double scale;
         //reference to a list of complex points, length depends on whats given when intitalized
         std::vector<std::complex<double>> assetRE;
         //assetRE is read only, transformations are applied to it and written here
         std::vector<std::complex<double>> assetWR;
     public:
+        double scale;
         //append point can be used during game loop, however it should be called before update
         void appendPoint(std::complex<double> pnt);
         void init(uint8_t r,uint8_t g,uint8_t b);

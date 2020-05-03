@@ -3,12 +3,14 @@
 #include "components.h"
 #include "assets.h"
 #include "SDL.h"
+#include <complex>
+#include <vector>
 
 class Player{
     public:
         RigidBody rb;
         Polygon poly;
-
+        
         void init(Assets* assets);
         void update(double dt);
         void render(Screen* screen);

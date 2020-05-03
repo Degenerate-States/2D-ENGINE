@@ -1,5 +1,6 @@
+#define _USE_MATH_DEFINES
 #include "components.h"
-#include <math.h>
+#include <cmath>
 #include <complex>
 #include <SDL.h>
 #include <glad/glad.h>
@@ -27,6 +28,9 @@ void RigidBody::setPos(double x,double y){
 void RigidBody::displace(double dx,double dy){
     this->pos += {dx,dx};
 }
+void RigidBody::fixedDisplace(double vx,double vy, double dt){
+    this->pos += {vx*dt,vy*dt};
+}
 void RigidBody::setVel(double vx,double vy){
     this->vel = {vx,vy};
 
@@ -43,13 +47,15 @@ void RigidBody::update(double dt){
     this->rotOp = {cos(this->rot),sin(this->rot)};
 }
 void RigidBody::setRot(double theta){
-    this->rot = theta;
+    this->rot = fmod(theta,2*M_PI);
 }
 void RigidBody::rotate(double dTheta){
     this->rot += dTheta;
+    this->rot = fmod(this->rot,2*M_PI);
 }
 void RigidBody::fixedRotate(double rotVel,double dt){
     this->rot += rotVel*dt;
+    this->rot = fmod(this->rot,2*M_PI);
 }
 
 
@@ -93,10 +99,39 @@ void Screen::changeZoom(double zoomVel,double dt){
         this->zoom += zoomVel*dt;
     }
 }
+void Screen::keys(const Uint8* keys,double dt){
+    if (keys[SDL_SCANCODE_UP]){
+        this->changeZoom(3.0,dt);
+    }
+    if (keys[SDL_SCANCODE_DOWN]){
+        this->changeZoom(-3.0,dt);
+    }
+}
+//************************//
+//**   Point Methods    **//
+//************************//
+void Point::init(uint8_t r,uint8_t g,uint8_t b,float diameter){
+    this->red = r;
+    this->green = g;
+    this->blue = b;
+
+    this->diameter = diameter;
+}
+void Point::render(Screen* screen,RigidBody* rb){
+    glColor3ub(this->red, this->green, this->blue);
+    glPointSize(this->diameter);
+
+    glBegin(GL_POINTS);
+    tuple<double,double> coord = (*screen).worldToScreen(rb->pos);
+    glVertex2d(get<0>(coord), get<1>(coord));
+    glEnd();
+
+}
+
 
 
 //************************//
-//**  POLYGON Methods   **//
+//**  Polygon Methods   **//
 //************************//
 void Polygon::appendPoint(std::complex<double> pnt){
     this->assetRE.push_back(pnt);
@@ -107,6 +142,7 @@ void Polygon::init(uint8_t r,uint8_t g,uint8_t b){
     this->green = g;
     this->blue = b;
 
+    this->thickness = 2;
     this->scale = 1.0;
 }
 void Polygon::update(RigidBody* rb){
@@ -119,7 +155,9 @@ void Polygon::update(RigidBody* rb){
     }
 }
 void Polygon::render(Screen* screen){
-    glColor3d(this->red, this->green, this->blue);
+    glColor3ub(this->red, this->green, this->blue);
+
+    glLineWidth(this->thickness);
     glBegin(GL_LINE_LOOP);
     for(int i=0; i < this->assetWR.size(); i++){
         tuple<double,double> coord = (*screen).worldToScreen(this->assetWR[i]);

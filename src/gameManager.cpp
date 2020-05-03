@@ -38,6 +38,8 @@ void GameManager::init(Config* cfg,Assets* assets){
 
     //event is initalized in header file
 }
+
+
 void GameManager::events(double dt){
     //Also updates key state array
     while (SDL_PollEvent(&(this->event)))
@@ -53,32 +55,28 @@ void GameManager::events(double dt){
             case SDLK_ESCAPE:
                 running = false;
                 break;
-            
-            this->plr.events(&(this->event),dt);
+        
+        //game object events
+        this->plr.events(&(this->event),dt);
             }
         }
     }
+
     // keypresses
+    this->screen.keys(this->keys,dt);
     this->plr.keys(this->keys,dt);
 
-    if (this->keys[SDL_SCANCODE_UP]){
-        this->screen.changeZoom(3.0,dt);
-    }
-    if (this->keys[SDL_SCANCODE_DOWN]){
-        this->screen.changeZoom(-3.0,dt);
-    }
-        if (this->keys[SDL_SCANCODE_RIGHT]){
-        this->screen.rb.fixedRotate(3.0,dt);
-    }
-    if (this->keys[SDL_SCANCODE_LEFT]){
-        this->screen.rb.fixedRotate(-3.0,dt);
-    }
-
+}
+void GameManager::preUpdateInteractions(double dt){
+    //this->screen.rb.rot = this->plr.rb.rot;
 
 }
 void GameManager::update(double dt){
     this->plr.update(dt);
     this->screen.update(dt);
+}
+void GameManager::postUpdateInteractions(double dt){
+    //this->screen.rb.pos = this->plr.rb.pos;
 }
 void GameManager::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -103,15 +101,21 @@ void GameManager::fixFramerate(){
     }
     this->frameTime = SDL_GetTicks();
 }
+
+
 void GameManager::gameLoop(){
     // Loop condition
     while (this->running) {
         this->events(this->spf);
+        this->preUpdateInteractions(this->spf);
         this->update(this->spf);
+        this->postUpdateInteractions(this->spf);
         this->render();
         this->fixFramerate();
     }
 }
+
+
 void GameManager::clean(){
     // Destroy everything to not leak memory.
     SDL_GL_DeleteContext(this->gl_context);
