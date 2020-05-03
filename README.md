@@ -17,6 +17,7 @@ during gameManager.update:
     //other stuff
 
 in player.update():
+
     this->rigidBody.update()
     //other stuff
 
