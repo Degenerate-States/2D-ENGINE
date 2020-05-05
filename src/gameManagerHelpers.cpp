@@ -17,7 +17,7 @@ tuple<SDL_Window*,SDL_Renderer*> GameManager::SDL_Visuals_Boilerplate(Config* cf
     SDL_Window* window = SDL_CreateWindow("Glad Sample",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          cfg->windowSizeX, cfg->windowSizeY, SDL_WINDOW_SHOWN |
+                                          windowSizeX, windowSizeY, SDL_WINDOW_SHOWN |
                                           SDL_WINDOW_OPENGL);
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
@@ -52,5 +52,8 @@ tuple<SDL_Window*,SDL_Renderer*> GameManager::SDL_Visuals_Boilerplate(Config* cf
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
+    //blur and AA
+    //glEnable(GL_MULTISAMPLE);
+
     return make_tuple(window,renderer);
 }

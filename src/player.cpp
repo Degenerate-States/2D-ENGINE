@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "player.h"
 #include "assets.h"
+#include "bulletManager.h"
 #include "components.h"
 #include "sdl.h"
 #include <complex>
@@ -21,27 +22,55 @@ double smallestAngle(double theta, double phi){
     }
 }
 
+void Gun::init(int ID, Assets* assets,BulletManager* bulletMan){
+    this->ID = ID;
+    this->bulletMan = bulletMan;
+    this->rb.init(1.,0,0,0.0);
+    this->poly.init(&(assets->gunAsset),white);
+}
+void Gun::update(Screen* screen,RigidBody*rb,double dt){
+    int x,y;
+    this->rb.pos = rb->pos;
+    SDL_GetMouseState(&x, &y);
+    this->rb.setRot(std::arg(screen->pixelScreenToWorld(x,y) - this->rb.pos));
+    this->rb.update(dt);
+    this->poly.update(&this->rb);
+}
+void Gun::render(Screen* screen){
+    this->poly.render(screen);
+}
+void Gun::events(SDL_Event* event, Screen* screen, double dt){
+    if(event->type == SDL_MOUSEBUTTONDOWN){
+        if (event->button.button == SDL_BUTTON_LEFT){
+            std::complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
 
-void Player::init(Assets* assets){
+            this->bulletMan->fireBullet(white,orange, this->ID, 5.0, 0.01, this->rb.pos, fireDirection, 2);
+        }
+    }
+}
+
+
+
+void Player::init(Assets* assets,BulletManager* bulletMan){
     this->rb.init(1.,0,0,0.0);
 
-    this->poly.init(255,255,255);
-    assets->polygonLoader(&(this->poly),&(assets->plrAsset));
+    this->poly.init(&(assets->plrAsset),white);
+    this->gun.init(this->ID,assets,bulletMan);
 }
-void Player::update(double dt){
+void Player::update(Screen* screen,double dt){
     this->rb.update(dt);
     this->poly.update(&(this->rb));
-
-    
+    this->gun.update(screen,&this->rb, dt);
 }
 void Player::render(Screen* screen){
     this->poly.render(screen);
+    this->gun.render(screen);
 }
-void Player::events(SDL_Event* event,double dt){
-
+void Player::events(SDL_Event* event, Screen* screen,double dt){
+    this->gun.events(event,screen,dt);
 }
 void Player::keys(const Uint8* keys,double dt){
-    std::complex<double> direction=0;
+    std::complex<double> direction = 0.0;
 
     if (keys[SDL_SCANCODE_D]){
         direction += {1,0};

@@ -2,7 +2,7 @@
 Engine for developing 2D games in SDL2/GLEW
 
 ## Current Demo Setup
-A simple Controlable polygon is implemented, controls are WASD for movement. in addition UP,Down zoom the camera
+A simple Controlable polygon is implemented, controls are WASD for movement, left click shoot. in addition UP,Down zoom the camera
 
 ## API
 Components:
@@ -31,13 +31,6 @@ likewise for the state of the keyboard, if your object is influenced by which ke
 
 
 ## Adding Assets
-asset storage and addition is done by assets.h and its respective class, for each type of asset in the game there
-will be a loader which takes in the component onto which the asset is to be loaded, and the asset to be loaded 
-(with is a member of the assets class). the loader is called in the game objects init method
-
-currently the only asset type is a complex vector which is loaded onto the component polygon, these can be created
-using point-input-tool and simply pasted as a memeber in assets.cpp as done with the player asset.
-
-## Future Devlopment
-going further, to implement many objects of the same type, managers must be put in place (ie bullet manager) which
-use object pooling and handel the interactions, update and render methods of the objects they manage.
+asset storage and addition is done by assets.h and its respective class, polygon points must be defined clockwise
+around the center of the asset (this needed for having properly oriented normals for collision). assets are loaded 
+by asset loader on polygon, these can be created using point-input-tool and simply pasted as a memeber in assets.cpp as done with the player asset.

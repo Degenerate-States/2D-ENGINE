@@ -23,14 +23,16 @@ void GameManager::init(Config* cfg,Assets* assets){
     this->mspf = cfg->mspf;
     this->frameTime = 0;
 
-    this->plr.init(assets);
+    this->bulletMan.init(cfg);
+
+    this->plr.init(assets,&this->bulletMan);
     this->running = true;
 
     tuple<SDL_Window*,SDL_Renderer*> winRend = SDL_Visuals_Boilerplate(cfg);
     
     //initalizes screen
     this->screen = Screen();
-    double aspectRatio = ((double)cfg->windowSizeX) / ((double)cfg->windowSizeY);
+    double aspectRatio = ((double)windowSizeX) / ((double)windowSizeY);
     this->screen.init(get<0>(winRend),get<1>(winRend),aspectRatio);
     
     //keys
@@ -45,7 +47,7 @@ void GameManager::events(double dt){
     while (SDL_PollEvent(&(this->event)))
     {
         //events
-        switch(this->event.type) {
+    switch(this->event.type) {
         case SDL_QUIT:
             running = false;
             break;
@@ -56,10 +58,11 @@ void GameManager::events(double dt){
                 running = false;
                 break;
         
-        //game object events
-        this->plr.events(&(this->event),dt);
+
             }
         }
+    //game object events
+    this->plr.events(&(this->event),&this->screen,dt);
     }
 
     // keypresses
@@ -72,8 +75,9 @@ void GameManager::preUpdateInteractions(double dt){
 
 }
 void GameManager::update(double dt){
-    this->plr.update(dt);
+    this->plr.update(&this->screen,dt);
     this->screen.update(dt);
+    this->bulletMan.update(dt);
 }
 void GameManager::postUpdateInteractions(double dt){
     //this->screen.rb.pos = this->plr.rb.pos;
@@ -83,6 +87,7 @@ void GameManager::render(){
 
     //render everything below
     this->plr.render(&(this->screen));
+    this->bulletMan.render(&this->screen);
 
     SDL_GL_SwapWindow(this->screen.window);
 }

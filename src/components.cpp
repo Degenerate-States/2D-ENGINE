@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "components.h"
+#include "config.h"
 #include <cmath>
 #include <complex>
 #include <SDL.h>
@@ -93,6 +94,12 @@ std::complex<double> Screen::screenToWorld(double x, double y){
 
     return val;
 }
+std::complex<double> Screen::pixelScreenToWorld(int x, int y){
+    double screenX = 2.0*x/windowSizeX - 1.0;
+    double screenY = -2.0*y/windowSizeY + 1.0;
+
+    return this->screenToWorld(screenX,screenY);
+}
 void Screen::changeZoom(double zoomVel,double dt){
     //keeps zoom from becoming negative
     if(this->zoom + zoomVel*dt > 0.0){
@@ -107,25 +114,28 @@ void Screen::keys(const Uint8* keys,double dt){
         this->changeZoom(-3.0,dt);
     }
 }
+
+
 //************************//
 //**   Point Methods    **//
 //************************//
-void Point::init(uint8_t r,uint8_t g,uint8_t b,float diameter){
-    this->red = r;
-    this->green = g;
-    this->blue = b;
+void Point::init(tuple<int,int,int> color,float diameter){
+    this->color = color;
 
     this->diameter = diameter;
 }
 void Point::render(Screen* screen,RigidBody* rb){
-    glColor3ub(this->red, this->green, this->blue);
-    glPointSize(this->diameter);
+    glColor3ub(get<0>(color),get<1>(color),get<2>(color));
+    glPointSize(screen->zoom*this->diameter);
 
     glBegin(GL_POINTS);
     tuple<double,double> coord = (*screen).worldToScreen(rb->pos);
     glVertex2d(get<0>(coord), get<1>(coord));
     glEnd();
 
+}
+void Point::changeColor(tuple<int,int,int> color){
+    this->color = color;
 }
 
 
@@ -136,14 +146,37 @@ void Point::render(Screen* screen,RigidBody* rb){
 void Polygon::appendPoint(std::complex<double> pnt){
     this->assetRE.push_back(pnt);
     this->assetWR.push_back(pnt);
+
 }
-void Polygon::init(uint8_t r,uint8_t g,uint8_t b){
-    this->red = r;
-    this->green = g;
-    this->blue = b;
+void Polygon::loadAsset(std::vector<std::complex<double>>* asset,tuple<int,int,int> color){
+    double length;
+
+    this->color = color;
+    //loads asset and finds its normals
+    this->assetRE.clear();
+    this->assetWR.clear();
+    this->smallestRadius = 0;
+    for(int i = 0; i < asset->size(); i++){
+
+        this->appendPoint((*asset)[i]);
+
+        // determines smallest radius circle which contains poly
+        length = std::abs((*asset)[i]);
+        if(length > this->smallestRadius){
+            this->smallestRadius = length;
+        }
+    }
+}
+void Polygon::init(std::vector<std::complex<double>>* asset, tuple<int,int,int> color){
+    this->loadAsset(asset,color);
 
     this->thickness = 2;
     this->scale = 1.0;
+}
+std::complex<double> Polygon::getNormal(int index){
+    std::complex<double> normal = this->assetWR[(index+1)%this->assetWR.size()] - this->assetWR[index];
+    normal*=rotNegative90;
+    return normal;
 }
 void Polygon::update(RigidBody* rb){
     for(int i=0; i < this->assetWR.size(); i++){
@@ -155,14 +188,104 @@ void Polygon::update(RigidBody* rb){
     }
 }
 void Polygon::render(Screen* screen){
-    glColor3ub(this->red, this->green, this->blue);
+    glColor3ub(get<0>(color),get<1>(color),get<2>(color));
 
-    glLineWidth(this->thickness);
+    tuple<double,double> coord;
+
+    glLineWidth(this->thickness*screen->zoom);
     glBegin(GL_LINE_LOOP);
     for(int i=0; i < this->assetWR.size(); i++){
-        tuple<double,double> coord = (*screen).worldToScreen(this->assetWR[i]);
+        coord = (*screen).worldToScreen(this->assetWR[i]);
         glVertex2d(get<0>(coord), get<1>(coord));
 
     }
     glEnd();
+}
+void Trail::init(int numVertices,double decayTime){
+    this->startThickness = 1;
+    
+    this->numVertices = numVertices;
+    this->decayTime = decayTime;
+    this->startThickness = startThickness;
+
+    this->segmentColors.resize(numVertices-1);
+
+    complex<double> zero = {0,0};
+    for(int i = 0; i < numVertices; i++){
+        this->vertexPos.push_back(zero);
+        this->vetexTimers.push_back(0.0);
+    }
+}
+void Trail::reset(RigidBody* rb, double thickness, tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
+    this->headColor=headColor;
+    this->tailColor=tailColor;
+    this->startThickness = thickness;
+
+    //sets inital pos and vertex decay times(so they all dont dissappear at once)
+    this->trailHeadIndex = 0;
+    double time;
+    for(int i = 0; i < this->numVertices; i++){
+        this->vertexPos[i] = rb->pos;
+        time = this->decayTime - this->decayTime*((double)i)/((double) this->numVertices);
+        this->vetexTimers[i] = time;
+    }
+
+    // determines colors of each segment as gradient between head and tail color
+    int  red,green,blue;
+    double colorWeight;
+    for(int i = 0; i < this->numVertices-1; i++){
+        
+        colorWeight = ((double)(i)/(double)(this->numVertices-2));
+        red = get<0>(this->headColor)*(1-colorWeight);
+        red += get<0>(this->tailColor)*colorWeight;
+        green = get<1>(this->headColor)*(1-colorWeight);
+        green += get<1>(this->tailColor)*colorWeight;
+        blue = get<2>(this->headColor)*(1-colorWeight);
+        blue += get<2>(this->tailColor)*colorWeight;
+        this->segmentColors[i] = make_tuple(red,green,blue);
+    }
+    
+}
+void Trail::update(RigidBody* rb,double dt){
+    for(int i = 0; i < this->numVertices; i++){
+        this->vetexTimers[i] -= dt;
+        
+        //if this is true, ith vertex because new trail head
+        if (this->vetexTimers[i] <= 0.0){
+            // += might be better here, although it might cause timers to accumulate rounding errors
+            this->vetexTimers[i] = this->decayTime;
+            this->trailHeadIndex = i;
+        }
+    }
+    this->vertexPos[this->trailHeadIndex] = rb->pos;
+}
+void Trail::render(Screen* screen){
+
+    double thickness;
+    int index;
+    tuple<double,double> coord1;
+    tuple<double,double> coord2;
+
+    coord1 = (*screen).worldToScreen(this->vertexPos[this->trailHeadIndex]);
+
+    for(int i = 1; i < this->numVertices; i++){
+        index = (trailHeadIndex+i)%this->numVertices;
+        thickness = screen->zoom*(this->vetexTimers[index]/this->decayTime)*this->startThickness;
+        coord2 = (*screen).worldToScreen(this->vertexPos[index]);
+
+        glLineWidth(thickness);
+
+        //sets color to gradient calculated in reset method
+        glColor3ub(get<0>(this->segmentColors[i-1]), 
+                    get<1>(this->segmentColors[i-1]), get<2>(this->segmentColors[i-1]));
+
+        glBegin(GL_LINES);
+        glVertex2d(get<0>(coord1), get<1>(coord1));
+        glVertex2d(get<0>(coord2), get<1>(coord2));
+        glEnd();
+
+        coord1 = coord2;
+        
+    }
+    
 }

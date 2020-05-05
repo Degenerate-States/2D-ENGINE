@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include <complex>
 #include "components.h"
+#include "bulletManager.h"
 #include "player.h"
 #include <tuple>
 
@@ -17,6 +18,8 @@ class GameManager{
         double spf;
         int tickNumber;
         bool running;
+        
+        BulletManager bulletMan;
 
         SDL_Event event;
         SDL_GLContext gl_context;

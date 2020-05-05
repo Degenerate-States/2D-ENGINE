@@ -9,13 +9,10 @@ class Assets{
     public:
         // list of all game assets
         std::vector<std::complex<double>> plrAsset;
+        std::vector<std::complex<double>> gunAsset;
 
         //where all the assets are acutally defined
         void init();
-        
-        //tools for loading them into different components
-        //pass the component and which asset from assets you wish to load
-        void polygonLoader(Polygon* poly, std::vector<std::complex<double>>* asset);
 };
 
 #endif
