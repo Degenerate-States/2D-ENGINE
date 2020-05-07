@@ -78,7 +78,7 @@ void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,doubl
 
             // checks if bullet will be in circle containing polygon
             possibleCollisonRad = abs(rb->pos - bulletPosNext) +abs(rb->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
-            if (possibleCollisonRad > poly->smallestRadius){
+            if (possibleCollisonRad > poly->getSmallestRadius()){
 
                 //extensive collision checking
                 

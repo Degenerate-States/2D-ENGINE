@@ -145,57 +145,65 @@ void Point::changeColor(tuple<int,int,int> color){
 //************************//
 void Polygon::appendPoint(complex<double> pnt){
     this->assetRE.push_back(pnt);
-    this->assetWR.push_back(pnt);
+    this->assetWR1.push_back(pnt);
+    this->assetWR2.push_back(pnt);
 
 }
 void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){
-    double length;
 
     this->color = color;
     //loads asset and finds its normals
     this->assetRE.clear();
-    this->assetWR.clear();
-    this->smallestRadius = 0;
+    this->assetWR1.clear();
+    this->assetWR2.clear();
+
     for(int i = 0; i < asset->size(); i++){
 
         this->appendPoint((*asset)[i]);
-
-        // determines smallest radius circle which contains poly
-        length = abs((*asset)[i]);
-        if(length > this->smallestRadius){
-            this->smallestRadius = length;
-        }
     }
 }
 void Polygon::init(vector<complex<double>>* asset, tuple<int,int,int> color){
     this->loadAsset(asset,color);
-
+    this->currentAsset = &this->assetWR1;
+    this->nextAsset = &this->assetWR2;
     this->thickness = 2;
     this->scale = 1.0;
 }
 complex<double> Polygon::getNormal(int index){
-    complex<double> normal = this->assetWR[(index+1)%this->assetWR.size()] - this->assetWR[index];
+    complex<double> normal = (*this->nextAsset)[(index+1)%this->currentAsset->size()] - (*this->nextAsset)[index];
     normal*=rotNegative90;
     return normal;
 }
+double Polygon::getSmallestRadius(){
+    double smallest;
+    double current = 0;
+    for(int i=0; i<this->nextAsset->size(); i++){
+        current = abs((*this->nextAsset)[i]);
+        if(current>smallest){
+            smallest = current;
+        }
+    }
+    return smallest;
+}
 void Polygon::update(RigidBody* rb){
-    for(int i=0; i < this->assetWR.size(); i++){
+    for(int i=0; i < this->nextAsset->size(); i++){
         //rotates and scales polygon
-        this->assetWR[i] =this->scale * (*rb).rotOp * (this->assetRE)[i];
+        (*this->nextAsset)[i] =this->scale * (*rb).rotOp * (this->assetRE)[i];
         //translates polygon
-        this->assetWR[i] += (*rb).pos;
+        (*this->nextAsset)[i] += (*rb).pos;
 
     }
 }
 void Polygon::render(Screen* screen){
+    swap(this->nextAsset,this->currentAsset);
     glColor3ub(get<0>(color),get<1>(color),get<2>(color));
 
     tuple<double,double> coord;
 
     glLineWidth(this->thickness*screen->zoom);
     glBegin(GL_LINE_LOOP);
-    for(int i=0; i < this->assetWR.size(); i++){
-        coord = (*screen).worldToScreen(this->assetWR[i]);
+    for(int i=0; i < this->currentAsset->size(); i++){
+        coord = (*screen).worldToScreen((*this->currentAsset)[i]);
         glVertex2d(get<0>(coord), get<1>(coord));
 
     }
@@ -285,7 +293,5 @@ void Trail::render(Screen* screen){
         glEnd();
 
         coord1 = coord2;
-        
     }
-    
 }

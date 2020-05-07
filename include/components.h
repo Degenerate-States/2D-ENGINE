@@ -90,20 +90,28 @@ class Polygon{
         //reference to a list of complex points, length depends on whats given when intitalized. is read only
         std::vector<std::complex<double>> assetRE;
 
+        //transformations are applied to assetRE and written to assetWR
+        std::vector<std::complex<double>> assetWR1;
+        std::vector<std::complex<double>> assetWR2;
         
 
     public:
-        //transformations are applied to assetRE and written to assetWR
-        std::vector<std::complex<double>> assetWR;
-        // smallest radius circle which contains poly
-        double smallestRadius;
+        //how you access the current shape of the polygon
+        std::vector<std::complex<double>>* currentAsset;
+        std::vector<std::complex<double>>* nextAsset;
+
+       
         double scale;
         //can be called during runtime, do so before update
         void appendPoint(std::complex<double> pnt);
         void loadAsset(std::vector<std::complex<double>>* asset, tuple<int,int,int> color);
         void init(std::vector<std::complex<double>>* asset,tuple<int,int,int> color);
 
+
+        // both get normal and get smallest raduis use next asset because theyre used in collision
         std::complex<double> getNormal(int index);
+        //get radius of smallest circle which contains polygon
+        double getSmallestRadius();
 
         //updates assetWR using posistion and rotation values from RigidBody
         void update(RigidBody* rb);
