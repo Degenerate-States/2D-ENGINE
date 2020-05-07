@@ -12,7 +12,7 @@ using namespace std;
 
 //theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
 double smallestAngle(double theta, double phi){
-    double delta = std::abs(theta-phi);
+    double delta = abs(theta-phi);
     double oppSign = (-1)*(theta-phi) / delta;
     if (2*M_PI -delta > delta){
         return theta-phi;
@@ -32,7 +32,7 @@ void Gun::update(Screen* screen,RigidBody*rb,double dt){
     int x,y;
     this->rb.pos = rb->pos;
     SDL_GetMouseState(&x, &y);
-    this->rb.setRot(std::arg(screen->pixelScreenToWorld(x,y) - this->rb.pos));
+    this->rb.setRot(arg(screen->pixelScreenToWorld(x,y) - this->rb.pos));
     this->rb.update(dt);
     this->poly.update(&this->rb);
 }
@@ -42,7 +42,7 @@ void Gun::render(Screen* screen){
 void Gun::events(SDL_Event* event, Screen* screen, double dt){
     if(event->type == SDL_MOUSEBUTTONDOWN){
         if (event->button.button == SDL_BUTTON_LEFT){
-            std::complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
+            complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
 
             this->bulletMan->fireBullet(white,orange, this->ID, 5.0, 0.01, this->rb.pos, fireDirection, 2);
         }
@@ -70,7 +70,7 @@ void Player::events(SDL_Event* event, Screen* screen,double dt){
     this->gun.events(event,screen,dt);
 }
 void Player::keys(const Uint8* keys,double dt){
-    std::complex<double> direction = 0.0;
+    complex<double> direction = 0.0;
 
     if (keys[SDL_SCANCODE_D]){
         direction += {1,0};
@@ -85,12 +85,12 @@ void Player::keys(const Uint8* keys,double dt){
         direction +={0,-1};
     }
 
-    if (std::abs(direction)!=0.0){
-        direction/=std::abs(direction);
-        double rotRate = 10*smallestAngle(std::arg(direction),this->rb.rot);
+    if (abs(direction)!=0.0){
+        direction/=abs(direction);
+        double rotRate = 10*smallestAngle(arg(direction),this->rb.rot);
         this->rb.fixedRotate(rotRate,dt);
 
-        this->rb.fixedDisplace(std::real(direction),std::imag(direction),dt);
+        this->rb.fixedDisplace(real(direction),imag(direction),dt);
     }
 
 

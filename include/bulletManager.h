@@ -20,7 +20,7 @@ class Bullet{
 
         void init(Config* cfg);
         void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
-                        double mass, std::complex<double> pos, std::complex<double> vel);
+                        double mass, complex<double> pos, complex<double> vel);
         void update(double dt);
         void render(Screen* screen);
 };
@@ -35,7 +35,7 @@ class BulletManager{
     public:
         void init(Config* cfg);
         void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
-                        double mass,std::complex<double> pos, std::complex<double> dirVec, double speed);
+                        double mass,complex<double> pos, complex<double> dirVec, double speed);
 
         // checks polygon against all bullets
         void checkCollisionPoly(int ID,RigidBody* rb,Polygon* poly,double dt);

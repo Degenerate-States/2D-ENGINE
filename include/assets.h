@@ -8,8 +8,8 @@ using namespace std;
 class Assets{
     public:
         // list of all game assets
-        std::vector<std::complex<double>> plrAsset;
-        std::vector<std::complex<double>> gunAsset;
+        vector<complex<double>> plrAsset;
+        vector<complex<double>> gunAsset;
 
         //where all the assets are acutally defined
         void init();

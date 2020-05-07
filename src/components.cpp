@@ -75,18 +75,18 @@ void Screen::init(SDL_Window* win, SDL_Renderer* rend, double winAspectRatio){
 void Screen::update(double dt){
     this->rb.update(dt);
 }
-tuple<double,double> Screen::worldToScreen(std::complex<double> val){
+tuple<double,double> Screen::worldToScreen(complex<double> val){
     val -= this->rb.pos;
     //multiplies by conj of rotation operator corrisponds to negative rotation
-    val *= std::conj(this->rb.rotOp);
+    val *= conj(this->rb.rotOp);
     val *= this->zoom;
 
     // must multiply y coord by aspect ratio 
-    return make_tuple(std::real(val), std::imag(val)*(this->aspectRatio));
+    return make_tuple(real(val), imag(val)*(this->aspectRatio));
 }
-std::complex<double> Screen::screenToWorld(double x, double y){
+complex<double> Screen::screenToWorld(double x, double y){
 
-    std::complex<double> val ={x,y/(this->aspectRatio)};
+    complex<double> val ={x,y/(this->aspectRatio)};
 
     val += this->rb.pos;
     val *= this->rb.rotOp;
@@ -94,7 +94,7 @@ std::complex<double> Screen::screenToWorld(double x, double y){
 
     return val;
 }
-std::complex<double> Screen::pixelScreenToWorld(int x, int y){
+complex<double> Screen::pixelScreenToWorld(int x, int y){
     double screenX = 2.0*x/windowSizeX - 1.0;
     double screenY = -2.0*y/windowSizeY + 1.0;
 
@@ -143,12 +143,12 @@ void Point::changeColor(tuple<int,int,int> color){
 //************************//
 //**  Polygon Methods   **//
 //************************//
-void Polygon::appendPoint(std::complex<double> pnt){
+void Polygon::appendPoint(complex<double> pnt){
     this->assetRE.push_back(pnt);
     this->assetWR.push_back(pnt);
 
 }
-void Polygon::loadAsset(std::vector<std::complex<double>>* asset,tuple<int,int,int> color){
+void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){
     double length;
 
     this->color = color;
@@ -161,20 +161,20 @@ void Polygon::loadAsset(std::vector<std::complex<double>>* asset,tuple<int,int,i
         this->appendPoint((*asset)[i]);
 
         // determines smallest radius circle which contains poly
-        length = std::abs((*asset)[i]);
+        length = abs((*asset)[i]);
         if(length > this->smallestRadius){
             this->smallestRadius = length;
         }
     }
 }
-void Polygon::init(std::vector<std::complex<double>>* asset, tuple<int,int,int> color){
+void Polygon::init(vector<complex<double>>* asset, tuple<int,int,int> color){
     this->loadAsset(asset,color);
 
     this->thickness = 2;
     this->scale = 1.0;
 }
-std::complex<double> Polygon::getNormal(int index){
-    std::complex<double> normal = this->assetWR[(index+1)%this->assetWR.size()] - this->assetWR[index];
+complex<double> Polygon::getNormal(int index){
+    complex<double> normal = this->assetWR[(index+1)%this->assetWR.size()] - this->assetWR[index];
     normal*=rotNegative90;
     return normal;
 }

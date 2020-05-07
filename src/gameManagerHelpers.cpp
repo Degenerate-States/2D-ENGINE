@@ -8,9 +8,9 @@ using namespace std;
 
 tuple<SDL_Window*,SDL_Renderer*> GameManager::SDL_Visuals_Boilerplate(Config* cfg){
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "SDL2 video subsystem couldn't be initialized. Error: "
+        cerr << "SDL2 video subsystem couldn't be initialized. Error: "
                   << SDL_GetError()
-                  << std::endl;
+                  << endl;
         exit(1);
     }
 
@@ -24,9 +24,9 @@ tuple<SDL_Window*,SDL_Renderer*> GameManager::SDL_Visuals_Boilerplate(Config* cf
                                                 SDL_RENDERER_ACCELERATED);
     
     if (renderer == nullptr) {
-        std::cerr << "SDL2 Renderer couldn't be created. Error: "
+        cerr << "SDL2 Renderer couldn't be created. Error: "
                   << SDL_GetError()
-                  << std::endl;
+                  << endl;
         exit(1);
     }
 
@@ -35,13 +35,13 @@ tuple<SDL_Window*,SDL_Renderer*> GameManager::SDL_Visuals_Boilerplate(Config* cf
     
     // Load GL extensions using glad
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-        std::cerr << "Failed to initialize the OpenGL context." << std::endl;
+        cerr << "Failed to initialize the OpenGL context." << endl;
         exit(1);
     }
 
     // Loaded OpenGL successfully.
-    std::cout << "OpenGL version loaded: " << GLVersion.major << "."
-              << GLVersion.minor << std::endl;
+    cout << "OpenGL version loaded: " << GLVersion.major << "."
+              << GLVersion.minor << endl;
 
     //sets clear color
     glClearColor(0, 0, 0, 1.0f);

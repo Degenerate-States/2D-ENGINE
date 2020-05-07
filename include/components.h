@@ -7,12 +7,11 @@
 using namespace std;
 
 
-
 class RigidBody{
     public:
         double mass;
-        std::complex<double> pos;
-        std::complex<double> vel;
+        complex<double> pos;
+        complex<double> vel;
 
         //in radians
         double rot;

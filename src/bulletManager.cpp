@@ -19,7 +19,7 @@ void Bullet::init(Config* cfg){
     this->active = false;
 }
 
-void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, double mass, std::complex<double> pos, std::complex<double> vel){
+void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, double mass, complex<double> pos, complex<double> vel){
     this->shooterID = shooterID;
     this->rb.pos = pos;
     this->rb.vel = vel;
@@ -51,20 +51,21 @@ void BulletManager::init(Config* cfg){
         this->bullets[i]->init(cfg);
     }
 }
-void BulletManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, double mass,std::complex<double> pos, std::complex<double> dirVec, double speed){
+void BulletManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, double mass,complex<double> pos, complex<double> dirVec, double speed){
     //direction vec is now velocity vec
-    dirVec *= speed/std::abs(dirVec);
+    dirVec *= speed/abs(dirVec);
 
     this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID, diameter, mass, pos, dirVec);
     // change which bullet is considered the oldest
     this->oldestBulletIndex+=1;
     this->oldestBulletIndex%=bulletPoolSize;
 }
+//unfinished, not using proper system
 void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
 
-    tuple<bool,int,std::complex<double>> helperReturnVal;
-    std::complex<double> bulletPos;
-    std::complex<double> bulletPosNext;
+    tuple<bool,int,complex<double>> helperReturnVal;
+    complex<double> bulletPos;
+    complex<double> bulletPosNext;
     double possibleCollisonRad;
 
     for(int i = 0; i < bulletPoolSize; i++){
@@ -76,11 +77,11 @@ void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,doubl
             bulletPosNext = bulletPos + this->bullets[i]->rb.vel;
 
             // checks if bullet will be in circle containing polygon
-            possibleCollisonRad = std::abs(rb->pos - bulletPosNext) +std::abs(rb->vel*dt) + pointCollisionPadding;
+            possibleCollisonRad = abs(rb->pos - bulletPosNext) +abs(rb->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
             if (possibleCollisonRad > poly->smallestRadius){
 
                 //extensive collision checking
-                helperReturnVal = doesLineIntersectPoly(poly,bulletPos,bulletPosNext);
+                
             }
             
 

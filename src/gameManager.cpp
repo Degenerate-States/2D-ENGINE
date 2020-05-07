@@ -16,6 +16,7 @@ using namespace std;
 //**GameManager Methods **//
 //************************//
 void GameManager::init(Config* cfg,Assets* assets){
+    
     //stuff used in fixFramerate (spf is used for internal timestep)
     this->tickNumber=0;
     this->fps = cfg->fps;
@@ -98,7 +99,7 @@ void GameManager::fixFramerate(){
     double currentfps = 1000.0 / frameDuration;
 
     if (this->tickNumber%300 == 0){
-        std::cout <<"fps: "<< currentfps <<  std::endl;
+        cout <<"fps: "<< currentfps <<  endl;
     }
 
     if (this->mspf > frameDuration){
