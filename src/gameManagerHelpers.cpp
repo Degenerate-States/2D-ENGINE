@@ -61,6 +61,9 @@ tuple<SDL_Window*,SDL_Renderer*> GameManager::SDL_Visuals_Boilerplate(Config* cf
 
     // Create a OpenGL context on SDL2
     this->gl_context = SDL_GL_CreateContext(window);
+
+    // 1 -> vsync : 0 -> NO vsync 
+    SDL_GL_SetSwapInterval(0);
     
     // Load GL extensions using glad
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
