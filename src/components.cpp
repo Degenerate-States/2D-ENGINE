@@ -119,17 +119,17 @@ void Screen::keys(const Uint8* keys,double dt){
 //************************//
 //**   Point Methods    **//
 //************************//
-void Point::init(tuple<int,int,int> color,float diameter){
+void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter){
     this->color = color;
-
+    this->rb = rb;
     this->diameter = diameter;
 }
-void Point::render(Screen* screen,RigidBody* rb){
+void Point::render(Screen* screen){
     glColor3ub(get<0>(color),get<1>(color),get<2>(color));
     glPointSize(screen->zoom*this->diameter);
 
     glBegin(GL_POINTS);
-    tuple<double,double> coord = (*screen).worldToScreen(rb->pos);
+    tuple<double,double> coord = (*screen).worldToScreen(this->rb->pos);
     glVertex2d(get<0>(coord), get<1>(coord));
     glEnd();
 
@@ -162,11 +162,12 @@ void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color)
         this->appendPoint((*asset)[i]);
     }
 }
-void Polygon::init(vector<complex<double>>* asset, tuple<int,int,int> color){
+void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color){
     this->loadAsset(asset,color);
     this->currentAsset = &this->assetWR1;
     this->nextAsset = &this->assetWR2;
 
+    this->rb = rb;
     this->rotNegative90 = {0,-1};
     this->thickness = 2;
     this->scale = 1.0;
@@ -189,12 +190,12 @@ double Polygon::getSmallestRadius(){
     }
     return furthest;
 }
-void Polygon::update(RigidBody* rb){
+void Polygon::update(){
     for(int i=0; i < this->nextAsset->size(); i++){
         //rotates and scales polygon
-        (*this->nextAsset)[i] =this->scale * (*rb).rotOp * (this->assetRE)[i];
+        (*this->nextAsset)[i] =this->scale * this->rb->rotOp * (this->assetRE)[i];
         //translates polygon
-        (*this->nextAsset)[i] += (*rb).pos;
+        (*this->nextAsset)[i] += this->rb->pos;
 
     }
 }
@@ -213,7 +214,9 @@ void Polygon::render(Screen* screen){
     }
     glEnd();
 }
-void Trail::init(int numVertices,double decayTime){
+void Trail::init(RigidBody* rb, int numVertices,double decayTime){
+    this->rb = rb;
+
     this->startThickness = 1;
     
     this->numVertices = numVertices;
@@ -228,7 +231,7 @@ void Trail::init(int numVertices,double decayTime){
         this->vetexTimers.push_back(0.0);
     }
 }
-void Trail::reset(RigidBody* rb, double thickness, tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
+void Trail::reset(double thickness, tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
     this->headColor=headColor;
     this->tailColor=tailColor;
     this->startThickness = thickness;
@@ -237,7 +240,7 @@ void Trail::reset(RigidBody* rb, double thickness, tuple<int,int,int> headColor,
     this->trailHeadIndex = 0;
     double time;
     for(int i = 0; i < this->numVertices; i++){
-        this->vertexPos[i] = rb->pos;
+        this->vertexPos[i] = this->rb->pos;
         time = this->decayTime - this->decayTime*((double)i)/((double) this->numVertices);
         this->vetexTimers[i] = time;
     }
@@ -258,7 +261,7 @@ void Trail::reset(RigidBody* rb, double thickness, tuple<int,int,int> headColor,
     }
     
 }
-void Trail::update(RigidBody* rb,double dt){
+void Trail::update(double dt){
     for(int i = 0; i < this->numVertices; i++){
         this->vetexTimers[i] -= dt;
         
@@ -269,7 +272,7 @@ void Trail::update(RigidBody* rb,double dt){
             this->trailHeadIndex = i;
         }
     }
-    this->vertexPos[this->trailHeadIndex] = rb->pos;
+    this->vertexPos[this->trailHeadIndex] = this->rb->pos;
 }
 void Trail::render(Screen* screen){
 

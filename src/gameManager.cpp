@@ -83,8 +83,9 @@ void GameManager::update(double dt){
     this->bulletMan.update(dt);
 }
 void GameManager::postUpdateInteractions(double dt){
-    //this->screen.rb.pos = this->plr.rb.pos;
+
     this->bulletMan.checkCollisionPoly(this->box.ID,&this->box.rb,&this->box.poly,dt);
+    this->bulletMan.checkCollisionPoly(this->plr.ID,&this->plr.rb, &this->plr.poly,dt);
 }
 void GameManager::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

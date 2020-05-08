@@ -15,9 +15,11 @@ class Gun{
         BulletManager* bulletMan;
         //holds copy of shooters id
         int ID;
+        //holds reference of shooters rb
+        RigidBody* plrRb;
 
-        void init(int ID, Assets* assets,BulletManager* bulletMan);
-        void update(Screen* screen,RigidBody*rb, double dt);
+        void init(RigidBody* plrRb,int ID, Assets* assets,BulletManager* bulletMan);
+        void update(Screen* screen, double dt);
         void render(Screen* screen);
 
         //event hanlding

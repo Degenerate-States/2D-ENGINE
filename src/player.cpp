@@ -22,19 +22,20 @@ double smallestAngle(double theta, double phi){
     }
 }
 
-void Gun::init(int ID, Assets* assets,BulletManager* bulletMan){
+void Gun::init(RigidBody* plrRb, int ID, Assets* assets,BulletManager* bulletMan){
     this->ID = ID;
     this->bulletMan = bulletMan;
     this->rb.init(1.,0,0,0.0);
-    this->poly.init(&(assets->gunAsset),white);
+    this->plrRb = plrRb;
+    this->poly.init(&(assets->gunAsset),&this->rb,white);
 }
-void Gun::update(Screen* screen,RigidBody*rb,double dt){
+void Gun::update(Screen* screen,double dt){
     int x,y;
-    this->rb.pos = rb->pos;
+    this->rb.pos = plrRb->pos;
     SDL_GetMouseState(&x, &y);
     this->rb.setRot(arg(screen->pixelScreenToWorld(x,y) - this->rb.pos));
     this->rb.update(dt);
-    this->poly.update(&this->rb);
+    this->poly.update();
 }
 void Gun::render(Screen* screen){
     this->poly.render(screen);
@@ -54,13 +55,13 @@ void Gun::events(SDL_Event* event, Screen* screen, double dt){
 void Player::init(Assets* assets,BulletManager* bulletMan){
     this->rb.init(1.,0,0,0.0);
 
-    this->poly.init(&(assets->plrAsset),white);
-    this->gun.init(this->ID,assets,bulletMan);
+    this->poly.init(&assets->plrAsset,&this->rb,white);
+    this->gun.init(&this->rb, this->ID, assets, bulletMan);
 }
 void Player::update(Screen* screen,double dt){
     this->rb.update(dt);
-    this->poly.update(&(this->rb));
-    this->gun.update(screen,&this->rb, dt);
+    this->poly.update();
+    this->gun.update(screen, dt);
 }
 void Player::render(Screen* screen){
     this->poly.render(screen);

@@ -14,8 +14,8 @@ void Bullet::init(Config* cfg){
     this->rb.init(1.0,0.0,0.0,0.0);
     this->prevPos=rb.pos;
     //overwritten by activate
-    this->pnt.init(white,2.0);
-    this->trail.init(cfg->bulletTrailSegments,cfg->bulletTrailDecay);
+    this->pnt.init(&this->rb,white,2.0);
+    this->trail.init(&this->rb,cfg->bulletTrailSegments,cfg->bulletTrailDecay);
 
     this->active = false;
 }
@@ -28,7 +28,7 @@ void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
 
     this->pnt.changeColor(headColor);
     this->pnt.diameter = diameter;
-    this->trail.reset(&this->rb,diameter,headColor,tailColor);
+    this->trail.reset(diameter,headColor,tailColor);
 
     this->active = true;
 }
@@ -38,9 +38,9 @@ void Bullet::update(double dt){
     
 }
 void Bullet::render(Screen* screen,double dt){
-    this->trail.update(&this->rb,dt);
+    this->trail.update(dt);
     this->trail.render(screen);
-    this->pnt.render(screen,&this->rb);
+    this->pnt.render(screen);
 }
 void Bullet::riccochet(complex<double> normal,double dt){
     // undoes update movement, you could also move bullet to collision point, although this may cause double hits

@@ -20,7 +20,7 @@ class RigidBody{
         //complex used to rotate other complex number by rot though multiplication
         //note multiplying by its complex conj will be the negative of this rotation
         //rotOp is updated in update method, if its going to be used update method must be called
-        std::complex<double> rotOp;
+        complex<double> rotOp;
         
         void init(double m, double x, double y, double initRot);
 
@@ -57,9 +57,9 @@ class Screen{
         void init(SDL_Window* win, SDL_Renderer* rend,double winAspectRatio);
         void update(double dt);
         //methods for converting coordinate systems
-        tuple<double,double> worldToScreen(std::complex<double> val);
-        std::complex<double> screenToWorld(double x, double y);
-        std::complex<double> pixelScreenToWorld(int x, int y);
+        tuple<double,double> worldToScreen(complex<double> val);
+        complex<double> screenToWorld(double x, double y);
+        complex<double> pixelScreenToWorld(int x, int y);
 
         //inc or dec by zoomVel*dt 
         void changeZoom(double zoomVel, double dt);
@@ -71,11 +71,14 @@ class Screen{
 class Point{
     private:
         tuple<int,int,int> color;
+
+        //references to components which polygon depends on (only read by this component)
+        RigidBody* rb;
         
     public:
         float diameter;
-        void init(tuple<int,int,int> color,float diameter);
-        void render(Screen* screen,RigidBody* rb);
+        void init(RigidBody* rb, tuple<int,int,int> color,float diameter);
+        void render(Screen* screen);
         void changeColor(tuple<int,int,int> color);
 };  
 class Polygon{
@@ -84,37 +87,41 @@ class Polygon{
         float thickness;
 
         //used when finding normals
-        std::complex<double> rotNegative90;
+        complex<double> rotNegative90;
 
 
         //reference to a list of complex points, length depends on whats given when intitalized. is read only
-        std::vector<std::complex<double>> assetRE;
+        vector<complex<double>> assetRE;
+
+        //used for morphing the shape
+        vector<complex<double>> vertexOffsets;
 
         //transformations are applied to assetRE and written to assetWR
-        std::vector<std::complex<double>> assetWR1;
-        std::vector<std::complex<double>> assetWR2;
+        vector<complex<double>> assetWR1;
+        vector<complex<double>> assetWR2;
         
-
+        //references to components which polygon depends on (only read by this component)
+        RigidBody* rb;
     public:
         //how you access the current shape of the polygon
-        std::vector<std::complex<double>>* currentAsset;
-        std::vector<std::complex<double>>* nextAsset;
+        vector<complex<double>>* currentAsset;
+        vector<complex<double>>* nextAsset;
 
        
         double scale;
         //can be called during runtime, do so before update
-        void appendPoint(std::complex<double> pnt);
-        void loadAsset(std::vector<std::complex<double>>* asset, tuple<int,int,int> color);
-        void init(std::vector<std::complex<double>>* asset,tuple<int,int,int> color);
+        void appendPoint(complex<double> pnt);
+        void loadAsset(vector<complex<double>>* asset, tuple<int,int,int> color);
+        void init(vector<complex<double>>* asset, RigidBody* rb, tuple<int,int,int> color);
 
 
         // both get normal and get smallest raduis use next asset because theyre used in collision
-        std::complex<double> getNormal(int index);
+        complex<double> getNormal(int index);
         //get radius of smallest circle which contains polygon
         double getSmallestRadius();
 
         //updates assetWR using posistion and rotation values from RigidBody
-        void update(RigidBody* rb);
+        void update();
         void render(Screen* screen);
 };
 class Trail{
@@ -139,14 +146,16 @@ class Trail{
 
         double startThickness;
 
-        std::vector<complex<double>> vertexPos;
-        std::vector<double> vetexTimers;
-    public:
-        void init(int numVertices,double decayTime);
-        void reset(RigidBody* rb,double thickness, 
-                    tuple<int,int,int> headColor,tuple<int,int,int> tailColor);
+        vector<complex<double>> vertexPos;
+        vector<double> vetexTimers;
 
-        void update(RigidBody* rb,double dt);
+        //references to components which polygon depends on (only read by this component)
+        RigidBody* rb;
+    public:
+        void init(RigidBody* rb, int numVertices, double decayTime);
+        void reset(double thickness, tuple<int,int,int> headColor,tuple<int,int,int> tailColor);
+
+        void update(double dt);
         void render(Screen* screen);
 };
 #endif
