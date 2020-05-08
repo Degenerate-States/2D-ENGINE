@@ -51,8 +51,14 @@ class GameManager{
         //miliseconds per frame
         int mspf;
 
+        //initalizes all internally used values
+        void internalInit(Config*cfg);
         //used in init,returns window and renderer also assigns gl_context
         tuple<SDL_Window*,SDL_Renderer*> SDL_Visuals_Boilerplate(Config* cfg);
+
+        void Check_Quit();
+
+        
 
 };
 

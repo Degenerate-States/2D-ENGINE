@@ -176,7 +176,6 @@ complex<double> Polygon::getNormal(int index){
     complex<double> normal = (*this->nextAsset)[(index+1)%this->nextAsset->size()] - (*this->nextAsset)[index];
     normal*=this->rotNegative90;
     normal/=abs(normal);
-    cout<<normal<<endl;
     return normal;
 }
 double Polygon::getSmallestRadius(){

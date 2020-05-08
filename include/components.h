@@ -93,8 +93,6 @@ class Polygon{
         //reference to a list of complex points, length depends on whats given when intitalized. is read only
         vector<complex<double>> assetRE;
 
-        //used for morphing the shape
-        vector<complex<double>> vertexOffsets;
 
         //transformations are applied to assetRE and written to assetWR
         vector<complex<double>> assetWR1;
@@ -109,6 +107,10 @@ class Polygon{
 
        
         double scale;
+        
+        //used for morphing the shape
+        vector<complex<double>> vertexOffsets;
+
         //can be called during runtime, do so before update
         void appendPoint(complex<double> pnt);
         void loadAsset(vector<complex<double>>* asset, tuple<int,int,int> color);
