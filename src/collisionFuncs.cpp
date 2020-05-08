@@ -5,6 +5,7 @@
 #include "config.h"
 #include "components.h"
 #include "collisionFuncs.h"
+#include <iostream>
 using namespace std;
 
 //tuple<bool,complex<double>> 
@@ -104,12 +105,20 @@ complex<double> endLine1,complex<double> endLine2){
                 t2 = (real(deltaP) - lineScalar2*real(l))/denom2;
             }
 
-            if(t2>t1 && t1 > 0){
+            //negative t values are irrelevent
+            if (t1 < 0){
+                t1= 100;
+            }
+            if (t2 < 0){
+                t2 = 100;
+            }
+
+            if(t2>t1){
                 t = t1;
                 lineScalar = lineScalar1;
 
             }else{
-                if(t1>t2 && t2>0){
+                if(t1>t2){
                     t = t2;
                     lineScalar = lineScalar2;
                 }
@@ -174,6 +183,7 @@ willBulletHitPoly(Polygon* poly,complex<double> bulletPos,complex<double> bullet
 
 complex<double>
 reflectAboutNormal(complex<double> normal, complex<double> vec){
-    vec += {2*real(normal)*real(vec),2*imag(normal)*imag(vec)};
+    double dotProd = real(normal)*real(vec)+imag(normal)*imag(vec);
+    vec += 2*abs(dotProd)*normal;
     return vec;
 }

@@ -10,6 +10,7 @@ class Assets{
         // list of all game assets
         vector<complex<double>> plrAsset;
         vector<complex<double>> gunAsset;
+        vector<complex<double>> box;
 
         //where all the assets are acutally defined
         void init();

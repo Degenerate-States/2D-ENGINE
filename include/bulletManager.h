@@ -23,7 +23,7 @@ class Bullet{
         void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
                         double mass, complex<double> pos, complex<double> vel);
         void update(double dt);
-        void render(Screen* screen);
+        void render(Screen* screen,double dt);
         void riccochet(complex<double> normal,double dt);
 };
 
@@ -43,7 +43,7 @@ class BulletManager{
         void checkCollisionPoly(int ID,RigidBody* rb,Polygon* poly,double dt);
 
         void update(double dt);
-        void render(Screen* screen);
+        void render(Screen* screen,double dt);
 };
 
 #endif

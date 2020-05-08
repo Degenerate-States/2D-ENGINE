@@ -35,9 +35,10 @@ void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
 void Bullet::update(double dt){
     this->prevPos = this->rb.pos;
     this->rb.update(dt);
-    this->trail.update(&this->rb,dt);
+    
 }
-void Bullet::render(Screen* screen){
+void Bullet::render(Screen* screen,double dt){
+    this->trail.update(&this->rb,dt);
     this->trail.render(screen);
     this->pnt.render(screen,&this->rb);
 }
@@ -47,7 +48,6 @@ void Bullet::riccochet(complex<double> normal,double dt){
     // reflects velocity
     this->rb.vel = reflectAboutNormal(normal , this->rb.vel);
     // updates bullet
-    this->update(dt);
 }
 
 
@@ -81,19 +81,19 @@ void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,doubl
         
         //checks if bullet is active and poly isnt the one who fired it
         if(this->bullets[i]->active && ID != this->bullets[i]->shooterID){
-
             bulletPos = this->bullets[i]->prevPos;
             bulletPosNext = this->bullets[i]->rb.pos;
 
             // checks if bullet will be in circle containing polygon
             possibleCollisonRad = abs(rb->pos - bulletPosNext) +abs(rb->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
-            if (possibleCollisonRad > poly->getSmallestRadius()){
-
+            if (possibleCollisonRad < poly->getSmallestRadius()){
                 //extensive collision checking
                 helperReturnVal = willBulletHitPoly(poly,bulletPos, bulletPosNext);
 
                 // bullet riccochet
                 if  (get<0>(helperReturnVal)){
+                    this->bullets[i]->prevPos = get<2>(helperReturnVal);
+                    this->bullets[i]->shooterID = ID;
                     this->bullets[i]->riccochet( poly->getNormal(get<1>(helperReturnVal)) , dt);
                 }
                 
@@ -111,11 +111,10 @@ void BulletManager::update(double dt){
     }
 
 }
-void BulletManager::render(Screen* screen){
+void BulletManager::render(Screen* screen,double dt){
     for(int i = 0; i < bulletPoolSize; i++){
         if(this->bullets[i]->active){
-            this->bullets[i]->render(screen);
+            this->bullets[i]->render(screen,dt);
         }
     }
-
 }

@@ -11,5 +11,5 @@ void Config::init(){
 
     //bullets
     this->bulletTrailDecay=0.15;
-    this->bulletTrailSegments=8;
+    this->bulletTrailSegments=10;
 }

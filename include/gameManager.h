@@ -7,6 +7,7 @@
 #include "components.h"
 #include "bulletManager.h"
 #include "player.h"
+#include "miscGameObjs.h"
 #include <tuple>
 
 using namespace std;
@@ -28,6 +29,8 @@ class GameManager{
         const Uint8* keys;
 
         Player plr;
+        Box box;
+
 
 
         void init(Config* cfg, Assets* assets);

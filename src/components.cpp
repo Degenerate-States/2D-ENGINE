@@ -166,25 +166,28 @@ void Polygon::init(vector<complex<double>>* asset, tuple<int,int,int> color){
     this->loadAsset(asset,color);
     this->currentAsset = &this->assetWR1;
     this->nextAsset = &this->assetWR2;
+
+    this->rotNegative90 = {0,-1};
     this->thickness = 2;
     this->scale = 1.0;
 }
 complex<double> Polygon::getNormal(int index){
-    complex<double> normal = (*this->nextAsset)[(index+1)%this->currentAsset->size()] - (*this->nextAsset)[index];
-    normal*=rotNegative90;
+    complex<double> normal = (*this->nextAsset)[(index+1)%this->nextAsset->size()] - (*this->nextAsset)[index];
+    normal*=this->rotNegative90;
     normal/=abs(normal);
+    cout<<normal<<endl;
     return normal;
 }
 double Polygon::getSmallestRadius(){
-    double smallest = 100000000000000.0;
+    double furthest = 0;
     double current;
     for(int i=0; i<this->nextAsset->size(); i++){
         current = abs((*this->nextAsset)[i]);
-        if(current>smallest){
-            smallest = current;
+        if(current>furthest){
+            furthest = current;
         }
     }
-    return smallest;
+    return furthest;
 }
 void Polygon::update(RigidBody* rb){
     for(int i=0; i < this->nextAsset->size(); i++){

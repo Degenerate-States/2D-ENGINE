@@ -27,6 +27,7 @@ void GameManager::init(Config* cfg,Assets* assets){
     this->bulletMan.init(cfg);
 
     this->plr.init(assets,&this->bulletMan);
+    this->box.init(assets);
     this->running = true;
 
     tuple<SDL_Window*,SDL_Renderer*> winRend = SDL_Visuals_Boilerplate(cfg);
@@ -77,18 +78,21 @@ void GameManager::preUpdateInteractions(double dt){
 }
 void GameManager::update(double dt){
     this->plr.update(&this->screen,dt);
+    this->box.update(&this->screen,dt);
     this->screen.update(dt);
     this->bulletMan.update(dt);
 }
 void GameManager::postUpdateInteractions(double dt){
     //this->screen.rb.pos = this->plr.rb.pos;
+    this->bulletMan.checkCollisionPoly(this->box.ID,&this->box.rb,&this->box.poly,dt);
 }
 void GameManager::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //render everything below
     this->plr.render(&(this->screen));
-    this->bulletMan.render(&this->screen);
+    this->box.render(&(this->screen));
+    this->bulletMan.render(&this->screen,this->spf);
 
     SDL_GL_SwapWindow(this->screen.window);
 }

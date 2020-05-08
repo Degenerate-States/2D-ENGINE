@@ -7,8 +7,8 @@ using namespace std;
 constexpr int bulletPoolSize = 5;
 
 //used inside functions
-constexpr double pntCollisionPadSpatial = 0.05;
-constexpr double pntCollisionPadTemporal = 0.05;
+constexpr double pntCollisionPadSpatial = 0;
+constexpr double pntCollisionPadTemporal = 0;
 constexpr double reallySmall = 1.0e-100;
 
 constexpr int windowSizeX =  1400;
