@@ -172,11 +172,12 @@ void Polygon::init(vector<complex<double>>* asset, tuple<int,int,int> color){
 complex<double> Polygon::getNormal(int index){
     complex<double> normal = (*this->nextAsset)[(index+1)%this->currentAsset->size()] - (*this->nextAsset)[index];
     normal*=rotNegative90;
+    normal/=abs(normal);
     return normal;
 }
 double Polygon::getSmallestRadius(){
-    double smallest;
-    double current = 0;
+    double smallest = 100000000000000.0;
+    double current;
     for(int i=0; i<this->nextAsset->size(); i++){
         current = abs((*this->nextAsset)[i]);
         if(current>smallest){

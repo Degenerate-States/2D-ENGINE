@@ -33,24 +33,6 @@ using namespace std;
 //    }
 //}
 
-//tuple<bool,int,complex<double>> 
-//doesLineIntersectPoly(Polygon* poly,complex<double> linStart,complex<double> linEnd){
-//
-//    tuple<bool,complex<double>> helperReturnVal;
-//    int iPlus1;
-//    for(int i = 0; i < poly->assetWR.size(); i++){
-//
-//        iPlus1 = (i+1)%poly->assetWR.size();
-//        helperReturnVal = doLineSegmentsIntersect(poly->assetWR[i], poly->assetWR[iPlus1],linStart,linEnd);
-//
-//        if (get<0>(helperReturnVal)){
-//            return make_tuple(true,i,get<1>(helperReturnVal));
-//        }
-//    }
-//    //everything other than false is dummy data
-//    return make_tuple(false,0,get<1>(helperReturnVal));
-//}
-
 
 //private helper function
 tuple<double,double>
@@ -157,4 +139,41 @@ complex<double> endLine1,complex<double> endLine2){
     }
     //all but false is dummy data
     return make_tuple(false,t,point1);
+}
+
+tuple<bool,int,complex<double>> 
+willBulletHitPoly(Polygon* poly,complex<double> bulletPos,complex<double> bulletNextPos){
+    
+    tuple<bool, double ,complex<double>> helperReturnVal;
+    //updated if a line was hit, updated further if another line was hit with smaller t
+    int minIndex = -1;
+    bool collisionOccured = false;
+    complex<double> collisionPoint= bulletPos;
+    double minT = 2;
+
+    int iPlus1;
+    for(int i = 0; i < poly->currentAsset->size(); i++){
+
+        iPlus1 = (i+1)%poly->currentAsset->size();
+
+        helperReturnVal = willPointHitLine (bulletPos, bulletNextPos, 
+                                            (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
+                                            (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
+
+        // checks if line was hit, and if was hit before other hit lines
+        if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
+            collisionOccured = true;
+            minT = get<1>(helperReturnVal);
+            minIndex = i;
+            collisionPoint = get<2>(helperReturnVal);
+        }
+    }
+    return make_tuple(collisionOccured, minIndex, collisionPoint);
+}
+
+
+complex<double>
+reflectAboutNormal(complex<double> normal, complex<double> vec){
+    vec += {2*real(normal)*real(vec),2*imag(normal)*imag(vec)};
+    return vec;
 }

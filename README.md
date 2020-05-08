@@ -28,6 +28,7 @@ any game object which is influenced by events must have a .events() method which
 
 likewise for the state of the keyboard, if your object is influenced by which keys are currently pressed, it must have a .keys() method which takes in const Uint8* keys. it should also be placed in gameManager.events() after the event loop. 
 
+some collision notes, collision is checked after update function (but before current asset and next asset are swapped), if collision is detected bullets will be moved back to their previous posistion, have  their dynamics altered to riccochet and such, then moved
 
 
 ## Adding Assets

@@ -10,6 +10,7 @@ class Bullet{
     public:
         // 0 is all, 1 is all but player, 2 is all but enemies 
         int shooterID;
+        complex<double> prevPos;
         RigidBody rb;
         Point pnt;
         Trail trail;
@@ -23,6 +24,7 @@ class Bullet{
                         double mass, complex<double> pos, complex<double> vel);
         void update(double dt);
         void render(Screen* screen);
+        void riccochet(complex<double> normal,double dt);
 };
 
 class BulletManager{
