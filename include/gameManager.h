@@ -30,9 +30,7 @@ class GameManager{
 
         Player plr;
         Box box;
-
-
-
+        
         void init(Config* cfg, Assets* assets);
 
         void events(double dt);

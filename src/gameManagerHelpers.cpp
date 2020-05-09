@@ -27,6 +27,7 @@ void GameManager::fixFramerate(){
     double currentfps = 1000.0 / frameDuration;
 
     if (this->tickNumber%300 == 0){
+        
         cout <<"fps: "<< currentfps <<  endl;
     }
 

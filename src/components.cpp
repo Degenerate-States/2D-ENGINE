@@ -148,6 +148,8 @@ void Polygon::appendPoint(complex<double> pnt){
     this->assetWR1.push_back(pnt);
     this->assetWR2.push_back(pnt);
 
+    this->vertexOffsets.push_back(0);
+
 }
 void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){
 
@@ -156,6 +158,7 @@ void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color)
     this->assetRE.clear();
     this->assetWR1.clear();
     this->assetWR2.clear();
+    this->vertexOffsets.clear();
 
     for(int i = 0; i < asset->size(); i++){
 
@@ -191,8 +194,8 @@ double Polygon::getSmallestRadius(){
 }
 void Polygon::update(){
     for(int i=0; i < this->nextAsset->size(); i++){
-        //rotates and scales polygon
-        (*this->nextAsset)[i] =this->scale * this->rb->rotOp * (this->assetRE)[i];
+        //rotates and scales polygon after applying warping from vertex offsets
+        (*this->nextAsset)[i] =this->scale * this->rb->rotOp *( (this->assetRE)[i] + this->vertexOffsets[i]);
         //translates polygon
         (*this->nextAsset)[i] += this->rb->pos;
 
