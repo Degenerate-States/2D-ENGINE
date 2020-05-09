@@ -49,28 +49,71 @@ void Gun::events(SDL_Event* event, Screen* screen, double dt){
         }
     }
 }
+void Flame::init(RigidBody* plrRb, Assets* assets,BulletManager* bulletMan){
+    this->plrRb = plrRb;
+    this->rb.init(1.0,0,0,0);
+    this->poly.init(&assets->flameAsset,&this->rb,red);
+    this->bulletMan = bulletMan;
+}
 
+void Flame::update(Screen* screen, double dt){
+    this->rb.setRot(this->plrRb->rot);
+    this->rb.pos = this->plrRb->pos;
 
+    this->rb.update(dt);
+    this->poly.update();
+}
+void Flame::render(Screen* screen){
+    this->poly.render(screen);
+}
 
-void Player::init(Assets* assets,BulletManager* bulletMan){
+void Player::init(Assets* assets,BulletManager* bulletMan, Stats* stats){
+    this->ID = 1;
     this->rb.init(1.,0,0,0.0);
+    this->relScreenPos = 0.0;
+    this->screenOffset = stats->screenOffset;
+    this->screenVel = stats->screenVel;
+
+    this->topSpeed = stats->plrTopSpeed;
+    this->acceleration = stats->plrAcceleration;
 
     this->poly.init(&assets->plrAsset,&this->rb,white);
+
     this->gun.init(&this->rb, this->ID, assets, bulletMan);
+    this->flame.init(&this->rb,assets,bulletMan);
 }
 void Player::update(Screen* screen,double dt){
+    //points in direction of motion
+    this->rb.setRot(arg(this->rb.vel));
+
+    //clamps velocity
+    if (abs(this->rb.vel) > this->topSpeed){
+        this->rb.vel *= this->topSpeed/abs(this->rb.vel);
+    }
+
     this->rb.update(dt);
     this->poly.update();
     this->gun.update(screen, dt);
+    this->flame.update(screen,dt);
 }
 void Player::render(Screen* screen){
     this->poly.render(screen);
     this->gun.render(screen);
+    this->flame.render(screen);
 }
 void Player::events(SDL_Event* event, Screen* screen,double dt){
     this->gun.events(event,screen,dt);
 }
-void Player::keys(const Uint8* keys,double dt){
+void Player::setScreenPos(Screen* screen ,complex<double> controlDirec, double dt){
+    // direction of motion is from where screen is to where player is trusting times offset size
+
+    this->relScreenPos = this->screenOffset*controlDirec;
+    // sets screen posisiton to player posistion plus relative posisiton
+    screen->rb.pos = this->rb.pos + this->relScreenPos;
+
+
+}
+void Player::keys(const Uint8* keys,Screen* screen,double dt){
     complex<double> direction = 0.0;
 
     if (keys[SDL_SCANCODE_D]){
@@ -86,20 +129,11 @@ void Player::keys(const Uint8* keys,double dt){
         direction +={0,-1};
     }
 
+
+
     if (abs(direction)!=0.0){
-        direction/=abs(direction);
-        double rotRate = 10*smallestAngle(arg(direction),this->rb.rot);
-        this->rb.fixedRotate(rotRate,dt);
-
-        this->rb.fixedDisplace(real(direction),imag(direction),dt);
+        direction*= this->acceleration/abs(direction);
+        this->rb.applyForce(real(direction),imag(direction),dt);
     }
 
-
-
-    if (keys[SDL_SCANCODE_Q]){
-        this->rb.fixedRotate(3.0,dt);
-    }
-    if (keys[SDL_SCANCODE_E]){
-        this->rb.fixedRotate(-3.0,dt);
-    }
 }

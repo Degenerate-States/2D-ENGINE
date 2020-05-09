@@ -10,12 +10,12 @@ using namespace std;
 //************************//
 //**   Bullet Methods   **//
 //************************//
-void Bullet::init(Config* cfg){
+void Bullet::init(Stats* stats){
     this->rb.init(1.0,0.0,0.0,0.0);
     this->prevPos=rb.pos;
     //overwritten by activate
     this->pnt.init(&this->rb,white,2.0);
-    this->trail.init(&this->rb,cfg->bulletTrailSegments,cfg->bulletTrailDecay);
+    this->trail.init(&this->rb,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
     this->active = false;
 }
@@ -54,11 +54,11 @@ void Bullet::riccochet(complex<double> normal,double dt){
 //************************//
 //**BulletManager Methods**//
 //************************//
-void BulletManager::init(Config* cfg){
+void BulletManager::init(Stats* stats){
     this->oldestBulletIndex = 0;
     for(int i = 0; i < bulletPoolSize; i++){
         this->bullets[i] = new Bullet();
-        this->bullets[i]->init(cfg);
+        this->bullets[i]->init(stats);
     }
 }
 void BulletManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, double mass,complex<double> pos, complex<double> dirVec, double speed){
@@ -78,7 +78,6 @@ void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,doubl
     double possibleCollisonRad;
 
     for(int i = 0; i < bulletPoolSize; i++){
-        
         //checks if bullet is active and poly isnt the one who fired it
         if(this->bullets[i]->active && ID != this->bullets[i]->shooterID){
             bulletPos = this->bullets[i]->prevPos;

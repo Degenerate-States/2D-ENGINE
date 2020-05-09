@@ -283,12 +283,12 @@ void Trail::render(Screen* screen){
     tuple<double,double> coord1;
     tuple<double,double> coord2;
 
-    coord1 = (*screen).worldToScreen(this->vertexPos[this->trailHeadIndex]);
+    coord1 = screen->worldToScreen(this->vertexPos[this->trailHeadIndex]);
 
     for(int i = 1; i < this->numVertices; i++){
         index = (trailHeadIndex+i)%this->numVertices;
         thickness = screen->zoom*(this->vetexTimers[index]/this->decayTime)*this->startThickness;
-        coord2 = (*screen).worldToScreen(this->vertexPos[index]);
+        coord2 = screen->worldToScreen(this->vertexPos[index]);
 
         glLineWidth(thickness);
 

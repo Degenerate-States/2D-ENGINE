@@ -19,7 +19,7 @@ class Bullet{
 
         // will also include trail component
 
-        void init(Config* cfg);
+        void init(Stats* stats);
         void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
                         double mass, complex<double> pos, complex<double> vel);
         void update(double dt);
@@ -35,7 +35,7 @@ class BulletManager{
         
     
     public:
-        void init(Config* cfg);
+        void init(Stats* stats);
         void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
                         double mass,complex<double> pos, complex<double> dirVec, double speed);
 

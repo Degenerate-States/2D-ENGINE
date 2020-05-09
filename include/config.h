@@ -17,7 +17,6 @@ constexpr tuple<int,int,int> white = make_tuple(255,255,255);
 constexpr tuple<int,int,int> red = make_tuple(255,0,0);
 constexpr tuple<int,int,int> orange = make_tuple(255, 127, 0);
 
-
 struct Config{
     int fps;
 
@@ -25,14 +24,28 @@ struct Config{
     int mspf;
     double spf;
 
+    void init();
+};
 
-    //bullet config
+//game specific
+struct Stats{
+    //appearence
 
     //bullet trail
-    //time in seconds
+        //time in seconds
     double bulletTrailDecay;
-    // must be greater than 2
+        // must be greater than 2
     int bulletTrailSegments;
+    
+    //controls screen motion based on current controls
+    double screenVel;
+    double screenOffset;
+
+    //gameplay
+    double plrTopSpeed;
+    double plrAcceleration;
+
+
     void init();
 };
 #endif

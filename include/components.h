@@ -100,6 +100,7 @@ class Polygon{
         
         //references to components which polygon depends on (only read by this component)
         RigidBody* rb;
+        
     public:
         //how you access the current shape of the polygon
         vector<complex<double>>* currentAsset;
