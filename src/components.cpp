@@ -88,16 +88,16 @@ complex<double> Screen::screenToWorld(double x, double y){
 
     complex<double> val ={x,y/(this->aspectRatio)};
 
-    val += this->rb.pos;
-    val *= this->rb.rotOp;
     val /= this->zoom;
-
+    val *= this->rb.rotOp;
+    val += this->rb.pos;
+    
     return val;
 }
 complex<double> Screen::pixelScreenToWorld(int x, int y){
     double screenX = 2.0*x/windowSizeX - 1.0;
     double screenY = -2.0*y/windowSizeY + 1.0;
-
+    
     return this->screenToWorld(screenX,screenY);
 }
 void Screen::changeZoom(double zoomVel,double dt){

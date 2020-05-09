@@ -40,11 +40,12 @@ struct Stats{
     //controls screen motion based on current controls
     double screenVel;
     double screenOffset;
+    double defaultZoom;
 
     //gameplay
     double plrTopSpeed;
     double plrAcceleration;
-
+    double plrBulletVel;
 
     void init();
 };

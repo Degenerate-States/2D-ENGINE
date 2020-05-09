@@ -12,8 +12,9 @@ using namespace std;
 //************************//
 //**GameManager Methods **//
 //************************//
-void GameManager::init(Config* cfg,Assets* assets,Stats* stats){    
+void GameManager::init(Config* cfg,Assets* assets,Stats* stats){
     this->internalInit(cfg);
+    this->screen.zoom = stats->defaultZoom;
 
     // initalize game objects
     this->bulletMan.init(stats);
@@ -53,7 +54,7 @@ void GameManager::postUpdateInteractions(double dt){
     this->bulletMan.checkCollisionPoly(this->box.ID,&this->box.rb,&this->box.poly,dt);
     this->bulletMan.checkCollisionPoly(this->plr.ID,&this->plr.rb, &this->plr.poly,dt);
 
-    this->plr.setScreenPos(&screen,this->plr.rb.vel,dt);
+    this->plr.setScreenPos(&screen,dt);
 }
 void GameManager::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

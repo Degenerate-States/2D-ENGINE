@@ -22,9 +22,10 @@ double smallestAngle(double theta, double phi){
     }
 }
 
-void Gun::init(RigidBody* plrRb, int ID, Assets* assets,BulletManager* bulletMan){
+void Gun::init(RigidBody* plrRb, Assets* assets,BulletManager* bulletMan, int ID, double bulletVel){
     this->ID = ID;
     this->bulletMan = bulletMan;
+    this->bulletVel = bulletVel;
     this->rb.init(1.,0,0,0.0);
     this->plrRb = plrRb;
     this->poly.init(&(assets->gunAsset),&this->rb,white);
@@ -44,8 +45,8 @@ void Gun::events(SDL_Event* event, Screen* screen, double dt){
     if(event->type == SDL_MOUSEBUTTONDOWN){
         if (event->button.button == SDL_BUTTON_LEFT){
             complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
-
-            this->bulletMan->fireBullet(white,orange, this->ID, 5.0, 0.01, this->rb.pos, fireDirection, 2);
+            
+            this->bulletMan->fireBullet(white,orange, this->ID, 5.0, 0.01, this->rb.pos, fireDirection, this->bulletVel);
         }
     }
 }
@@ -59,6 +60,10 @@ void Flame::init(RigidBody* plrRb, Assets* assets,BulletManager* bulletMan){
 void Flame::update(Screen* screen, double dt){
     this->rb.setRot(this->plrRb->rot);
     this->rb.pos = this->plrRb->pos;
+
+    double flameLen = fmod(0.005*SDL_GetTicks(),0.12) -0.08;
+    this->poly.vertexOffsets[0] = flameLen;
+
 
     this->rb.update(dt);
     this->poly.update();
@@ -79,7 +84,7 @@ void Player::init(Assets* assets,BulletManager* bulletMan, Stats* stats){
 
     this->poly.init(&assets->plrAsset,&this->rb,white);
 
-    this->gun.init(&this->rb, this->ID, assets, bulletMan);
+    this->gun.init(&this->rb, assets, bulletMan, this->ID, stats->plrBulletVel);
     this->flame.init(&this->rb,assets,bulletMan);
 }
 void Player::update(Screen* screen,double dt){
@@ -104,14 +109,12 @@ void Player::render(Screen* screen){
 void Player::events(SDL_Event* event, Screen* screen,double dt){
     this->gun.events(event,screen,dt);
 }
-void Player::setScreenPos(Screen* screen ,complex<double> controlDirec, double dt){
+void Player::setScreenPos(Screen* screen, double dt){
     // direction of motion is from where screen is to where player is trusting times offset size
 
-    this->relScreenPos = this->screenOffset*controlDirec;
+    this->relScreenPos = this->screenOffset*this->rb.vel/this->topSpeed;
     // sets screen posisiton to player posistion plus relative posisiton
     screen->rb.pos = this->rb.pos + this->relScreenPos;
-
-
 }
 void Player::keys(const Uint8* keys,Screen* screen,double dt){
     complex<double> direction = 0.0;

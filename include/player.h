@@ -15,10 +15,12 @@ class Gun{
         BulletManager* bulletMan;
         //holds copy of shooters id
         int ID;
+
+        double bulletVel;
         //holds reference of shooters rb
         RigidBody* plrRb;
 
-        void init(RigidBody* plrRb,int ID, Assets* assets,BulletManager* bulletMan);
+        void init(RigidBody* plrRb, Assets* assets,BulletManager* bulletMan,int ID, double bulletVel);
         void update(Screen* screen, double dt);
         void render(Screen* screen);
 
@@ -69,7 +71,7 @@ class Player{
         void keys(const Uint8* keys,Screen* screen,double dt);
 
         //screen controling
-        void setScreenPos(Screen* screen ,complex<double> direction, double dt);
+        void setScreenPos(Screen* screen, double dt);
 };
 
 #endif
