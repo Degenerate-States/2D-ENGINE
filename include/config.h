@@ -3,8 +3,13 @@
 #include <tuple>
 #include <stdint.h>
 using namespace std;
+
 //must be known at compile time
 constexpr int bulletPoolSize = 5;
+constexpr int sparkPoolSize = 10;
+
+//global line thickness
+constexpr float defaultLineThickness = 4.0;
 
 //used inside functions
 constexpr double pntCollisionPadSpatial = 0;
@@ -31,12 +36,23 @@ struct Config{
 struct Stats{
     //appearence
 
-    //bullet trail
+    //bullets
         //time in seconds
     double bulletTrailDecay;
         // must be greater than 2
     int bulletTrailSegments;
+    double bulletDiameter;
     
+    //sparks
+    double sparkDiameter;
+    int sparkTrailSegments;
+    double sparkTrailDecay;
+    //divides riccochet vel by this to get num sparks
+    double riccoSparkSpawnDamping;
+    //divides riccochet vel by this to get spark vel
+    double riccoSparkVelDamping;
+    double sparkVelVarience;
+
     //controls screen motion based on current controls
     double screenVel;
     double screenOffset;

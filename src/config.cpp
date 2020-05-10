@@ -14,14 +14,26 @@ void Config::init(){
 
 void Stats::init(){
     // appearence
-    //bullets
+        //bullets
     this->bulletTrailDecay=0.13;
     this->bulletTrailSegments=8;
+    this->bulletDiameter=5;
+
+    //sparks
+    this->sparkDiameter = 3;
+    this->sparkTrailSegments = 3;
+    this->sparkTrailDecay = 0.05;
+    this->riccoSparkSpawnDamping = 2;
+    this->riccoSparkVelDamping = 2.5;
+    this->sparkVelVarience = 0.5;
 
     //screen
+    //screen vel unused
     this->screenVel = 0.5;
+
     this->screenOffset =  0.2;
-    this->defaultZoom = 0.7;
+    this->defaultZoom = 0.5;
+
 
     //gameplay
     this->plrTopSpeed = 2;

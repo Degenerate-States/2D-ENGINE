@@ -46,7 +46,7 @@ void Gun::events(SDL_Event* event, Screen* screen, double dt){
         if (event->button.button == SDL_BUTTON_LEFT){
             complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
             
-            this->bulletMan->fireBullet(white,orange, this->ID, 5.0, 0.01, this->rb.pos, fireDirection, this->bulletVel);
+            this->bulletMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->bulletVel);
         }
     }
 }
@@ -61,7 +61,7 @@ void Flame::update(Screen* screen, double dt){
     this->rb.setRot(this->plrRb->rot);
     this->rb.pos = this->plrRb->pos;
 
-    double flameLen = fmod(0.005*SDL_GetTicks(),0.12) -0.08;
+    double flameLen = fmod(-0.001*SDL_GetTicks(),0.12) +0.08;
     this->poly.vertexOffsets[0] = flameLen;
 
 
