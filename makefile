@@ -1,15 +1,14 @@
-CC=cl.exe
-LINK=link.exe
+CC = cl.exe
+LINK = link.exe
+CFLAGS = -EHsc -Zi -FC -O2 $(INC)
+LIBS = Shell32.lib SDL2.lib opengl32.lib
+SRC = src
+BUILD = build
 
-CFLAGS=-EHsc -Zi -FC -O2 -I lib/SDL/include -I lib/GLAD/include -I include
-LIBS=Shell32.lib SDL2.lib opengl32.lib
-
-SRC=src
-BUILD=build
-
+INC = -I lib/SDL/include -I lib/GLAD/include -I include
 EXE = engine.exe
 
-engine.exe: $(BUILD)\*.obj
+$(EXE): $(BUILD)\*.obj
 	nmake glad.obj
 	@if not exist $(BUILD) mkdir $(BUILD)
 	$(LINK) -LIBPATH:lib/SDL/lib/win64 -SUBSYSTEM:CONSOLE -PDB:$(BUILD)/vc140.pdb $** $(LIBS) -OUT:$(BUILD)\$(EXE)
@@ -18,7 +17,6 @@ engine.exe: $(BUILD)\*.obj
 
 glad.obj:
 	$(CC) $(CFLAGS) -Fo:$(BUILD)\ -c lib\GLAD\src\glad.c
-
 
 {$(SRC)}.cpp{$(BUILD)}.obj:: 
 	$(CC) $(CFLAGS) -Fo:$(BUILD)\ -c $< 
