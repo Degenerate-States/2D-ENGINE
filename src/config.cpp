@@ -27,6 +27,13 @@ void Stats::init(){
     this->riccoSparkVelDamping = 2.5;
     this->sparkVelVarience = 0.5;
 
+
+    //energy ball
+    this->engBallRotRate = 1;
+    this->engBallVibrateFreq = 0.01;
+    this->engBallVibrateAmplitude = 0.02;
+
+
     //screen
     //screen vel unused
     this->screenVel = 0.5;
@@ -38,6 +45,6 @@ void Stats::init(){
     //gameplay
     this->plrTopSpeed = 2;
     this->plrAcceleration = 4;
-    this->plrBulletVel = 5;
+    this->plrBulletVel = 2;
     this->plrShotVarience= 0.5;
 }

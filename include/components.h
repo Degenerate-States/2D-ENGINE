@@ -86,15 +86,10 @@ class Point{
 };  
 class Polygon{
     private:
-        tuple<int,int,int> color;
         float thickness;
 
         //used when finding normals
         complex<double> rotNegative90;
-
-
-        //reference to a list of complex points, length depends on whats given when intitalized. is read only
-        vector<complex<double>> assetRE;
 
 
         //transformations are applied to assetRE and written to assetWR
@@ -105,6 +100,10 @@ class Polygon{
         RigidBody* rb;
         
     public:
+        tuple<int,int,int> color;
+        //reference to a list of complex points, length depends on whats given when intitalized. Read only
+        vector<complex<double>> assetRE;
+
         //how you access the current shape of the polygon
         vector<complex<double>>* currentAsset;
         vector<complex<double>>* nextAsset;

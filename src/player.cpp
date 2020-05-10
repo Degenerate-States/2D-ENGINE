@@ -57,7 +57,7 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
 
     this->poly.init(&assets->plrAsset,&this->rb,white);
 
-    this->gun.init(&this->rb, assets, projMan, bullet, this->ID, stats->plrBulletVel, stats->plrShotVarience);
+    this->gun.init(&this->rb, assets, projMan, energyBall, this->ID, stats->plrBulletVel, stats->plrShotVarience);
     this->flame.init(&this->rb,assets,projMan);
 }
 void Player::update(Screen* screen,double dt){

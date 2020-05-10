@@ -7,6 +7,7 @@ using namespace std;
 //must be known at compile time
 constexpr int bulletPoolSize = 5;
 constexpr int sparkPoolSize = 10;
+constexpr int engBallPoolSize = 5;
 
 //global line thickness
 constexpr float defaultLineThickness = 4.0;
@@ -21,6 +22,10 @@ constexpr int windowSizeY = 800;
 constexpr tuple<int,int,int> white = make_tuple(255,255,255);
 constexpr tuple<int,int,int> red = make_tuple(255,0,0);
 constexpr tuple<int,int,int> orange = make_tuple(255, 127, 0);
+constexpr tuple<int,int,int> blue = make_tuple(0, 0, 255);
+constexpr tuple<int,int,int> green = make_tuple(0, 255, 0);
+constexpr tuple<int,int,int> violet = make_tuple(127, 0, 255);
+
 
 struct Config{
     int fps;
@@ -53,10 +58,17 @@ struct Stats{
     double riccoSparkVelDamping;
     double sparkVelVarience;
 
+
+    //energy ball
+    double engBallRotRate;
+    double engBallVibrateFreq;
+    double engBallVibrateAmplitude;
+
     //controls screen motion based on current controls
     double screenVel;
     double screenOffset;
     double defaultZoom;
+
 
     //gameplay
     double plrTopSpeed;

@@ -53,14 +53,19 @@ void Bullet::render(Screen* screen,double dt){
     this->trail.render(screen);
     this->pnt.render(screen);
 }
-complex<double> Bullet::riccochet(complex<double> normal){
+complex<double> Bullet::onCollision(int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
+    this->prevPos = collisionPoint;
+    this->shooterID = hitID;
     // undoes update movement, you could also move bullet to collision point, although this may cause double hits
     this->rb.pos = this->prevPos;
+
     // reflects velocity
-    this->rb.vel = reflectAboutNormal(normal , this->rb.vel);
+    this->rb.vel = reflectAboutNormal(collisionNormal , this->rb.vel);
     
+    //returns riccochet direction
     return this->rb.vel;
 }
+
 
 //************************//
 //**   Spark Methods    **//
@@ -97,9 +102,61 @@ void Spark::render(Screen* screen,double dt){
 
 
 //************************//
-//**ProjectileManager Methods**//
+//*  EnergyBall Methods **//
 //************************//
-void ProjectileManager::init(Stats* stats){
+void EnergyBall::init(Assets* assets,Stats* stats){    
+    this->type = energyBall;
+    this->rb.init(1.0,0.0,0.0,0.0);
+    this->prevPos=rb.pos;
+
+    this->vibeAmp = stats->engBallVibrateAmplitude;
+    this->vibeFreq = stats->engBallVibrateFreq;
+
+    this->rb.rotVel = stats->engBallRotRate;
+
+    this->innerPoly.init(&assets->innerEngBall,&this->rb,violet);
+    this->outerPoly.init(&assets->outerEngBall,&this->rb,blue);
+
+    this->active = false;
+}
+
+void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, 
+                            int shooterID, complex<double> pos, complex<double> vel){
+    this->shooterID = shooterID;
+    this->rb.pos = pos;
+    this->rb.vel = vel;
+
+    this->innerPoly.color = innerColor;
+    this->outerPoly.color = outerColor;
+
+    this->active = true;
+}
+void EnergyBall::update(double dt){
+    this->prevPos = this->rb.pos;
+    this->rb.update(dt);
+
+    // inner polygon morphing
+    double angle = this->vibeFreq * SDL_GetTicks();
+    int numVertices = this->innerPoly.vertexOffsets.size();
+    for (int i = 0; i < this->innerPoly.vertexOffsets.size(); i++){
+        this->innerPoly.vertexOffsets[i] = this->innerPoly.assetRE[i];
+        this->innerPoly.vertexOffsets[i]*= this->vibeAmp*sin(angle + 3.5*M_PI*i/numVertices) /abs(this->innerPoly.assetRE[i]);
+    }
+
+    this->outerPoly.update();
+    this->innerPoly.update();
+}
+void EnergyBall::render(Screen* screen){
+    this->innerPoly.render(screen);
+    this->outerPoly.render(screen);
+}
+
+
+
+//*****************************//
+//**ProjectileManager Methods**//
+//*****************************//
+void ProjectileManager::init(Assets* assets,Stats* stats){
     this->riccoSparkSpawnDamping = stats->riccoSparkSpawnDamping;
     this->riccoSparkVelDamping = stats->riccoSparkVelDamping;
     this->sparkVelVarience=stats->sparkVelVarience;
@@ -116,6 +173,13 @@ void ProjectileManager::init(Stats* stats){
     for(int i = 0; i < sparkPoolSize; i++){
         this->sparks[i] = new Spark();
         this->sparks[i]->init(stats);
+    }
+
+    //initalizes energy balls
+    this->oldestEngBallIndex = 0;
+    for(int i = 0; i < engBallPoolSize; i++){
+        this->engBalls[i] = new EnergyBall();
+        this->engBalls[i]->init(assets,stats);
     }
 }
 void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
@@ -139,6 +203,19 @@ void ProjectileManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int
     this->oldestSparkIndex+=1;
     this->oldestSparkIndex%=sparkPoolSize;
 }
+void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor,int shooterID, 
+                                        complex<double> pos, complex<double> vel,double velVarience){
+    //applies velocity varience
+    vel += randComplex(velVarience);
+
+    this->engBalls[this->oldestEngBallIndex]->activate(innerColor,outerColor, shooterID, pos, vel);
+    // change which bullet is considered the oldest
+    this->oldestEngBallIndex+=1;
+    this->oldestEngBallIndex%=engBallPoolSize;
+}
+//TODO: clean up following method and make it acecessable for use with other projectile types
+//      this can be done by moving the collision heuristic to willBulletHitPoly. in general
+//      having such collision functions in the collision helpers file seems like the best approch
 void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
 
     tuple<bool,int,complex<double>> helperReturnVal;
@@ -161,26 +238,23 @@ void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,d
 
                 // if collision occured
                 if  (get<0>(helperReturnVal)){
-                    this->onCollsion(i,ID,get<2>(helperReturnVal),poly->getNormal(get<1>(helperReturnVal)));
+                    complex<double> normal = poly->getNormal(get<1>(helperReturnVal));
+                    complex<double> point = get<2>(helperReturnVal);
+                    complex<double> riccochetVel = this->bullets[i]->onCollision(ID,point,normal);
+                    this->collisionSparks(riccochetVel,point);
                 }
         
             }// end of if collision is possilbe
 
         }// end of if bullet is active
 
-    }// end of for loop
+    }// end of bullet loop
 }
-void ProjectileManager::onCollsion(int bulletIndex,int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
-    //bullet riccochet
-    this->bullets[bulletIndex]->prevPos = collisionPoint;
-    this->bullets[bulletIndex]->shooterID = hitID;
-    complex<double> riccochetDirection = this->bullets[bulletIndex]->riccochet(collisionNormal);
-
-    //spark spawning
-    double riccochetMag = abs(riccochetDirection);
-    complex<double> sparkVel = riccochetDirection/this->riccoSparkVelDamping;
+void ProjectileManager::collisionSparks(complex<double> direction,complex<double> point){
+    double riccochetMag = abs(direction);
+    complex<double> sparkVel = direction/this->riccoSparkVelDamping;
     for(int i = 0; i < (int)(riccochetMag/this->riccoSparkSpawnDamping); i++){
-        this->fireSpark(orange,red,collisionPoint,sparkVel,this->sparkVelVarience);
+        this->fireSpark(orange,red,point,sparkVel,this->sparkVelVarience);
     }
 }
 
@@ -197,6 +271,12 @@ void ProjectileManager::update(double dt){
             this->sparks[i]->update(dt);
         }
     }
+    //energy balls
+    for(int i = 0; i < engBallPoolSize; i++){
+        if(this->engBalls[i]->active){
+            this->engBalls[i]->update(dt);
+        }
+    }
 
 }
 void ProjectileManager::render(Screen* screen,double dt){
@@ -209,6 +289,12 @@ void ProjectileManager::render(Screen* screen,double dt){
     for(int i = 0; i < sparkPoolSize; i++){
         if(this->sparks[i]->active){
             this->sparks[i]->render(screen,dt);
+        }
+    }
+    //energy balls
+    for(int i = 0; i < engBallPoolSize; i++){
+        if(this->engBalls[i]->active){
+            this->engBalls[i]->render(screen);
         }
     }
 }

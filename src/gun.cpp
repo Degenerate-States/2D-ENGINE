@@ -32,5 +32,9 @@ void Gun::fire(complex<double> fireDirection){
         case(spark):
             this->projMan->fireSpark(orange,red, this->rb.pos, fireDirection, this->velVarience);
         break;
+
+        case(energyBall):
+            this->projMan->fireEngBall(orange,red,this->ID, this->rb.pos, fireDirection, this->velVarience);
+        break;
     }
 }

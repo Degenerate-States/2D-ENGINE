@@ -17,7 +17,7 @@ void GameManager::init(Config* cfg,Assets* assets,Stats* stats){
     this->screen.zoom = stats->defaultZoom;
 
     // initalize game objects
-    this->projMan.init(stats);
+    this->projMan.init(assets,stats);
     this->plr.init(assets,&this->projMan, stats);
     this->box.init(assets);
     

@@ -13,6 +13,9 @@ class Assets{
         vector<complex<double>> flameAsset;
         vector<complex<double>> box;
 
+        vector<complex<double>> outerEngBall;
+        vector<complex<double>> innerEngBall;
+
         //where all the assets are acutally defined
         void init();
 };
