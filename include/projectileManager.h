@@ -1,13 +1,17 @@
-#ifndef bulletManager_h
-#define bulletManager_h
+#ifndef projectileManager_h
+#define projectileManager_h
 #include "components.h"
 #include "config.h"
 #include <complex>
 #include <vector>
 using namespace std;
 
+enum projectileType{ bullet, spark };
+
 class Bullet{
     public:
+        projectileType type;
+
         // 0 is all, 1 is all but player, 2 is all but enemies 
         int shooterID;
         complex<double> prevPos;
@@ -30,6 +34,7 @@ class Bullet{
 
 class Spark{
     public:
+        projectileType type;
         RigidBody rb;
         Point pnt;
         Trail trail;
@@ -42,7 +47,7 @@ class Spark{
         void render(Screen* screen,double dt);
 };
 
-class BulletManager{
+class ProjectileManager{
     private:
         int oldestBulletIndex;
         Bullet* bullets[bulletPoolSize];
@@ -61,7 +66,7 @@ class BulletManager{
     public:
         void init(Stats* stats);
         void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
-                        complex<double> pos, complex<double> dirVec, double speed);
+                        complex<double> pos, complex<double> vel, double velVarience);
         //vel varience is maximum deviation from vel (think radius of circle around vel)
         void fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
                         complex<double> pos, complex<double> vel, double velVarience);

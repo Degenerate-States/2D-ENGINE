@@ -1,11 +1,14 @@
 #ifndef components_h
 #define components_h
 #include <complex>
+#include <cmath>
 #include <vector>
 #include <tuple>
-#include "SDL.h"
+#include <SDL.h>
+#include <iostream>
+#include <glad/glad.h>
+#include "config.h"
 using namespace std;
-
 
 class RigidBody{
     public:

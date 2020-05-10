@@ -1,4 +1,4 @@
-#include "bulletManager.h"
+#include "projectileManager.h"
 #include "components.h"
 #include "config.h"
 #include "collisionFuncs.h"
@@ -23,6 +23,7 @@ complex<double> randComplex(double maxMag){
 //**   Bullet Methods   **//
 //************************//
 void Bullet::init(Stats* stats){
+    this->type = bullet;
     this->rb.init(1.0,0.0,0.0,0.0);
     this->prevPos=rb.pos;
 
@@ -65,6 +66,7 @@ complex<double> Bullet::riccochet(complex<double> normal){
 //**   Spark Methods    **//
 //************************//
 void Spark::init(Stats* stats){
+    this->type = spark;
     this->rb.init(1.0,0.0,0.0,0.0);
 
     this->pnt.init(&this->rb,white,stats->sparkDiameter);
@@ -95,9 +97,9 @@ void Spark::render(Screen* screen,double dt){
 
 
 //************************//
-//**BulletManager Methods**//
+//**ProjectileManager Methods**//
 //************************//
-void BulletManager::init(Stats* stats){
+void ProjectileManager::init(Stats* stats){
     this->riccoSparkSpawnDamping = stats->riccoSparkSpawnDamping;
     this->riccoSparkVelDamping = stats->riccoSparkVelDamping;
     this->sparkVelVarience=stats->sparkVelVarience;
@@ -116,17 +118,17 @@ void BulletManager::init(Stats* stats){
         this->sparks[i]->init(stats);
     }
 }
-void BulletManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
-                                complex<double> pos, complex<double> dirVec, double speed){
-    //direction vec is now velocity vec
-    dirVec *= speed/abs(dirVec);
+void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
+                                complex<double> pos, complex<double> vel, double velVarience){
+    //applies velocity varience
+    vel += randComplex(velVarience);        
 
-    this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID, pos, dirVec);
+    this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID, pos, vel);
     // change which bullet is considered the oldest
     this->oldestBulletIndex+=1;
     this->oldestBulletIndex%=bulletPoolSize;
 }
-void BulletManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
+void ProjectileManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
                                 complex<double> pos, complex<double> vel,double velVarience){
 
     //applies velocity varience
@@ -137,7 +139,7 @@ void BulletManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> ta
     this->oldestSparkIndex+=1;
     this->oldestSparkIndex%=sparkPoolSize;
 }
-void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
+void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
 
     tuple<bool,int,complex<double>> helperReturnVal;
     complex<double> bulletPos;
@@ -168,7 +170,7 @@ void BulletManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,doubl
 
     }// end of for loop
 }
-void BulletManager::onCollsion(int bulletIndex,int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
+void ProjectileManager::onCollsion(int bulletIndex,int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
     //bullet riccochet
     this->bullets[bulletIndex]->prevPos = collisionPoint;
     this->bullets[bulletIndex]->shooterID = hitID;
@@ -182,7 +184,7 @@ void BulletManager::onCollsion(int bulletIndex,int hitID,complex<double> collisi
     }
 }
 
-void BulletManager::update(double dt){
+void ProjectileManager::update(double dt){
     //bullets
     for(int i = 0; i < bulletPoolSize; i++){
         if(this->bullets[i]->active){
@@ -197,7 +199,7 @@ void BulletManager::update(double dt){
     }
 
 }
-void BulletManager::render(Screen* screen,double dt){
+void ProjectileManager::render(Screen* screen,double dt){
     for(int i = 0; i < bulletPoolSize; i++){
         if(this->bullets[i]->active){
             this->bullets[i]->render(screen,dt);

@@ -1,13 +1,8 @@
-#define _USE_MATH_DEFINES
 #include "components.h"
-#include "config.h"
-#include <cmath>
-#include <complex>
-#include <SDL.h>
-#include <glad/glad.h>
-#include <tuple>
-#include <iostream>
+#define _USE_MATH_DEFINES
 using namespace std;
+
+
 
 
 //************************//

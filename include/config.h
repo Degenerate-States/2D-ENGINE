@@ -62,6 +62,7 @@ struct Stats{
     double plrTopSpeed;
     double plrAcceleration;
     double plrBulletVel;
+    double plrShotVarience;
 
     void init();
 };

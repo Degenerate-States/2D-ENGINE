@@ -1,8 +1,4 @@
-#include "components.h"
 #include "assets.h"
-#include <complex>
-#include <vector>
-#include <iostream>
 using namespace std;
 
 void Assets::init(){

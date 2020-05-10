@@ -17,8 +17,8 @@ void GameManager::init(Config* cfg,Assets* assets,Stats* stats){
     this->screen.zoom = stats->defaultZoom;
 
     // initalize game objects
-    this->bulletMan.init(stats);
-    this->plr.init(assets,&this->bulletMan, stats);
+    this->projMan.init(stats);
+    this->plr.init(assets,&this->projMan, stats);
     this->box.init(assets);
     
 
@@ -48,11 +48,11 @@ void GameManager::update(double dt){
     this->plr.update(&this->screen,dt);
     this->box.update(&this->screen,dt);
     this->screen.update(dt);
-    this->bulletMan.update(dt);
+    this->projMan.update(dt);
 }
 void GameManager::postUpdateInteractions(double dt){
-    this->bulletMan.checkCollisionPoly(this->box.ID,&this->box.rb,&this->box.poly,dt);
-    this->bulletMan.checkCollisionPoly(this->plr.ID,&this->plr.rb, &this->plr.poly,dt);
+    this->projMan.checkCollisionPoly(this->box.ID,&this->box.rb,&this->box.poly,dt);
+    this->projMan.checkCollisionPoly(this->plr.ID,&this->plr.rb, &this->plr.poly,dt);
 
     this->plr.setScreenPos(&screen,dt);
 }
@@ -62,7 +62,7 @@ void GameManager::render(){
     //render everything below
     this->plr.render(&(this->screen));
     this->box.render(&(this->screen));
-    this->bulletMan.render(&this->screen,this->spf);
+    this->projMan.render(&this->screen,this->spf);
 
     SDL_GL_SwapWindow(this->screen.window);
 }

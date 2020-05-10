@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "player.h"
 #include "assets.h"
-#include "bulletManager.h"
+#include "projectileManager.h"
 #include "components.h"
 #include "sdl.h"
 #include <complex>
@@ -22,39 +22,12 @@ double smallestAngle(double theta, double phi){
     }
 }
 
-void Gun::init(RigidBody* plrRb, Assets* assets,BulletManager* bulletMan, int ID, double bulletVel){
-    this->ID = ID;
-    this->bulletMan = bulletMan;
-    this->bulletVel = bulletVel;
-    this->rb.init(1.,0,0,0.0);
-    this->plrRb = plrRb;
-    this->poly.init(&(assets->gunAsset),&this->rb,white);
-}
-void Gun::update(Screen* screen,double dt){
-    int x,y;
-    this->rb.pos = plrRb->pos;
-    SDL_GetMouseState(&x, &y);
-    this->rb.setRot(arg(screen->pixelScreenToWorld(x,y) - this->rb.pos));
-    this->rb.update(dt);
-    this->poly.update();
-}
-void Gun::render(Screen* screen){
-    this->poly.render(screen);
-}
-void Gun::events(SDL_Event* event, Screen* screen, double dt){
-    if(event->type == SDL_MOUSEBUTTONDOWN){
-        if (event->button.button == SDL_BUTTON_LEFT){
-            complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
-            
-            this->bulletMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->bulletVel);
-        }
-    }
-}
-void Flame::init(RigidBody* plrRb, Assets* assets,BulletManager* bulletMan){
+
+void Flame::init(RigidBody* plrRb, Assets* assets,ProjectileManager* projMan){
     this->plrRb = plrRb;
     this->rb.init(1.0,0,0,0);
     this->poly.init(&assets->flameAsset,&this->rb,red);
-    this->bulletMan = bulletMan;
+    this->projMan = projMan;
 }
 
 void Flame::update(Screen* screen, double dt){
@@ -72,7 +45,7 @@ void Flame::render(Screen* screen){
     this->poly.render(screen);
 }
 
-void Player::init(Assets* assets,BulletManager* bulletMan, Stats* stats){
+void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
     this->ID = 1;
     this->rb.init(1.,0,0,0.0);
     this->relScreenPos = 0.0;
@@ -84,8 +57,8 @@ void Player::init(Assets* assets,BulletManager* bulletMan, Stats* stats){
 
     this->poly.init(&assets->plrAsset,&this->rb,white);
 
-    this->gun.init(&this->rb, assets, bulletMan, this->ID, stats->plrBulletVel);
-    this->flame.init(&this->rb,assets,bulletMan);
+    this->gun.init(&this->rb, assets, projMan, bullet, this->ID, stats->plrBulletVel, stats->plrShotVarience);
+    this->flame.init(&this->rb,assets,projMan);
 }
 void Player::update(Screen* screen,double dt){
     //points in direction of motion
@@ -107,7 +80,12 @@ void Player::render(Screen* screen){
     this->flame.render(screen);
 }
 void Player::events(SDL_Event* event, Screen* screen,double dt){
-    this->gun.events(event,screen,dt);
+    if(event->type == SDL_MOUSEBUTTONDOWN){
+        if (event->button.button == SDL_BUTTON_LEFT){
+            complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
+            this->gun.fire(fireDirection);
+        }
+    }
 }
 void Player::setScreenPos(Screen* screen, double dt){
     // direction of motion is from where screen is to where player is trusting times offset size
@@ -123,13 +101,13 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
         direction += {1,0};
     }
     if (keys[SDL_SCANCODE_A]){
-        direction +={-1,0};
+        direction += {-1,0};
     }
     if (keys[SDL_SCANCODE_W]){
-        direction +={0,1};
+        direction += {0,1};
     }
     if (keys[SDL_SCANCODE_S]){
-        direction +={0,-1};
+        direction += {0,-1};
     }
 
 
@@ -138,5 +116,4 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
         direction*= this->acceleration/abs(direction);
         this->rb.applyForce(real(direction),imag(direction),dt);
     }
-
 }

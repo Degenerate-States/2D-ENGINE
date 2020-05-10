@@ -1,11 +1,4 @@
-#include <complex>
-#include <cmath>
-#include <tuple>
-#include <vector>
-#include "config.h"
-#include "components.h"
 #include "collisionFuncs.h"
-#include <iostream>
 using namespace std;
 
 //tuple<bool,complex<double>> 

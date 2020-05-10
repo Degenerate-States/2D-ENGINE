@@ -5,6 +5,8 @@
 #include <tuple>
 #include <vector>
 #include "components.h"
+#include "config.h"
+
 
 //returns collision info on the first line in the polygon hit between now and next frame
 tuple<bool,int,complex<double>> 

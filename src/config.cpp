@@ -39,4 +39,5 @@ void Stats::init(){
     this->plrTopSpeed = 2;
     this->plrAcceleration = 4;
     this->plrBulletVel = 5;
+    this->plrShotVarience= 0.5;
 }
