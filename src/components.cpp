@@ -88,16 +88,16 @@ complex<double> Screen::screenToWorld(double x, double y){
 
     complex<double> val ={x,y/(this->aspectRatio)};
 
-    val += this->rb.pos;
-    val *= this->rb.rotOp;
     val /= this->zoom;
-
+    val *= this->rb.rotOp;
+    val += this->rb.pos;
+    
     return val;
 }
 complex<double> Screen::pixelScreenToWorld(int x, int y){
     double screenX = 2.0*x/windowSizeX - 1.0;
     double screenY = -2.0*y/windowSizeY + 1.0;
-
+    
     return this->screenToWorld(screenX,screenY);
 }
 void Screen::changeZoom(double zoomVel,double dt){
@@ -172,7 +172,7 @@ void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,i
 
     this->rb = rb;
     this->rotNegative90 = {0,-1};
-    this->thickness = 2;
+    this->thickness = defaultLineThickness;
     this->scale = 1.0;
 }
 complex<double> Polygon::getNormal(int index){
@@ -216,14 +216,13 @@ void Polygon::render(Screen* screen){
     }
     glEnd();
 }
-void Trail::init(RigidBody* rb, int numVertices,double decayTime){
+void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTime){
     this->rb = rb;
 
-    this->startThickness = 1;
+    this->startThickness = thickness;
     
     this->numVertices = numVertices;
     this->decayTime = decayTime;
-    this->startThickness = startThickness;
 
     this->segmentColors.resize(numVertices-1);
 
@@ -233,10 +232,9 @@ void Trail::init(RigidBody* rb, int numVertices,double decayTime){
         this->vetexTimers.push_back(0.0);
     }
 }
-void Trail::reset(double thickness, tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
+void Trail::reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
     this->headColor=headColor;
     this->tailColor=tailColor;
-    this->startThickness = thickness;
 
     //sets inital pos and vertex decay times(so they all dont dissappear at once)
     this->trailHeadIndex = 0;
@@ -283,12 +281,12 @@ void Trail::render(Screen* screen){
     tuple<double,double> coord1;
     tuple<double,double> coord2;
 
-    coord1 = (*screen).worldToScreen(this->vertexPos[this->trailHeadIndex]);
+    coord1 = screen->worldToScreen(this->vertexPos[this->trailHeadIndex]);
 
     for(int i = 1; i < this->numVertices; i++){
         index = (trailHeadIndex+i)%this->numVertices;
         thickness = screen->zoom*(this->vetexTimers[index]/this->decayTime)*this->startThickness;
-        coord2 = (*screen).worldToScreen(this->vertexPos[index]);
+        coord2 = screen->worldToScreen(this->vertexPos[index]);
 
         glLineWidth(thickness);
 

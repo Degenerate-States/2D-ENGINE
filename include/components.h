@@ -100,6 +100,7 @@ class Polygon{
         
         //references to components which polygon depends on (only read by this component)
         RigidBody* rb;
+        
     public:
         //how you access the current shape of the polygon
         vector<complex<double>>* currentAsset;
@@ -154,8 +155,8 @@ class Trail{
         //references to components which polygon depends on (only read by this component)
         RigidBody* rb;
     public:
-        void init(RigidBody* rb, int numVertices, double decayTime);
-        void reset(double thickness, tuple<int,int,int> headColor,tuple<int,int,int> tailColor);
+        void init(RigidBody* rb,double thickness, int numVertices, double decayTime);
+        void reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor);
 
         void update(double dt);
         void render(Screen* screen);

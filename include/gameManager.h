@@ -31,7 +31,7 @@ class GameManager{
         Player plr;
         Box box;
         
-        void init(Config* cfg, Assets* assets);
+        void init(Config* cfg, Assets* assets,Stats* stats);
 
         void events(double dt);
         void preUpdateInteractions(double dt);

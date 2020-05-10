@@ -19,30 +19,56 @@ class Bullet{
 
         // will also include trail component
 
-        void init(Config* cfg);
-        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
-                        double mass, complex<double> pos, complex<double> vel);
+        void init(Stats* stats);
+        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, 
+                        int shooterID, complex<double> pos, complex<double> vel);
         void update(double dt);
         void render(Screen* screen,double dt);
-        void riccochet(complex<double> normal,double dt);
+        //returns riccochet direction
+        complex<double> riccochet(complex<double> normal);
+};
+
+class Spark{
+    public:
+        RigidBody rb;
+        Point pnt;
+        Trail trail;
+        bool active;
+        void init(Stats* stats);
+
+        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, 
+                    complex<double> pos, complex<double> vel);
+        void update(double dt);
+        void render(Screen* screen,double dt);
 };
 
 class BulletManager{
     private:
         int oldestBulletIndex;
         Bullet* bullets[bulletPoolSize];
+
+        int oldestSparkIndex;
+        Spark* sparks[sparkPoolSize];
         
-        
+        //divides riccochet vel by this to get num sparks
+        double riccoSparkSpawnDamping;
+        //divides riccochet vel by this to get spark vel
+        double riccoSparkVelDamping;
+        double sparkVelVarience;
+
+        void onCollsion(int bulletIndex,int hitID,complex<double> collisionPoint, complex<double> collisionNormal);
     
     public:
-        void init(Config* cfg);
-        void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID,double diameter, 
-                        double mass,complex<double> pos, complex<double> dirVec, double speed);
-
-        // checks polygon against all bullets
-        void checkCollisionPoly(int ID,RigidBody* rb,Polygon* poly,double dt);
+        void init(Stats* stats);
+        void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
+                        complex<double> pos, complex<double> dirVec, double speed);
+        //vel varience is maximum deviation from vel (think radius of circle around vel)
+        void fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
+                        complex<double> pos, complex<double> vel, double velVarience);
 
         void update(double dt);
+        // checks polygon against all bullets
+        void checkCollisionPoly(int ID,RigidBody* rb,Polygon* poly,double dt);
         void render(Screen* screen,double dt);
 };
 

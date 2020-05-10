@@ -14,13 +14,17 @@ using namespace std;
 int main(int argc, char **argv) {
     Assets* assets = new Assets();
     Config* cfg = new Config();
+    Stats* stats = new Stats();
     assets->init();
     cfg->init();
+    stats->init();
 
     GameManager gameMng;
-    gameMng.init(cfg,assets);
+    gameMng.init(cfg,assets,stats);
+
     free(assets);
     free(cfg);
+    free(stats);
 
     gameMng.gameLoop();
     gameMng.clean();
