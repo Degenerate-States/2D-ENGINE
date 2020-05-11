@@ -111,6 +111,13 @@ void EnergyBall::init(Assets* assets,Stats* stats){
 
     this->vibeAmp = stats->engBallVibrateAmplitude;
     this->vibeFreq = stats->engBallVibrateFreq;
+    this->vibePhase = stats->engBallVibePhase;
+
+
+    this->explosionTotalTime = stats->engBallExpTimer;
+    this->explosionTimeRemaining = -1;
+    this->explosionVel = stats->engBallExpVel;
+    this->explosionVelVarience= stats->engBallExpVelVarience;
 
     this->rb.rotVel = stats->engBallRotRate;
 
@@ -118,6 +125,7 @@ void EnergyBall::init(Assets* assets,Stats* stats){
     this->outerPoly.init(&assets->outerEngBall,&this->rb,blue);
 
     this->active = false;
+    this->exploding = false;
 }
 
 void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, 
@@ -130,25 +138,67 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
     this->outerPoly.color = outerColor;
 
     this->active = true;
+    this->exploding = false;
 }
 void EnergyBall::update(double dt){
-    this->prevPos = this->rb.pos;
-    this->rb.update(dt);
 
-    // inner polygon morphing
-    double angle = this->vibeFreq * SDL_GetTicks();
-    int numVertices = this->innerPoly.vertexOffsets.size();
-    for (int i = 0; i < this->innerPoly.vertexOffsets.size(); i++){
-        this->innerPoly.vertexOffsets[i] = this->innerPoly.assetRE[i];
-        this->innerPoly.vertexOffsets[i]*= this->vibeAmp*sin(angle + 3.5*M_PI*i/numVertices) /abs(this->innerPoly.assetRE[i]);
+    // checks if in process of exploding
+    if(this->exploding){
+        this->explode(dt);
+    }else{
+        this->prevPos = this->rb.pos;
+        this->rb.update(dt);
+
+        // inner polygon morphing
+        double angle = this->vibeFreq * SDL_GetTicks();
+        for (int i = 0; i < this->innerPoly.numVertices; i++){
+
+            this->innerPoly.vertexOffsets[i] = this->innerPoly.assetRE[i];
+            this->innerPoly.vertexOffsets[i]*= this->vibeAmp*sin(angle + this->vibePhase*M_PI*i/this->innerPoly.numVertices) /abs(this->innerPoly.assetRE[i]);
+        }
     }
-
     this->outerPoly.update();
     this->innerPoly.update();
 }
 void EnergyBall::render(Screen* screen){
     this->innerPoly.render(screen);
     this->outerPoly.render(screen);
+}
+void EnergyBall::explode(double dt){
+    this->explosionTimeRemaining-=dt;
+    
+    //fading
+    this->innerPoly.lineThickness -= dt*defaultLineThickness/this->explosionTotalTime;
+    this->outerPoly.lineThickness -= dt*defaultLineThickness/this->explosionTotalTime;
+    if (this->innerPoly.lineThickness<0.01){
+        this->innerPoly.lineThickness = 0.01;
+    }
+    if (this->outerPoly.lineThickness<0.01){
+        this->outerPoly.lineThickness = 0.01;
+    }
+    //vertex mangling
+    for(int i = 0; i <this->innerPoly.numVertices; i++){
+        //explosion vel times dt, times unitvector outwards
+        this->innerPoly.vertexOffsets[i] += this->explosionVel*dt* this->innerPoly.assetRE[i]/abs(this->innerPoly.assetRE[i]);
+        this->innerPoly.vertexOffsets[i] += randComplex(explosionVelVarience)*dt;
+    }
+    for(int i = 0; i <this->outerPoly.numVertices; i++){
+        this->outerPoly.vertexOffsets[i] += this->explosionVel*dt* this->outerPoly.assetRE[i]/abs(this->outerPoly.assetRE[i]);
+        this->outerPoly.vertexOffsets[i] += randComplex(explosionVelVarience)*dt;
+    }
+
+    if (this->explosionTimeRemaining < 0){
+        this->exploding = false;
+        this->innerPoly.resetVertexOffsets();
+        this->outerPoly.resetVertexOffsets();
+        this->innerPoly.lineThickness=defaultLineThickness;
+        this->outerPoly.lineThickness=defaultLineThickness;
+    }
+}
+void EnergyBall::onCollision(){
+    this->active = false;
+    this->exploding = true;
+    this->explosionTimeRemaining = this->explosionTotalTime;
 }
 
 
@@ -218,37 +268,30 @@ void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,
 //      having such collision functions in the collision helpers file seems like the best approch
 void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
 
+    // check collision with bullets
     tuple<bool,int,complex<double>> helperReturnVal;
-    complex<double> bulletPos;
-    complex<double> bulletPosNext;
-    double possibleCollisonRad;
-
     for(int i = 0; i < bulletPoolSize; i++){
-        //checks if bullet is active and poly isnt the one who fired it
-        if(this->bullets[i]->active && ID != this->bullets[i]->shooterID){
-            bulletPos = this->bullets[i]->prevPos;
-            bulletPosNext = this->bullets[i]->rb.pos;
+        helperReturnVal = willBulletHitPoly(poly,this->bullets[i], rb, ID, dt);
+        // if collision occured
+        if  (get<0>(helperReturnVal)){
+            complex<double> normal = poly->getNormal(get<1>(helperReturnVal));
+            complex<double> point = get<2>(helperReturnVal);
+            complex<double> riccochetVel = this->bullets[i]->onCollision(ID,point,normal);
+            this->collisionSparks(riccochetVel,point);
+        }
+    }
 
-            // checks if bullet will be in circle containing polygon
-            possibleCollisonRad = abs(rb->pos - bulletPosNext) +abs(rb->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
-            
-            if (possibleCollisonRad < poly->getSmallestRadius()){
-                //extensive collision checking
-                helperReturnVal = willBulletHitPoly(poly,bulletPos, bulletPosNext);
+    // check collision with energy balls
+    for(int i = 0; i < engBallPoolSize; i++){
+        if (this->engBalls[i]->active && this->engBalls[i]->shooterID != ID){
+            bool collisionOccured = isPointInPoly(poly,this->engBalls[i]->rb.pos);
+            if (collisionOccured){
+                this->engBalls[i]->onCollision();
+            }
+        }
+    }
 
-                // if collision occured
-                if  (get<0>(helperReturnVal)){
-                    complex<double> normal = poly->getNormal(get<1>(helperReturnVal));
-                    complex<double> point = get<2>(helperReturnVal);
-                    complex<double> riccochetVel = this->bullets[i]->onCollision(ID,point,normal);
-                    this->collisionSparks(riccochetVel,point);
-                }
-        
-            }// end of if collision is possilbe
 
-        }// end of if bullet is active
-
-    }// end of bullet loop
 }
 void ProjectileManager::collisionSparks(complex<double> direction,complex<double> point){
     double riccochetMag = abs(direction);
@@ -273,7 +316,8 @@ void ProjectileManager::update(double dt){
     }
     //energy balls
     for(int i = 0; i < engBallPoolSize; i++){
-        if(this->engBalls[i]->active){
+        // if energy ball is active or exploding
+        if(this->engBalls[i]->active || this->engBalls[i]->exploding){
             this->engBalls[i]->update(dt);
         }
     }
@@ -293,7 +337,8 @@ void ProjectileManager::render(Screen* screen,double dt){
     }
     //energy balls
     for(int i = 0; i < engBallPoolSize; i++){
-        if(this->engBalls[i]->active){
+        //renders if active or exploding
+        if(this->engBalls[i]->active || this->engBalls[i]->exploding){
             this->engBalls[i]->render(screen);
         }
     }

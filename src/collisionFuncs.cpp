@@ -1,4 +1,5 @@
 #include "collisionFuncs.h"
+#include "projectileManager.h"
 using namespace std;
 
 //tuple<bool,complex<double>> 
@@ -27,6 +28,18 @@ using namespace std;
 //    }
 //}
 
+//private helper function
+//theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
+double smallestAngle(double theta, double phi){
+    double delta = abs(theta-phi);
+    double oppSign = (-1)*(theta-phi) / delta;
+    if (2*M_PI -delta > delta){
+        return theta-phi;
+    }
+    else{
+        return oppSign*(2*M_PI -delta);
+    }
+}
 
 //private helper function
 tuple<double,double>
@@ -122,6 +135,8 @@ complex<double> endLine1,complex<double> endLine2){
     return make_tuple(t,lineScalar);
 }
 
+
+// private helper fuction
 tuple<bool, double ,complex<double>> 
 willPointHitLine 
 (complex<double> point1, complex<double> point2, 
@@ -144,35 +159,64 @@ complex<double> endLine1,complex<double> endLine2){
 }
 
 tuple<bool,int,complex<double>> 
-willBulletHitPoly(Polygon* poly,complex<double> bulletPos,complex<double> bulletNextPos){
-    
-    tuple<bool, double ,complex<double>> helperReturnVal;
-    //updated if a line was hit, updated further if another line was hit with smaller t
-    int minIndex = -1;
+willBulletHitPoly(Polygon* poly,Bullet* bullet,RigidBody* polyRB,int polyID,double dt){
+    complex<double> bulletPos = bullet->prevPos;
+    complex<double> bulletNextPos = bullet->rb.pos;
+
     bool collisionOccured = false;
     complex<double> collisionPoint= bulletPos;
     double minT = 2;
+    int minIndex = -1;
 
-    int iPlus1;
-    for(int i = 0; i < poly->currentAsset->size(); i++){
+    //checks if bullet is active and poly isnt the one who fired it
+    if(bullet->active && polyID != bullet->shooterID){
+        // checks if bullet will be in circle containing polygon
+        double possibleCollisonRad = abs(polyRB->pos - bulletNextPos) +abs(polyRB->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
+        if (possibleCollisonRad < poly->getSmallestRadius()){
 
-        iPlus1 = (i+1)%poly->currentAsset->size();
 
-        helperReturnVal = willPointHitLine (bulletPos, bulletNextPos, 
-                                            (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
-                                            (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
 
-        // checks if line was hit, and if was hit before other hit lines
-        if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
-            collisionOccured = true;
-            minT = get<1>(helperReturnVal);
-            minIndex = i;
-            collisionPoint = get<2>(helperReturnVal);
-        }
-    }
+                tuple<bool, double ,complex<double>> helperReturnVal;
+                //updated if a line was hit, updated further if another line was hit with smaller t
+                int iPlus1;
+                for(int i = 0; i < poly->currentAsset->size(); i++){
+                
+                    iPlus1 = (i+1)%poly->currentAsset->size();
+
+                    helperReturnVal = willPointHitLine (bulletPos, bulletNextPos, 
+                                                        (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
+                                                        (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
+
+                    // checks if line was hit, and if was hit before other hit lines
+                    if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
+                        collisionOccured = true;
+                        minT = get<1>(helperReturnVal);
+                        minIndex = i;
+                        collisionPoint = get<2>(helperReturnVal);
+                    }
+                }
+    
+        }// end of if collision is possilbe
+
+    }// end of if bullet is active
     return make_tuple(collisionOccured, minIndex, collisionPoint);
 }
 
+// change this to do distance checking if get smallest distance method doesnt have to recalculate
+bool isPointInPoly(Polygon* poly,complex<double> point){
+    double totalRot = 0;
+
+    double thetaI;
+    double thetaIPlus1;
+
+    for(int i = 0; i < poly->numVertices; i++){
+        thetaI = arg((*poly->nextAsset)[i] - point);
+        thetaIPlus1 = arg((*poly->nextAsset)[(i+1)%poly->numVertices] - point);
+        totalRot += smallestAngle(thetaIPlus1,thetaI);
+    }
+    // total rot will be either 0 or 2pi, we return false if zero, and true if 2pi
+    return abs(totalRot) > M_PI;
+}
 
 complex<double>
 reflectAboutNormal(complex<double> normal, complex<double> vec){

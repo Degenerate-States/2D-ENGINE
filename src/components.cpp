@@ -144,6 +144,7 @@ void Polygon::appendPoint(complex<double> pnt){
     this->assetWR2.push_back(pnt);
 
     this->vertexOffsets.push_back(0);
+    this->numVertices+=1;
 
 }
 void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){
@@ -154,10 +155,32 @@ void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color)
     this->assetWR1.clear();
     this->assetWR2.clear();
     this->vertexOffsets.clear();
-
+    this->numVertices = 0;
     for(int i = 0; i < asset->size(); i++){
 
         this->appendPoint((*asset)[i]);
+    }
+}
+complex<double> Polygon::getNormal(int index){
+    complex<double> normal = (*this->nextAsset)[(index+1)%this->numVertices] - (*this->nextAsset)[index];
+    normal*=this->rotNegative90;
+    normal/=abs(normal);
+    return normal;
+}
+double Polygon::getSmallestRadius(){
+    double furthest = 0;
+    double current;
+    for(int i=0; i<this->numVertices; i++){
+        current = abs((*this->nextAsset)[i]);
+        if(current>furthest){
+            furthest = current;
+        }
+    }
+    return furthest;
+}
+void Polygon::resetVertexOffsets(){
+    for(int i=0; i<this->numVertices; i++){
+        this->vertexOffsets[i] = 0;
     }
 }
 void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color){
@@ -167,25 +190,8 @@ void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,i
 
     this->rb = rb;
     this->rotNegative90 = {0,-1};
-    this->thickness = defaultLineThickness;
+    this->lineThickness = defaultLineThickness;
     this->scale = 1.0;
-}
-complex<double> Polygon::getNormal(int index){
-    complex<double> normal = (*this->nextAsset)[(index+1)%this->nextAsset->size()] - (*this->nextAsset)[index];
-    normal*=this->rotNegative90;
-    normal/=abs(normal);
-    return normal;
-}
-double Polygon::getSmallestRadius(){
-    double furthest = 0;
-    double current;
-    for(int i=0; i<this->nextAsset->size(); i++){
-        current = abs((*this->nextAsset)[i]);
-        if(current>furthest){
-            furthest = current;
-        }
-    }
-    return furthest;
 }
 void Polygon::update(){
     for(int i=0; i < this->nextAsset->size(); i++){
@@ -202,15 +208,15 @@ void Polygon::render(Screen* screen){
 
     tuple<double,double> coord;
 
-    glLineWidth(this->thickness*screen->zoom);
+    glLineWidth(this->lineThickness*screen->zoom);
     glBegin(GL_LINE_LOOP);
     for(int i=0; i < this->currentAsset->size(); i++){
         coord = (*screen).worldToScreen((*this->currentAsset)[i]);
         glVertex2d(get<0>(coord), get<1>(coord));
-
     }
     glEnd();
 }
+
 void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTime){
     this->rb = rb;
 

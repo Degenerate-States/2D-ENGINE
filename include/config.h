@@ -63,6 +63,12 @@ struct Stats{
     double engBallRotRate;
     double engBallVibrateFreq;
     double engBallVibrateAmplitude;
+    double engBallVibePhase;
+    //in seconds
+    double engBallExpTimer;
+    double engBallExpVel;
+    //varience is an upper bound
+    double engBallExpVelVarience;
 
     //controls screen motion based on current controls
     double screenVel;

@@ -29,9 +29,16 @@ void Stats::init(){
 
 
     //energy ball
-    this->engBallRotRate = 1;
+    this->engBallRotRate = 1.5;
     this->engBallVibrateFreq = 0.01;
     this->engBallVibrateAmplitude = 0.02;
+    //phase offset between first and last verticies of engBall
+    this->engBallVibePhase = 3.5;
+    //in seconds
+    this->engBallExpTimer = 0.1;
+    this->engBallExpVel = 2;
+    //varience is an upper bound
+    this->engBallExpVelVarience = 0;
 
 
     //screen

@@ -10,18 +10,6 @@
 #include <iostream>
 using namespace std;
 
-//theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
-double smallestAngle(double theta, double phi){
-    double delta = abs(theta-phi);
-    double oppSign = (-1)*(theta-phi) / delta;
-    if (2*M_PI -delta > delta){
-        return theta-phi;
-    }
-    else{
-        return oppSign*(2*M_PI -delta);
-    }
-}
-
 
 void Flame::init(RigidBody* plrRb, Assets* assets,ProjectileManager* projMan){
     this->plrRb = plrRb;

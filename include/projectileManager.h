@@ -53,7 +53,14 @@ class EnergyBall{
     private:
         double vibeFreq;
         double vibeAmp;
+        double vibePhase;
 
+        double explosionTotalTime;
+        double explosionTimeRemaining;
+        double explosionVel;
+        double explosionVelVarience;
+
+        void explode(double dt);
     public:
         projectileType type;
         RigidBody rb;
@@ -62,6 +69,7 @@ class EnergyBall{
 
         bool active;
         int shooterID;
+        bool exploding;
         complex<double> prevPos;
 
 
@@ -71,6 +79,7 @@ class EnergyBall{
                     int shooterID, complex<double> pos, complex<double> vel);
         void update(double dt);
         void render(Screen* screen);
+        void onCollision();
 };
 
 class ProjectileManager{

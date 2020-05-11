@@ -86,8 +86,6 @@ class Point{
 };  
 class Polygon{
     private:
-        float thickness;
-
         //used when finding normals
         complex<double> rotNegative90;
 
@@ -100,6 +98,8 @@ class Polygon{
         RigidBody* rb;
         
     public:
+        int numVertices;
+        float lineThickness;
         tuple<int,int,int> color;
         //reference to a list of complex points, length depends on whats given when intitalized. Read only
         vector<complex<double>> assetRE;
@@ -117,17 +117,22 @@ class Polygon{
         //can be called during runtime, do so before update
         void appendPoint(complex<double> pnt);
         void loadAsset(vector<complex<double>>* asset, tuple<int,int,int> color);
-        void init(vector<complex<double>>* asset, RigidBody* rb, tuple<int,int,int> color);
-
 
         // both get normal and get smallest raduis use next asset because theyre used in collision
         complex<double> getNormal(int index);
         //get radius of smallest circle which contains polygon
         double getSmallestRadius();
 
+        void resetVertexOffsets();
+        
+        void init(vector<complex<double>>* asset, RigidBody* rb, tuple<int,int,int> color);
+
+
+
         //updates assetWR using posistion and rotation values from RigidBody
         void update();
         void render(Screen* screen);
+
 };
 class Trail{
     // vertices disappear when theyre timer runs out
