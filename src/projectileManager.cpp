@@ -31,10 +31,11 @@ void Bullet::init(Stats* stats){
     this->trail.init(&this->rb,stats->bulletDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
     this->riccoVelDamping = stats->riccoBulletVelDamping;
-    this->active = false;
+    this->rb.active = false;
 }
 
-void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, complex<double> vel){
+void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
+                        complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
     this->shooterID = shooterID;
     this->rb.pos = pos;
     this->rb.vel = vel;
@@ -42,9 +43,22 @@ void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
     this->pnt.changeColor(headColor);
     this->trail.reset(headColor,tailColor);
 
-    this->active = true;
+    this->homingTarget = homingTarget;
+    this->homingRate = homingRate;
+    this->rb.active = true;
 }
 void Bullet::update(double dt){
+    //TODO; increase efficency of process and have it called periodically rather than constantly 
+    // homing
+    if(this->homingTarget != NULL){
+        if(this->homingTarget->active){
+            double angle =smallestAngle(arg(this->homingTarget->pos - this->rb.pos), arg(this->rb.vel));
+            //gets angles sign
+            angle/=abs(angle);
+            complex<double> rotation = {cos(angle*this->homingRate*dt),sin(angle*this->homingRate*dt)};
+            this->rb.vel*=rotation;
+        }
+    }
     this->prevPos = this->rb.pos;
     this->rb.update(dt);
     
@@ -55,6 +69,9 @@ void Bullet::render(Screen* screen,double dt){
     this->pnt.render(screen);
 }
 complex<double> Bullet::onCollision(int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
+    //disables homing on hit
+    this->homingTarget = NULL;
+    
     this->prevPos = collisionPoint;
     this->shooterID = hitID;
     // undoes update movement, you could also move bullet to collision point, although this may cause double hits
@@ -82,7 +99,7 @@ void Spark::init(Stats* stats){
     this->velDamping = stats->sparkVelDamping;
     this->startDiameter = stats->sparkDiameter;
     this->minVel = stats->sparkMinVel;
-    this->active = false;
+    this->rb.active = false;
 }
 
 void Spark::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, 
@@ -93,7 +110,7 @@ void Spark::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
     this->pnt.changeColor(headColor);
     this->trail.reset(headColor,tailColor);
     this->spawnSpeed = abs(vel);
-    this->active = true;
+    this->rb.active = true;
 }
 void Spark::update(double dt){
     double speed = abs(this->rb.vel);
@@ -105,7 +122,7 @@ void Spark::update(double dt){
 
     this->rb.update(dt);
     if(speed < this->minVel){
-        this->active = false;
+        this->rb.active = false;
     }
     
 }
@@ -139,7 +156,7 @@ void EnergyBall::init(Assets* assets,Stats* stats){
     this->innerPoly.init(&assets->innerEngBall,&this->rb,violet);
     this->outerPoly.init(&assets->outerEngBall,&this->rb,blue);
 
-    this->active = false;
+    this->rb.active = false;
     this->exploding = false;
 }
 
@@ -152,7 +169,7 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
     this->innerPoly.color = innerColor;
     this->outerPoly.color = outerColor;
 
-    this->active = true;
+    this->rb.active = true;
     this->exploding = false;
     this->innerPoly.resetVertexOffsets();
     this->outerPoly.resetVertexOffsets();
@@ -211,7 +228,7 @@ void EnergyBall::explode(double dt){
     }
 }
 void EnergyBall::onCollision(){
-    this->active = false;
+    this->rb.active = false;
     this->exploding = true;
     this->explosionTimeRemaining = this->explosionTotalTime;
 }
@@ -248,11 +265,11 @@ void ProjectileManager::init(Assets* assets,Stats* stats){
     }
 }
 void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
-                                complex<double> pos, complex<double> vel, double velVarience){
+        complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
     //applies velocity varience
     vel += randComplex(velVarience);        
 
-    this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID, pos, vel);
+    this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID, pos, vel,homingTarget,homingRate);
     // change which bullet is considered the oldest
     this->oldestBulletIndex+=1;
     this->oldestBulletIndex%=bulletPoolSize;
@@ -296,7 +313,7 @@ void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,d
 
     // check collision with energy balls
     for(int i = 0; i < engBallPoolSize; i++){
-        if (this->engBalls[i]->active && this->engBalls[i]->shooterID != ID){
+        if (this->engBalls[i]->rb.active && this->engBalls[i]->shooterID != ID){
             bool collisionOccured = isPointInPoly(poly,this->engBalls[i]->rb.pos);
             if (collisionOccured){
                 this->engBalls[i]->onCollision();
@@ -315,40 +332,40 @@ void ProjectileManager::collisionSparks(complex<double> direction,complex<double
 void ProjectileManager::update(double dt){
     //bullets
     for(int i = 0; i < bulletPoolSize; i++){
-        if(this->bullets[i]->active){
+        if(this->bullets[i]->rb.active){
             this->bullets[i]->update(dt);
         }
     }
     //sparks
     for(int i = 0; i < sparkPoolSize; i++){
-        if(this->sparks[i]->active){
+        if(this->sparks[i]->rb.active){
             this->sparks[i]->update(dt);
         }
     }
     //energy balls
     for(int i = 0; i < engBallPoolSize; i++){
         // if energy ball is active or exploding
-        if(this->engBalls[i]->active || this->engBalls[i]->exploding){
+        if(this->engBalls[i]->rb.active || this->engBalls[i]->exploding){
             this->engBalls[i]->update(dt);
         }
     }
 }
 void ProjectileManager::render(Screen* screen,double dt){
     for(int i = 0; i < bulletPoolSize; i++){
-        if(this->bullets[i]->active){
+        if(this->bullets[i]->rb.active){
             this->bullets[i]->render(screen,dt);
         }
     }
     //sparks
     for(int i = 0; i < sparkPoolSize; i++){
-        if(this->sparks[i]->active){
+        if(this->sparks[i]->rb.active){
             this->sparks[i]->render(screen,dt);
         }
     }
     //energy balls
     for(int i = 0; i < engBallPoolSize; i++){
         //renders if active or exploding
-        if(this->engBalls[i]->active || this->engBalls[i]->exploding){
+        if(this->engBalls[i]->rb.active || this->engBalls[i]->exploding){
             this->engBalls[i]->render(screen);
         }
     }

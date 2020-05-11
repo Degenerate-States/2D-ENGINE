@@ -37,7 +37,7 @@ void GameManager::events(double dt){
 
     // keypresses
     this->screen.keys(this->keys,dt);
-    this->plr.keys(this->keys,&this->screen,dt);
+    this->plr.keys(this->keys,&this->box.rb,&this->screen,dt);
 }
 
 void GameManager::preUpdateInteractions(double dt){

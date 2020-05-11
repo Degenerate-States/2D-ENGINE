@@ -28,7 +28,6 @@ using namespace std;
 //    }
 //}
 
-//private helper function
 //theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
 double smallestAngle(double theta, double phi){
     double delta = abs(theta-phi);
@@ -169,7 +168,7 @@ willBulletHitPoly(Polygon* poly,Bullet* bullet,RigidBody* polyRB,int polyID,doub
     int minIndex = -1;
 
     //checks if bullet is active and poly isnt the one who fired it
-    if(bullet->active && polyID != bullet->shooterID){
+    if(bullet->rb.active && polyID != bullet->shooterID){
         // checks if bullet will be in circle containing polygon
         double possibleCollisonRad = abs(polyRB->pos - bulletNextPos) +abs(polyRB->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
         if (possibleCollisonRad < poly->getSmallestRadius()){

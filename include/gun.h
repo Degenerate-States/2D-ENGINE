@@ -26,6 +26,7 @@ class Gun{
         double velVarience;
 
         int numShots;
+        double homingRate;
 
         //holds reference of shooters rb
         RigidBody* shooterRb;
@@ -37,7 +38,8 @@ class Gun{
 
         //event hanlding
         void events(SDL_Event* event, Screen* screen ,double dt);
-        void fire(complex<double> fireDirection);
+        //target is homing target, defaults to null
+        void fire(complex<double> fireDirection,RigidBody* target = NULL);
 };
 
 #endif

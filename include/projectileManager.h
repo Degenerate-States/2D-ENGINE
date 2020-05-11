@@ -12,6 +12,9 @@ enum projectileType{ bullet, spark, energyBall };
 class Bullet{
     private:
         double riccoVelDamping;
+        RigidBody* homingTarget;
+
+        double homingRate;
     public:
         projectileType type;
 
@@ -22,13 +25,13 @@ class Bullet{
         Point pnt;
         Trail trail;
         //bool must be checked to see if you should apply render, collision and update 
-        bool active;
 
         // will also include trail component
 
         void init(Stats* stats);
-        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, 
-                        int shooterID, complex<double> pos, complex<double> vel);
+        //homing target defaults to null, if target is null no homing is applied, likewise if the target is inactive
+        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, 
+                        complex<double> vel, RigidBody* homingTarget, double homingRate);
         void update(double dt);
         void render(Screen* screen,double dt);
 
@@ -49,7 +52,6 @@ class Spark{
         RigidBody rb;
         Point pnt;
         Trail trail;
-        bool active;
         void init(Stats* stats);
 
         void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, 
@@ -76,7 +78,6 @@ class EnergyBall{
         Polygon outerPoly;
         Polygon innerPoly;
 
-        bool active;
         int shooterID;
         bool exploding;
         complex<double> prevPos;
@@ -114,7 +115,7 @@ class ProjectileManager{
 
         //vel varience is maximum deviation from vel (think radius of circle around vel)
         void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
-                        complex<double> pos, complex<double> vel, double velVarience);
+            complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
         void fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
                         complex<double> pos, complex<double> vel, double velVarience);
         //vel varience is maximum deviation from vel (think radius of circle around vel)

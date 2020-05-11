@@ -8,6 +8,8 @@
 #include "projectileManager.h"
 #include "config.h"
 
+//theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
+double smallestAngle(double theta, double phi);
 
 //returns collision info on the first line in the polygon hit between now and next frame
 tuple<bool,int,complex<double>> 

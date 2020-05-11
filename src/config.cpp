@@ -55,6 +55,6 @@ void Stats::init(){
     //gameplay
     this->plrTopSpeed = 2;
     this->plrAcceleration = 4;
-    this->plrBulletVel = 5;
-    this->plrShotVarience= 0.5;
+    this->plrBulletVel = 4;
+    this->plrShotVarience= 2;
 }

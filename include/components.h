@@ -12,6 +12,7 @@ using namespace std;
 
 class RigidBody{
     public:
+        bool active;
         double mass;
         complex<double> pos;
         complex<double> vel;

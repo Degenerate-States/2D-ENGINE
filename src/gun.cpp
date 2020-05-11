@@ -12,8 +12,9 @@ void Gun::init(RigidBody* rb, Assets* assets,ProjectileManager* projMan, project
 
     //TODO: work the following into stat system
     this->fullAuto = true;
-    this->coolDown = 100;
-    this->numShots = 1;
+    this->coolDown = 300;
+    this->numShots = 5;
+    this->homingRate =2;
 }
 void Gun::update(Screen* screen,double dt){
     int x,y;
@@ -26,17 +27,23 @@ void Gun::update(Screen* screen,double dt){
 void Gun::render(Screen* screen){
     this->poly.render(screen);
 }
-void Gun::fire(complex<double> fireDirection){
+void Gun::fire(complex<double> fireDirection, RigidBody* target){
     if(SDL_GetTicks() - this->lastFired >this->coolDown){
         this->lastFired = SDL_GetTicks();
         //fire direction is now velocity vector
         fireDirection*=this->bulletVel/abs(fireDirection);
+
+        // overrides target if no homing
+        if(this-> homingRate == 0){
+            target = NULL;
+        }
+
         //fires "numshots" bullets
         for(int i = 0; i < this->numShots; i++){
             // its more efficet to put loop inside switch, but less legable 
             switch(this->type){
                 case (bullet): 
-                    this->projMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->velVarience);
+                    this->projMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
                 break;
 
                 case(spark):

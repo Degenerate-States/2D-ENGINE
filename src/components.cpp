@@ -13,7 +13,7 @@ void RigidBody::init(double m, double x, double y,double initRot){
     this->pos = {x,y};
     this->rot = initRot;
     this->rotVel = 0.0;
-
+    this->active = true;
     //initalizes rotOp
     this->rotOp = {cos(initRot),sin(initRot)};
 }
