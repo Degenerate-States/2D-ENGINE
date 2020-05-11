@@ -30,6 +30,7 @@ void Bullet::init(Stats* stats){
     this->pnt.init(&this->rb,white,stats->bulletDiameter);
     this->trail.init(&this->rb,stats->bulletDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
+    this->riccoVelDamping = stats->riccoBulletVelDamping;
     this->active = false;
 }
 
@@ -59,8 +60,9 @@ complex<double> Bullet::onCollision(int hitID,complex<double> collisionPoint, co
     // undoes update movement, you could also move bullet to collision point, although this may cause double hits
     this->rb.pos = this->prevPos;
 
-    // reflects velocity
-    this->rb.vel = reflectAboutNormal(collisionNormal , this->rb.vel);
+    // reflects velocity and damps it
+    this->rb.vel = this->riccoVelDamping*reflectAboutNormal(collisionNormal , this->rb.vel);
+    
     
     //returns riccochet direction
     return this->rb.vel;
@@ -77,6 +79,9 @@ void Spark::init(Stats* stats){
     this->pnt.init(&this->rb,white,stats->sparkDiameter);
     this->trail.init(&this->rb,stats->sparkDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
+    this->velDamping = stats->sparkVelDamping;
+    this->startDiameter = stats->sparkDiameter;
+    this->minVel = stats->sparkMinVel;
     this->active = false;
 }
 
@@ -87,11 +92,21 @@ void Spark::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
 
     this->pnt.changeColor(headColor);
     this->trail.reset(headColor,tailColor);
-
+    this->spawnSpeed = abs(vel);
     this->active = true;
 }
 void Spark::update(double dt){
+    double speed = abs(this->rb.vel);
+    this->rb.vel -= velDamping*dt*this->rb.vel;
+
+    double newDiameter = this->startDiameter*(speed)/ this->spawnSpeed;
+    this->trail.headThickness =newDiameter;
+    this->pnt.diameter = newDiameter;
+
     this->rb.update(dt);
+    if(speed < this->minVel){
+        this->active = false;
+    }
     
 }
 void Spark::render(Screen* screen,double dt){
@@ -209,7 +224,7 @@ void EnergyBall::onCollision(){
 void ProjectileManager::init(Assets* assets,Stats* stats){
     this->riccoSparkSpawnDamping = stats->riccoSparkSpawnDamping;
     this->riccoSparkVelDamping = stats->riccoSparkVelDamping;
-    this->sparkVelVarience=stats->sparkVelVarience;
+    this->riccoSparkVelVarience=stats->riccoSparkVelVarience;
 
     //initalize bullets
     this->oldestBulletIndex = 0;
@@ -291,9 +306,9 @@ void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,d
 }
 void ProjectileManager::collisionSparks(complex<double> direction,complex<double> point){
     double riccochetMag = abs(direction);
-    complex<double> sparkVel = direction/this->riccoSparkVelDamping;
-    for(int i = 0; i < (int)(riccochetMag/this->riccoSparkSpawnDamping); i++){
-        this->fireSpark(orange,red,point,sparkVel,this->sparkVelVarience);
+    complex<double> sparkVel = direction*this->riccoSparkVelDamping;
+    for(int i = 0; i < (int)(riccochetMag*this->riccoSparkSpawnDamping); i++){
+        this->fireSpark(orange,red,point,sparkVel,this->riccoSparkVelVarience);
     }
 }
 

@@ -10,6 +10,8 @@ using namespace std;
 enum projectileType{ bullet, spark, energyBall };
 
 class Bullet{
+    private:
+        double riccoVelDamping;
     public:
         projectileType type;
 
@@ -35,6 +37,13 @@ class Bullet{
 };
 
 class Spark{
+    private:
+        double velDamping;
+        double minVel;
+
+        // values at spawn, decreased overtime
+        double spawnSpeed;
+        double startDiameter;
     public:
         projectileType type;
         RigidBody rb;
@@ -97,7 +106,7 @@ class ProjectileManager{
         double riccoSparkSpawnDamping;
         //divides riccochet vel by this to get spark vel
         double riccoSparkVelDamping;
-        double sparkVelVarience;
+        double riccoSparkVelVarience;
 
 
     public:

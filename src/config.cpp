@@ -18,14 +18,17 @@ void Stats::init(){
     this->bulletTrailDecay=0.13;
     this->bulletTrailSegments=8;
     this->bulletDiameter=5;
+    this->riccoBulletVelDamping = 1;
 
     //sparks
-    this->sparkDiameter = 3;
+    this->sparkDiameter = 8;
     this->sparkTrailSegments = 3;
-    this->sparkTrailDecay = 0.05;
-    this->riccoSparkSpawnDamping = 2;
-    this->riccoSparkVelDamping = 2.5;
-    this->sparkVelVarience = 0.5;
+    this->sparkTrailDecay = 0.08;
+    this->riccoSparkSpawnDamping = 0.5;
+    this->riccoSparkVelDamping = 0.66;
+    this->riccoSparkVelVarience = 1;
+    this->sparkVelDamping = 3;
+    this->sparkMinVel = 0.1;
 
 
     //energy ball
@@ -52,6 +55,6 @@ void Stats::init(){
     //gameplay
     this->plrTopSpeed = 2;
     this->plrAcceleration = 4;
-    this->plrBulletVel = 2;
+    this->plrBulletVel = 5;
     this->plrShotVarience= 0.5;
 }

@@ -120,14 +120,15 @@ void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter){
     this->diameter = diameter;
 }
 void Point::render(Screen* screen){
-    glColor3ub(get<0>(color),get<1>(color),get<2>(color));
-    glPointSize(screen->zoom*this->diameter);
+    if(this->diameter > minLinThickness){
+        glColor3ub(get<0>(color),get<1>(color),get<2>(color));
+        glPointSize(screen->zoom*this->diameter);
 
-    glBegin(GL_POINTS);
-    tuple<double,double> coord = (*screen).worldToScreen(this->rb->pos);
-    glVertex2d(get<0>(coord), get<1>(coord));
-    glEnd();
-
+        glBegin(GL_POINTS);
+        tuple<double,double> coord = (*screen).worldToScreen(this->rb->pos);
+        glVertex2d(get<0>(coord), get<1>(coord));
+        glEnd();
+    }
 }
 void Point::changeColor(tuple<int,int,int> color){
     this->color = color;
@@ -220,7 +221,7 @@ void Polygon::render(Screen* screen){
 void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTime){
     this->rb = rb;
 
-    this->startThickness = thickness;
+    this->headThickness = thickness;
     
     this->numVertices = numVertices;
     this->decayTime = decayTime;
@@ -286,14 +287,19 @@ void Trail::render(Screen* screen){
 
     for(int i = 1; i < this->numVertices; i++){
         index = (trailHeadIndex+i)%this->numVertices;
-        thickness = screen->zoom*(this->vetexTimers[index]/this->decayTime)*this->startThickness;
+        thickness = screen->zoom*(this->vetexTimers[index]/this->decayTime)*this->headThickness;
         coord2 = screen->worldToScreen(this->vertexPos[index]);
 
         glLineWidth(thickness);
 
         //sets color to gradient calculated in reset method
-        glColor3ub(get<0>(this->segmentColors[i-1]), 
-                    get<1>(this->segmentColors[i-1]), get<2>(this->segmentColors[i-1]));
+        if(thickness > minLinThickness){
+            glColor3ub(get<0>(this->segmentColors[i-1]), 
+                get<1>(this->segmentColors[i-1]), get<2>(this->segmentColors[i-1]));
+        }else{
+            glColor3ub(get<0>(black),get<1>(black),get<2>(black));
+        }
+
 
         glBegin(GL_LINES);
         glVertex2d(get<0>(coord1), get<1>(coord1));
