@@ -5,9 +5,9 @@
 using namespace std;
 
 //must be known at compile time
-constexpr int bulletPoolSize = 5;
-constexpr int sparkPoolSize = 10;
-constexpr int engBallPoolSize = 5;
+constexpr int bulletPoolSize = 50;
+constexpr int sparkPoolSize = 100;
+constexpr int engBallPoolSize = 30;
 
 //global line thickness
 constexpr float defaultLineThickness = 4.0;

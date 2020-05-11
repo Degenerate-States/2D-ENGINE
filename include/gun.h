@@ -6,6 +6,8 @@
 
 
 class Gun{
+    private:
+        int lastFired;
     public:
         projectileType type;
         RigidBody rb;
@@ -15,8 +17,16 @@ class Gun{
         //holds copy of shooters id
         int ID;
 
+        //gun stats
+        bool fullAuto;
+        // in miliseconds
+        double coolDown;
+
         double bulletVel;
         double velVarience;
+
+        int numShots;
+
         //holds reference of shooters rb
         RigidBody* shooterRb;
 

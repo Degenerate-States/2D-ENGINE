@@ -9,6 +9,11 @@ void Gun::init(RigidBody* rb, Assets* assets,ProjectileManager* projMan, project
     this->rb.init(1.,0,0,0.0);
     this->shooterRb = rb;
     this->poly.init(&(assets->gunAsset),&this->rb,white);
+
+    //TODO: work the following into stat system
+    this->fullAuto = true;
+    this->coolDown = 300;
+    this->numShots = 3;
 }
 void Gun::update(Screen* screen,double dt){
     int x,y;
@@ -22,19 +27,28 @@ void Gun::render(Screen* screen){
     this->poly.render(screen);
 }
 void Gun::fire(complex<double> fireDirection){
-    //fire direction is now velocity vector
-    fireDirection*=this->bulletVel/abs(fireDirection);
-    switch(this->type){
-        case (bullet): 
-            this->projMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->velVarience);
-        break;
-        
-        case(spark):
-            this->projMan->fireSpark(orange,red, this->rb.pos, fireDirection, this->velVarience);
-        break;
+    if(SDL_GetTicks() - this->lastFired >this->coolDown){
+        this->lastFired = SDL_GetTicks();
+        //fire direction is now velocity vector
+        fireDirection*=this->bulletVel/abs(fireDirection);
+        //fires "numshots" bullets
+        for(int i = 0; i < this->numShots; i++){
+            // its more efficet to put loop inside switch, but less legable 
+            switch(this->type){
+                case (bullet): 
+                    this->projMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->velVarience);
+                break;
 
-        case(energyBall):
-            this->projMan->fireEngBall(orange,red,this->ID, this->rb.pos, fireDirection, this->velVarience);
-        break;
+                case(spark):
+                    this->projMan->fireSpark(orange,red, this->rb.pos, fireDirection, this->velVarience);
+                break;
+
+                case(energyBall):
+                    this->projMan->fireEngBall(orange,red,this->ID, this->rb.pos, fireDirection, this->velVarience);
+                break;
+            }
+
+        }
     }
+
 }

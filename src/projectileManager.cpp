@@ -139,6 +139,10 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
 
     this->active = true;
     this->exploding = false;
+    this->innerPoly.resetVertexOffsets();
+    this->outerPoly.resetVertexOffsets();
+    this->innerPoly.lineThickness=defaultLineThickness;
+    this->outerPoly.lineThickness=defaultLineThickness;
 }
 void EnergyBall::update(double dt){
 
@@ -189,10 +193,6 @@ void EnergyBall::explode(double dt){
 
     if (this->explosionTimeRemaining < 0){
         this->exploding = false;
-        this->innerPoly.resetVertexOffsets();
-        this->outerPoly.resetVertexOffsets();
-        this->innerPoly.lineThickness=defaultLineThickness;
-        this->outerPoly.lineThickness=defaultLineThickness;
     }
 }
 void EnergyBall::onCollision(){
@@ -263,9 +263,7 @@ void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,
     this->oldestEngBallIndex+=1;
     this->oldestEngBallIndex%=engBallPoolSize;
 }
-//TODO: clean up following method and make it acecessable for use with other projectile types
-//      this can be done by moving the collision heuristic to willBulletHitPoly. in general
-//      having such collision functions in the collision helpers file seems like the best approch
+
 void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
 
     // check collision with bullets
@@ -290,8 +288,6 @@ void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,d
             }
         }
     }
-
-
 }
 void ProjectileManager::collisionSparks(complex<double> direction,complex<double> point){
     double riccochetMag = abs(direction);
@@ -321,7 +317,6 @@ void ProjectileManager::update(double dt){
             this->engBalls[i]->update(dt);
         }
     }
-
 }
 void ProjectileManager::render(Screen* screen,double dt){
     for(int i = 0; i < bulletPoolSize; i++){

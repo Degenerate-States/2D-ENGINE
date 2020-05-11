@@ -68,20 +68,16 @@ void Player::render(Screen* screen){
     this->flame.render(screen);
 }
 void Player::events(SDL_Event* event, Screen* screen,double dt){
-    if(event->type == SDL_MOUSEBUTTONDOWN){
+    //semi auto firing
+    // if gun is semi auto right mouse was pressed
+    if((!this->gun.fullAuto) && event->type == SDL_MOUSEBUTTONDOWN){
         if (event->button.button == SDL_BUTTON_LEFT){
             complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
             this->gun.fire(fireDirection);
         }
     }
 }
-void Player::setScreenPos(Screen* screen, double dt){
-    // direction of motion is from where screen is to where player is trusting times offset size
 
-    this->relScreenPos = this->screenOffset*this->rb.vel/this->topSpeed;
-    // sets screen posisiton to player posistion plus relative posisiton
-    screen->rb.pos = this->rb.pos + this->relScreenPos;
-}
 void Player::keys(const Uint8* keys,Screen* screen,double dt){
     complex<double> direction = 0.0;
 
@@ -98,10 +94,23 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
         direction += {0,-1};
     }
 
-
-
     if (abs(direction)!=0.0){
         direction*= this->acceleration/abs(direction);
         this->rb.applyForce(real(direction),imag(direction),dt);
     }
+
+    //full auto firing
+    if(this->gun.fullAuto){
+        int x,y;
+        if (SDL_GetMouseState(&x,&y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
+            complex<double> fireDirection = screen->pixelScreenToWorld(x,y) - this->rb.pos;
+            this->gun.fire(fireDirection);
+        }
+    }
+}
+void Player::setScreenPos(Screen* screen, double dt){
+    // direction of motion is from where screen is to where player is trusting times offset size
+    this->relScreenPos = this->screenOffset*this->rb.vel/this->topSpeed;
+    // sets screen posisiton to player posistion plus relative posisiton
+    screen->rb.pos = this->rb.pos + this->relScreenPos;
 }

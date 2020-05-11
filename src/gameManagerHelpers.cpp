@@ -24,10 +24,8 @@ void GameManager::fixFramerate(){
     this->tickNumber+=1;
     double frameDuration = SDL_GetTicks() -this->frameTime;
 
-    double currentfps = 1000.0 / frameDuration;
-
     if (this->tickNumber%300 == 0){
-        
+        double currentfps = 1000.0 / frameDuration;
         cout <<"fps: "<< currentfps <<  endl;
     }
 
