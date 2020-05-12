@@ -130,7 +130,7 @@ class ProjectileManager{
         
         void update(double dt);
         // checks polygon against all bullets
-        void checkCollisionPoly(int ID,RigidBody* rb,Polygon* poly,double dt);
+        void checkCollisionPoly(Polygon* poly,int ID,double dt);
         void render(Screen* screen,double dt);
 
         void collisionSparks(complex<double> direction,complex<double> point);

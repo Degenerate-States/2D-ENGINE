@@ -156,9 +156,12 @@ complex<double> endLine1,complex<double> endLine2){
     //all but false is dummy data
     return make_tuple(false,t,point1);
 }
-
+// TODO: circle of influence calculation does not accomidate for previous vertex posisitons
+// this can be changed in poly->getContainingCircle(), however it would double the calculations done in there
+// pointCollisionPadSpatial could be increased to accomidate for this instead
+// furthermore a more efficent system for pre collision checking could be used (ie sector system)
 tuple<bool,int,complex<double>> 
-willBulletHitPoly(Polygon* poly,Bullet* bullet,RigidBody* polyRB,int polyID,double dt){
+willBulletHitPoly(Polygon* poly,Bullet* bullet, int polyID,double dt){
     complex<double> bulletPos = bullet->prevPos;
     complex<double> bulletNextPos = bullet->rb.pos;
 
@@ -167,13 +170,13 @@ willBulletHitPoly(Polygon* poly,Bullet* bullet,RigidBody* polyRB,int polyID,doub
     double minT = 2;
     int minIndex = -1;
 
+
     //checks if bullet is active and poly isnt the one who fired it
     if(bullet->rb.active && polyID != bullet->shooterID){
         // checks if bullet will be in circle containing polygon
-        double possibleCollisonRad = abs(polyRB->pos - bulletNextPos) +abs(polyRB->vel*(dt+pntCollisionPadTemporal)) + pntCollisionPadSpatial;
-        if (possibleCollisonRad < poly->getSmallestRadius()){
-
-
+        tuple<double,complex<double>> polyCircle = poly->getContainingCircle();
+        double possibleCollisonRad = abs(get<1>(polyCircle) - bulletNextPos) + pntCollisionPadSpatial;
+        if (possibleCollisonRad < get<0>(polyCircle)){
 
                 tuple<bool, double ,complex<double>> helperReturnVal;
                 //updated if a line was hit, updated further if another line was hit with smaller t

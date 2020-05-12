@@ -51,8 +51,8 @@ void GameManager::update(double dt){
     this->projMan.update(dt);
 }
 void GameManager::postUpdateInteractions(double dt){
-    this->projMan.checkCollisionPoly(this->box.ID,&this->box.rb,&this->box.poly,dt);
-    this->projMan.checkCollisionPoly(this->plr.ID,&this->plr.rb, &this->plr.poly,dt);
+    this->projMan.checkCollisionPoly(&this->box.poly,this->box.ID,dt);
+    this->projMan.checkCollisionPoly(&this->plr.poly,this->plr.ID,dt);
 
     this->plr.setScreenPos(&screen,dt);
 }

@@ -168,17 +168,22 @@ complex<double> Polygon::getNormal(int index){
     normal/=abs(normal);
     return normal;
 }
-double Polygon::getSmallestRadius(){
+tuple<double,complex<double>> Polygon::getContainingCircle(){
     //radius
     double furthest = 0;
     double current;
+
+    //center
+    complex<double> center = 0;
     for(int i=0; i<this->numVertices; i++){
         current = abs((*this->nextAsset)[i]);
         if(current>furthest){
             furthest = current;
         }
+        center+= (*this->nextAsset)[i];
     }
-    return furthest;
+    center /= this->numVertices;
+    return make_tuple(furthest,center);
 }
 void Polygon::resetVertexOffsets(){
     for(int i=0; i<this->numVertices; i++){

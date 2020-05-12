@@ -312,12 +312,12 @@ void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,
     this->oldestEngBallIndex%=engBallPoolSize;
 }
 
-void ProjectileManager::checkCollisionPoly(int ID, RigidBody* rb,Polygon* poly,double dt){
+void ProjectileManager::checkCollisionPoly(Polygon* poly,int ID,double dt){
 
     // check collision with bullets
     tuple<bool,int,complex<double>> helperReturnVal;
     for(int i = 0; i < bulletPoolSize; i++){
-        helperReturnVal = willBulletHitPoly(poly,this->bullets[i], rb, ID, dt);
+        helperReturnVal = willBulletHitPoly(poly,this->bullets[i], ID, dt);
         // if collision occured
         if  (get<0>(helperReturnVal)){
             complex<double> normal = poly->getNormal(get<1>(helperReturnVal));

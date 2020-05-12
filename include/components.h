@@ -121,8 +121,8 @@ class Polygon{
 
         // both get normal and get smallest raduis use next asset because theyre used in collision
         complex<double> getNormal(int index);
-        //get radius of smallest circle which contains polygon
-        double getSmallestRadius();
+        //get  center and radius of smallest circle which contains polygon
+        tuple<double,complex<double>> getContainingCircle();
 
         void resetVertexOffsets();
         
