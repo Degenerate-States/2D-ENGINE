@@ -16,9 +16,11 @@ $(EXE): $(BUILD)\*.obj
 	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL\lib\win64\SDL2.dll $(BUILD)
 
 glad.obj:
+	@if not exist $(BUILD) mkdir $(BUILD)
 	$(CC) $(CFLAGS) -Fo:$(BUILD)\ -c lib\GLAD\src\glad.c
 
 {$(SRC)}.cpp{$(BUILD)}.obj:: 
+	@if not exist $(BUILD) mkdir $(BUILD)
 	$(CC) $(CFLAGS) -Fo:$(BUILD)\ -c $< 
 
 clean:
