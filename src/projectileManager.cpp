@@ -31,6 +31,11 @@ void Bullet::init(Stats* stats){
     this->trail.init(&this->rb,stats->bulletDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
     this->riccoVelDamping = stats->riccoBulletVelDamping;
+    this->velDamping = stats->bulletVelDamping;
+    this->minVel = stats->bulletMinVel;
+
+    this->startDiameter = stats->bulletDiameter;
+    
     this->rb.active = false;
 }
 
@@ -45,6 +50,7 @@ void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
 
     this->homingTarget = homingTarget;
     this->homingRate = homingRate;
+    this->spawnSpeed = abs(vel);
     this->rb.active = true;
 }
 void Bullet::update(double dt){
@@ -59,8 +65,18 @@ void Bullet::update(double dt){
             this->rb.vel*=rotation;
         }
     }
+
+    double speed = abs(this->rb.vel);
+    this->rb.vel -= velDamping*dt*this->rb.vel;
+    double newDiameter = this->startDiameter*(speed)/ this->spawnSpeed;
+    this->trail.headThickness =newDiameter;
+    this->pnt.diameter = newDiameter;
+
     this->prevPos = this->rb.pos;
     this->rb.update(dt);
+    if(speed < this->minVel){
+        this->rb.active = false;
+    }
     
 }
 void Bullet::render(Screen* screen,double dt){
@@ -71,7 +87,7 @@ void Bullet::render(Screen* screen,double dt){
 complex<double> Bullet::onCollision(int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
     //disables homing on hit
     this->homingTarget = NULL;
-    
+
     this->prevPos = collisionPoint;
     this->shooterID = hitID;
     // undoes update movement, you could also move bullet to collision point, although this may cause double hits

@@ -15,6 +15,12 @@ class Bullet{
         RigidBody* homingTarget;
 
         double homingRate;
+
+        double velDamping;
+        double minVel;
+
+        double spawnSpeed;
+        double startDiameter;
     public:
         projectileType type;
 

@@ -51,6 +51,8 @@ struct Stats{
     int bulletTrailSegments;
     double bulletDiameter;
     double riccoBulletVelDamping;
+    double bulletVelDamping;
+    double bulletMinVel;
     
     //sparks
     double sparkDiameter;

@@ -169,6 +169,7 @@ complex<double> Polygon::getNormal(int index){
     return normal;
 }
 double Polygon::getSmallestRadius(){
+    //radius
     double furthest = 0;
     double current;
     for(int i=0; i<this->numVertices; i++){

@@ -18,13 +18,15 @@ void Stats::init(){
     this->bulletTrailDecay=0.13;
     this->bulletTrailSegments=8;
     this->bulletDiameter=5;
-    this->riccoBulletVelDamping = 1;
+    this->riccoBulletVelDamping = 0.8;
+    this->bulletVelDamping = 0.3;
+    this->bulletMinVel = 1;
 
     //sparks
     this->sparkDiameter = 8;
     this->sparkTrailSegments = 3;
     this->sparkTrailDecay = 0.08;
-    this->riccoSparkSpawnDamping = 0.5;
+    this->riccoSparkSpawnDamping = 0.6;
     this->riccoSparkVelDamping = 0.66;
     this->riccoSparkVelVarience = 1;
     this->sparkVelDamping = 3;
