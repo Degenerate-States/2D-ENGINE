@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include <complex>
 #include "components.h"
+#include "riggedPoly.h"
 #include "projectileManager.h"
 #include "player.h"
 #include "miscGameObjs.h"
@@ -30,6 +31,8 @@ class GameManager{
 
         Player plr;
         Box box;
+        RiggedTest rigTest;
+
         
         void init(Config* cfg, Assets* assets,Stats* stats);
 

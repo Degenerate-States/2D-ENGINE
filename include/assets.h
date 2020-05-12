@@ -5,6 +5,14 @@
 #include <vector>
 using namespace std;
 
+// used to serialize rigged poly joint data
+struct jointInfo{
+    vector<int> indices;
+    complex<double> pos;
+    //member initalizer
+    jointInfo(vector<int> indices,complex<double> pos) : indices(indices), pos(pos){}
+};
+
 class Assets{
     public:
         // list of all game assets
@@ -16,6 +24,8 @@ class Assets{
         vector<complex<double>> outerEngBall;
         vector<complex<double>> innerEngBall;
 
+        vector<complex<double>> testPoly;
+        vector<jointInfo> testJoints;
         //where all the assets are acutally defined
         void init();
 };

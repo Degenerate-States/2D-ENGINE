@@ -25,3 +25,22 @@ void Box::update(Screen* screen, double dt){
 void Box::render(Screen* screen){
     this->poly.render(screen);
 }
+
+void RiggedTest::init(Assets* assets){
+    this->rp.init(&assets->testPoly,&assets->testJoints,white);
+    this->ID = 3;
+
+    this->rp.joints[0]->rb.setPos(-0.5,0);
+    this->rp.joints[1]->rb.setPos(-0.5,0);
+}
+void RiggedTest::update(double dt){
+
+    this->rp.joints[0]->rb.setRot(sin(0.001*SDL_GetTicks()));
+    this->rp.joints[0]->rb.fixedDisplace(0,-0.1*sin(0.001*SDL_GetTicks()),dt);
+    this->rp.joints[1]->rb.setRot(cos(0.001*SDL_GetTicks()));
+    this->rp.joints[1]->rb.fixedDisplace(0,-0.1*cos(0.001*SDL_GetTicks()),dt);
+    this->rp.update(dt);
+}
+void RiggedTest::render(Screen* screen){
+    this->rp.render(screen);
+}

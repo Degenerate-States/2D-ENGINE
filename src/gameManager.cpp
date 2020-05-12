@@ -20,8 +20,7 @@ void GameManager::init(Config* cfg,Assets* assets,Stats* stats){
     this->projMan.init(assets,stats);
     this->plr.init(assets,&this->projMan, stats);
     this->box.init(assets);
-    
-
+    this->rigTest.init(assets);
 }
 
 
@@ -37,7 +36,7 @@ void GameManager::events(double dt){
 
     // keypresses
     this->screen.keys(this->keys,dt);
-    this->plr.keys(this->keys,&this->box.rb,&this->screen,dt);
+    this->plr.keys(this->keys,&this->screen,dt);
 }
 
 void GameManager::preUpdateInteractions(double dt){
@@ -49,20 +48,22 @@ void GameManager::update(double dt){
     this->box.update(&this->screen,dt);
     this->screen.update(dt);
     this->projMan.update(dt);
+    this->rigTest.update(dt);
 }
 void GameManager::postUpdateInteractions(double dt){
     this->projMan.checkCollisionPoly(&this->box.poly,this->box.ID,dt);
     this->projMan.checkCollisionPoly(&this->plr.poly,this->plr.ID,dt);
-
+    this->projMan.checkCollisionPoly(&this->rigTest.rp.poly,this->rigTest.ID,dt);
     this->plr.setScreenPos(&screen,dt);
 }
 void GameManager::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //render everything below
-    this->plr.render(&(this->screen));
-    this->box.render(&(this->screen));
+    this->plr.render(&this->screen);
+    this->box.render(&this->screen);
     this->projMan.render(&this->screen,this->spf);
+    this->rigTest.render(&this->screen);
 
     SDL_GL_SwapWindow(this->screen.window);
 }

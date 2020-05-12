@@ -201,7 +201,7 @@ void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,i
     this->scale = 1.0;
 }
 void Polygon::update(){
-    for(int i=0; i < this->nextAsset->size(); i++){
+    for(int i=0; i < this->numVertices; i++){
         //rotates and scales polygon after applying warping from vertex offsets
         (*this->nextAsset)[i] =this->scale * this->rb->rotOp *( (this->assetRE)[i] + this->vertexOffsets[i]);
         //translates polygon

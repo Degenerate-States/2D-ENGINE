@@ -78,7 +78,7 @@ void Player::events(SDL_Event* event, Screen* screen,double dt){
     }
 }
 
-void Player::keys(const Uint8* keys, RigidBody* box,Screen* screen,double dt){
+void Player::keys(const Uint8* keys,Screen* screen,double dt){
     complex<double> direction = 0.0;
 
     if (keys[SDL_SCANCODE_D]){
@@ -104,7 +104,7 @@ void Player::keys(const Uint8* keys, RigidBody* box,Screen* screen,double dt){
         int x,y;
         if (SDL_GetMouseState(&x,&y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
             complex<double> fireDirection = screen->pixelScreenToWorld(x,y) - this->rb.pos;
-            this->gun.fire(fireDirection,box);
+            this->gun.fire(fireDirection);
         }
     }
 }

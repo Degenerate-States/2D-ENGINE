@@ -49,7 +49,7 @@ class Player{
         void events(SDL_Event* event,Screen* screen,double dt);
         //current keys down
         //TODO remove temp input box
-        void keys(const Uint8* keys,RigidBody* box ,Screen* screen,double dt);
+        void keys(const Uint8* keys ,Screen* screen,double dt);
 
         //screen controling
         void setScreenPos(Screen* screen, double dt);
