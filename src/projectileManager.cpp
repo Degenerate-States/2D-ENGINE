@@ -176,8 +176,8 @@ void EnergyBall::init(Assets* assets,Stats* stats){
     this->exploding = false;
 }
 
-void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, 
-                            int shooterID, complex<double> pos, complex<double> vel){
+void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, 
+                        complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
     this->shooterID = shooterID;
     this->rb.pos = pos;
     this->rb.vel = vel;
@@ -191,6 +191,9 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
     this->outerPoly.resetVertexOffsets();
     this->innerPoly.lineThickness=defaultLineThickness;
     this->outerPoly.lineThickness=defaultLineThickness;
+
+    this->homingTarget = homingTarget;
+    this->homingRate = homingRate;
 }
 void EnergyBall::update(double dt){
 
@@ -198,6 +201,20 @@ void EnergyBall::update(double dt){
     if(this->exploding){
         this->explode(dt);
     }else{
+
+
+        //TODO; increase efficency of process and have it called periodically rather than constantly 
+        // homing
+        if(this->homingTarget != NULL){
+            if(this->homingTarget->active){
+                double angle =smallestAngle(arg(this->homingTarget->pos - this->rb.pos), arg(this->rb.vel));
+                //gets angles sign
+                angle/=abs(angle);
+                complex<double> rotation = {cos(angle*this->homingRate*dt),sin(angle*this->homingRate*dt)};
+                this->rb.vel*=rotation;
+            }
+        }
+
         this->prevPos = this->rb.pos;
         this->rb.update(dt);
 
@@ -301,12 +318,11 @@ void ProjectileManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int
     this->oldestSparkIndex+=1;
     this->oldestSparkIndex%=sparkPoolSize;
 }
-void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor,int shooterID, 
-                                        complex<double> pos, complex<double> vel,double velVarience){
+void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, complex<double> pos, 
+                        complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
     //applies velocity varience
     vel += randComplex(velVarience);
-
-    this->engBalls[this->oldestEngBallIndex]->activate(innerColor,outerColor, shooterID, pos, vel);
+    this->engBalls[this->oldestEngBallIndex]->activate(innerColor,outerColor, shooterID, pos, vel, homingTarget, homingRate);
     // change which bullet is considered the oldest
     this->oldestEngBallIndex+=1;
     this->oldestEngBallIndex%=engBallPoolSize;

@@ -51,7 +51,7 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
                 break;
 
                 case(energyBall):
-                    this->projMan->fireEngBall(orange,red,this->ID, this->rb.pos, fireDirection, this->velVarience);
+                    this->projMan->fireEngBall(orange,red,this->ID, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
                 break;
             }
 

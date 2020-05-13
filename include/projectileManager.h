@@ -77,6 +77,9 @@ class EnergyBall{
         double explosionVel;
         double explosionVelVarience;
 
+        RigidBody* homingTarget;
+        double homingRate;
+
         void explode(double dt);
     public:
         projectileType type;
@@ -91,8 +94,8 @@ class EnergyBall{
 
         void init(Assets* assets,Stats* stats);
 
-        void activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, 
-                    int shooterID, complex<double> pos, complex<double> vel);
+        void activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, complex<double> pos, 
+                        complex<double> vel, RigidBody* homingTarget, double homingRate);
         void update(double dt);
         void render(Screen* screen);
         void onCollision();
@@ -120,13 +123,13 @@ class ProjectileManager{
         void init(Assets* assets, Stats* stats);
 
         //vel varience is maximum deviation from vel (think radius of circle around vel)
-        void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
-            complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
+        void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, 
+                        complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
         void fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
                         complex<double> pos, complex<double> vel, double velVarience);
         //vel varience is maximum deviation from vel (think radius of circle around vel)
-        void fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor,int shooterID,
-                        complex<double> pos, complex<double> vel, double velVarience);
+        void fireEngBall(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, 
+                        complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
         
         void update(double dt);
         // checks polygon against all bullets
