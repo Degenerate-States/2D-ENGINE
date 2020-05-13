@@ -7,6 +7,7 @@ void Start(Screen* screen, Assets* assets, Stats* stats) {
     // initalize game objects
     game->projMan.init(assets,stats);
     game->plr.init(assets,&game->projMan, stats);
+    game->enemyMan.init(assets,&game->projMan,&game->plr.rb,stats);
     game->box.init(assets);
     game->rigTest.init(assets);
     game->screen = screen;
@@ -24,21 +25,24 @@ void Update(double dt) {
     game->box.update(game->screen,dt);
     game->screen->update(dt);
     game->projMan.update(dt);
+    game->enemyMan.update(game->screen,dt);
     game->rigTest.update(dt);
 }
 void PostUpdate(double dt) {
     game->projMan.checkCollisionPoly(&game->box.poly,game->box.ID,dt);
     game->projMan.checkCollisionPoly(&game->plr.poly,game->plr.ID,dt);
     game->projMan.checkCollisionPoly(&game->rigTest.rp.poly,game->rigTest.ID,dt);
+    game->enemyMan.checkCollision(&game->projMan,dt);
     game->plr.setScreenPos(game->screen,dt);
 }
 
 
-void Render() {
+void Render(double dt) {
     //render everything below
     game->plr.render(game->screen);
     game->box.render(game->screen);
-    game->projMan.render(game->screen,game->spf);
+    game->projMan.render(game->screen,dt);
+    game->enemyMan.render(game->screen);
     game->rigTest.render(game->screen);
 }
 

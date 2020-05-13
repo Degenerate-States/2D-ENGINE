@@ -6,8 +6,10 @@ void Swarmer::init(Assets* assets,RigidBody* plrRB, Stats* stats){
 
     this->topSpeed = stats->swarmerTopSpeed;
     this->acceleration = stats->swarmerAcceleration;
+    this->drag = stats->swarmerDrag;
 
     this->poly.init(&assets->swarmerAsset,&this->rb,red);
+    this->plrRB = plrRB;
     this->rb.active = false;
 }
 void Swarmer::spawn(complex<double> pos, complex<double> vel){
@@ -32,6 +34,8 @@ void Swarmer::update(double dt){
     if (abs(this->rb.vel) > this->topSpeed){
         this->rb.vel *= this->topSpeed/abs(this->rb.vel);
     }
+    double speed = abs(this->rb.vel);
+    this->rb.vel -= this->drag*dt*this->rb.vel;
 
     this->rb.update(dt);
     this->poly.update();
@@ -50,6 +54,9 @@ void EnemyManager::init(Assets* assets, ProjectileManager* projMan,RigidBody* pl
         this->swarmers[i] = new Swarmer();
         this->swarmers[i]->init(assets,plrRB,stats);
     }
+
+    //TODO remove tester swarmer spawn below
+    this->spawnSwarmer({1,1});
 }
 
 void EnemyManager::spawnSwarmer(complex<double> pos, complex<double> vel, double velVarience){
@@ -65,6 +72,14 @@ void EnemyManager::update(Screen* screen, double dt){
     for(int i = 0; i < swarmerPoolSize; i++){
         if(this->swarmers[i]->rb.active){
             this->swarmers[i]->update(dt);
+        }
+    }
+}
+void EnemyManager::checkCollision(ProjectileManager* projMan,double dt){
+    //swarmers
+    for(int i = 0; i < swarmerPoolSize; i++){
+        if(this->swarmers[i]->rb.active){
+            projMan->checkCollisionPoly(&this->swarmers[i]->poly,this->swarmers[i]->ID,dt);
         }
     }
 }

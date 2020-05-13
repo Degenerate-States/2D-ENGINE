@@ -13,6 +13,7 @@ class Swarmer{
         //stats
         double topSpeed;
         double acceleration;
+        double drag;
     public:
         int ID;
         RigidBody rb;
@@ -39,6 +40,7 @@ class EnemyManager{
         void spawnSwarmer(complex<double> pos, complex<double> vel = 0, double velVarience = 0);
 
         void update(Screen* screen, double dt);
+        void checkCollision(ProjectileManager* projMan,double dt);
         void render(Screen* screen);
 
 };

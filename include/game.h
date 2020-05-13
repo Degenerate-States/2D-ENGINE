@@ -7,6 +7,7 @@
 #include "components.h"
 #include "riggedPoly.h"
 #include "projectileManager.h"
+#include "enemyManager.h"
 #include "player.h"
 #include "miscGameObjs.h"
 #include <tuple>
@@ -16,19 +17,15 @@ using namespace std;
 
 
 class Game{
-    public:
-        int fps;
-        //seconds per frame, used as internal time step dt
-        double spf;
-        int tickNumber;
-        bool running;
-        
+    public:        
         Screen* screen;
 
         Player plr;
         Box box;
         RiggedTest rigTest;
         ProjectileManager projMan;
+        EnemyManager enemyMan;
+
 
 };
 

@@ -61,5 +61,6 @@ void Stats::init(){
     this->plrShotVarience= 1;
 
     this->swarmerTopSpeed = 3;
-    this->swarmerAcceleration = 2;
+    this->swarmerAcceleration = 3;
+    this->swarmerDrag = 1;
 }

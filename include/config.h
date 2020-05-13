@@ -100,6 +100,8 @@ struct Stats{
     // swarmer
     double swarmerTopSpeed;
     double swarmerAcceleration;
+    double swarmerDrag;
+
     void init();
 };
 #endif

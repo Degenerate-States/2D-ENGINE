@@ -270,6 +270,7 @@ void Trail::reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
     
 }
 void Trail::update(double dt){
+    
     for(int i = 0; i < this->numVertices; i++){
         this->vetexTimers[i] -= dt;
         

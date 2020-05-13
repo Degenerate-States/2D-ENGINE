@@ -20,7 +20,7 @@ extern void PreUpdate(double dt);
 extern void Update(double dt);
 extern void PostUpdate(double dt);
 
-extern void Render();
+extern void Render(double dt);
 
 extern void Events(SDL_Event* event, Screen* screen,double dt);
 extern void Keys(const Uint8* keys,Screen* screen,double dt);

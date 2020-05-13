@@ -51,7 +51,6 @@ void Engine::init(Config* cfg,Assets* assets,Stats* stats){
     tuple<SDL_Window*,SDL_Renderer*> winRend = SDL_Visuals_Boilerplate(cfg);
     
     //initalizes screen
-    this->screen = Screen();
     double aspectRatio = ((double)windowSizeX) / ((double)windowSizeY);
     this->screen.init(get<0>(winRend),get<1>(winRend),aspectRatio);
     
@@ -80,7 +79,7 @@ void Engine::events(double dt){
 void Engine::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Render();
+    Render(this->spf);
 
     SDL_GL_SwapWindow(this->screen.window);
 }
