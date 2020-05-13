@@ -1,7 +1,6 @@
 #include "config.h"
 
 
-
 void Config::init(){
     //note vsync will cap this value
     this->fps = 60;

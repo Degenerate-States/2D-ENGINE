@@ -1,7 +1,7 @@
-#ifndef riggedPoly_h
-#define riggedPoly_h
+#pragma once
 #include "components.h"
 #include "assets.h"
+
 
 class Joint{
     private:
@@ -20,6 +20,7 @@ class Joint{
         void update(double dt);
 
 };
+
 class RiggedPoly{
     public:
         Polygon poly;
@@ -31,6 +32,3 @@ class RiggedPoly{
         void update(double dt);
         void render(Screen* screen);
 };
-
-
-#endif

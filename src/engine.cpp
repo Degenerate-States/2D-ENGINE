@@ -1,15 +1,5 @@
-#define SDL_MAIN_HANDLED
 #include "engine.h"
-#include "components.h"
-#include "config.h"
-#include "assets.h"
-#include <SDL.h>
-#include <glad/glad.h>
-#include <iostream>
-#include <complex>
-#include <tuple>
 
-using namespace std;
 
 int main(int argc, char **argv) {
     Assets* assets = new Assets();
@@ -37,7 +27,7 @@ int main(int argc, char **argv) {
 }
 
 //************************//
-//**GameManager Methods **//
+//**  Engine Methods    **//
 //************************//
 void Engine::init(Config* cfg,Assets* assets,Stats* stats){
     //stuff used in fixFramerate (spf is used for internal timestep)
@@ -107,7 +97,6 @@ void Engine::clean(){
     SDL_Quit();
 }
 
-// from helper
 void Engine::Check_Quit(){
     //events
     switch(this->event.type) {
@@ -139,6 +128,7 @@ void Engine::fixFramerate(){
     this->frameTime = SDL_GetTicks();
 }
 
+// TODO: refactor
 tuple<SDL_Window*,SDL_Renderer*> Engine::SDL_Visuals_Boilerplate(Config* cfg){
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         cerr << "SDL2 video subsystem couldn't be initialized. Error: "

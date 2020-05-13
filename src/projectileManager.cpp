@@ -1,11 +1,5 @@
 #include "projectileManager.h"
-#include "components.h"
-#include "config.h"
 #include "collisionFuncs.h"
-#include <complex>
-#include <tuple>
-#include <iostream>
-using namespace std;
 
 double randDouble(double max){
     return max* (double)rand()/RAND_MAX;
@@ -53,6 +47,7 @@ void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
     this->spawnSpeed = abs(vel);
     this->rb.active = true;
 }
+
 void Bullet::update(double dt){
     //TODO; increase efficency of process and have it called periodically rather than constantly 
     // homing
@@ -79,11 +74,13 @@ void Bullet::update(double dt){
     }
     
 }
+
 void Bullet::render(Screen* screen,double dt){
     this->trail.update(dt);
     this->trail.render(screen);
     this->pnt.render(screen);
 }
+
 complex<double> Bullet::onCollision(int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
     //disables homing on hit
     this->homingTarget = NULL;
@@ -128,6 +125,7 @@ void Spark::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
     this->spawnSpeed = abs(vel);
     this->rb.active = true;
 }
+
 void Spark::update(double dt){
     double speed = abs(this->rb.vel);
     this->rb.vel -= velDamping*dt*this->rb.vel;
@@ -142,6 +140,7 @@ void Spark::update(double dt){
     }
     
 }
+
 void Spark::render(Screen* screen,double dt){
     this->trail.update(dt);
     this->trail.render(screen);
@@ -195,6 +194,7 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
     this->homingTarget = homingTarget;
     this->homingRate = homingRate;
 }
+
 void EnergyBall::update(double dt){
 
     // checks if in process of exploding
@@ -229,10 +229,12 @@ void EnergyBall::update(double dt){
     this->outerPoly.update();
     this->innerPoly.update();
 }
+
 void EnergyBall::render(Screen* screen){
     this->innerPoly.render(screen);
     this->outerPoly.render(screen);
 }
+
 void EnergyBall::explode(double dt){
     this->explosionTimeRemaining-=dt;
     
@@ -260,6 +262,7 @@ void EnergyBall::explode(double dt){
         this->exploding = false;
     }
 }
+
 void EnergyBall::onCollision(){
     this->rb.active = false;
     this->exploding = true;
@@ -297,6 +300,7 @@ void ProjectileManager::init(Assets* assets,Stats* stats){
         this->engBalls[i]->init(assets,stats);
     }
 }
+
 void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
         complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
     //applies velocity varience
@@ -307,6 +311,7 @@ void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,in
     this->oldestBulletIndex+=1;
     this->oldestBulletIndex%=bulletPoolSize;
 }
+
 void ProjectileManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
                                 complex<double> pos, complex<double> vel,double velVarience){
 
@@ -318,6 +323,7 @@ void ProjectileManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int
     this->oldestSparkIndex+=1;
     this->oldestSparkIndex%=sparkPoolSize;
 }
+
 void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, complex<double> pos, 
                         complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
     //applies velocity varience
@@ -353,6 +359,7 @@ void ProjectileManager::checkCollisionPoly(Polygon* poly,int ID,double dt){
         }
     }
 }
+
 void ProjectileManager::collisionSparks(complex<double> direction,complex<double> point){
     double riccochetMag = abs(direction);
     complex<double> sparkVel = direction*this->riccoSparkVelDamping;
@@ -382,6 +389,7 @@ void ProjectileManager::update(double dt){
         }
     }
 }
+
 void ProjectileManager::render(Screen* screen,double dt){
     for(int i = 0; i < bulletPoolSize; i++){
         if(this->bullets[i]->rb.active){

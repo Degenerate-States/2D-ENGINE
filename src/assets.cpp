@@ -1,5 +1,5 @@
 #include "assets.h"
-using namespace std;
+
 
 void Assets::init(){
     colliderID = 0;
@@ -18,6 +18,7 @@ void Assets::init(){
     this->testPoly = {{-0.1,-0.1},{0.1,-0.1},{0.1,0.1},{-0.1,0.1}};
     this->testJoints = { jointInfo({0,1}, {0,-0.1}), jointInfo({2,3}, {0,0.1}) };
 }
+
 int Assets::getID(){
     this->colliderID++;
     return this->colliderID;

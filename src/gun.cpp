@@ -16,6 +16,7 @@ void Gun::init(RigidBody* rb, Assets* assets,ProjectileManager* projMan, project
     this->numShots = 5;
     this->homingRate =2;
 }
+
 void Gun::update(Screen* screen,double dt){
     int x,y;
     this->rb.pos = shooterRb->pos;
@@ -24,9 +25,11 @@ void Gun::update(Screen* screen,double dt){
     this->rb.update(dt);
     this->poly.update();
 }
+
 void Gun::render(Screen* screen){
     this->poly.render(screen);
 }
+
 void Gun::fire(complex<double> fireDirection, RigidBody* target){
     if(SDL_GetTicks() - this->lastFired >this->coolDown){
         this->lastFired = SDL_GetTicks();

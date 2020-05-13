@@ -20,6 +20,7 @@ void End() {
 void PreUpdate(double dt) {
     //this->screen.rb.rot = this->plr.rb.rot;
 }
+
 void Update(double dt) {
     game->plr.update(game->screen,dt);
     game->box.update(game->screen,dt);
@@ -28,6 +29,7 @@ void Update(double dt) {
     game->enemyMan.update(game->screen,dt);
     game->rigTest.update(dt);
 }
+
 void PostUpdate(double dt) {
     game->projMan.checkCollisionPoly(&game->box.poly,game->box.ID,dt);
     game->projMan.checkCollisionPoly(&game->plr.poly,game->plr.ID,dt);
@@ -35,7 +37,6 @@ void PostUpdate(double dt) {
     game->enemyMan.checkCollision(&game->projMan,dt);
     game->plr.setScreenPos(game->screen,dt);
 }
-
 
 void Render(double dt) {
     //render everything below
@@ -49,6 +50,7 @@ void Render(double dt) {
 void Events(SDL_Event* event, Screen* screen,double dt) {
     game->plr.events(event,screen,dt);
 }
+
 void Keys(const Uint8* keys,Screen* screen,double dt){
     game->screen->keys(keys,dt);
     game->plr.keys(keys,screen,dt);

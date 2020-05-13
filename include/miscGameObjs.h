@@ -1,10 +1,9 @@
-#ifndef miscGameObjs_h
-#define miscGameObjs_h
+#pragma once
 #include "components.h"
 #include "riggedPoly.h"
 #include "config.h"
 #include "assets.h"
-using namespace std;
+
 
 class Box{
     public:
@@ -28,4 +27,3 @@ class RiggedTest{
         void update(double dt);
         void render(Screen* screen);
 };
-#endif

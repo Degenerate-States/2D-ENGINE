@@ -1,32 +1,5 @@
 #include "collisionFuncs.h"
-#include "projectileManager.h"
-using namespace std;
 
-//tuple<bool,complex<double>> 
-//doLineSegmentsIntersect 
-//(complex<double> p1, complex<double> p2,
-//complex<double> q1,complex<double> q2)
-//{
-//    double scalar;
-//    complex<double> intersection;
-//    complex<double> divisor = q2-q1-p2+p1;
-//
-//    if (real(divisor)>imag(divisor)){
-//        scalar = real(p1-q1)/real(divisor);
-//    }
-//    else{
-//        scalar = imag(p1-q1)/imag(divisor);
-//    }
-//    
-//    if ((scalar>0.0-pointCollisionPadding) && (scalar<1.0+pointCollisionPadding)){
-//        intersection = p1 + scalar*(p2-p1);
-//        return make_tuple(true,intersection);
-//    }
-//    else{
-//        //divisor is just dummy data here
-//        return make_tuple(false,divisor);
-//    }
-//}
 
 //theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
 double smallestAngle(double theta, double phi){
@@ -156,6 +129,7 @@ complex<double> endLine1,complex<double> endLine2){
     //all but false is dummy data
     return make_tuple(false,t,point1);
 }
+
 // TODO: circle of influence calculation does not accomidate for previous vertex posisitons
 // this can be changed in poly->getContainingCircle(), however it would double the calculations done in there
 // pointCollisionPadSpatial could be increased to accomidate for this instead

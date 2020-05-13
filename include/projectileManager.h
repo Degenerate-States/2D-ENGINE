@@ -1,10 +1,12 @@
-#ifndef projectileManager_h
-#define projectileManager_h
+#pragma once
 #include "components.h"
 #include "config.h"
 #include "assets.h"
+
 #include <complex>
 #include <vector>
+#include <tuple>
+
 using namespace std;
 
 enum projectileType{ bullet, spark, energyBall };
@@ -140,5 +142,3 @@ class ProjectileManager{
 
         void collisionSparks(complex<double> direction,complex<double> point);
 };
-
-#endif

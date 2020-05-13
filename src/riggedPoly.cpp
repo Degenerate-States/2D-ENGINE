@@ -10,6 +10,7 @@ void Joint::init(Polygon* poly, vector<int>* indices,complex<double> initPos){
         this->attachedVerts.push_back((*indices)[i]);
     }
 }
+
 void Joint::update(double dt){
     this->rb.update(dt);
     for(int i=0; i < this->numVerticies; i++){
@@ -40,6 +41,7 @@ void RiggedPoly::update(double dt){
         this->joints[i]->update(dt);
     }
 }
+
 void RiggedPoly::render(Screen* screen){
     this->poly.render(screen);
 }

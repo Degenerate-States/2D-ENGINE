@@ -1,14 +1,4 @@
-#define _USE_MATH_DEFINES
 #include "player.h"
-#include "assets.h"
-#include "projectileManager.h"
-#include "components.h"
-#include "sdl.h"
-#include <complex>
-#include <vector>
-#include <cmath>
-#include <iostream>
-using namespace std;
 
 
 void Flame::init(RigidBody* plrRb, Assets* assets,ProjectileManager* projMan){
@@ -29,6 +19,7 @@ void Flame::update(Screen* screen, double dt){
     this->rb.update(dt);
     this->poly.update();
 }
+
 void Flame::render(Screen* screen){
     this->poly.render(screen);
 }
@@ -48,6 +39,7 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
     this->gun.init(&this->rb, assets, projMan, bullet, this->ID, stats->plrBulletVel, stats->plrShotVarience);
     this->flame.init(&this->rb,assets,projMan);
 }
+
 void Player::update(Screen* screen,double dt){
     //points in direction of motion
     this->rb.setRot(arg(this->rb.vel));
@@ -62,11 +54,13 @@ void Player::update(Screen* screen,double dt){
     this->gun.update(screen, dt);
     this->flame.update(screen,dt);
 }
+
 void Player::render(Screen* screen){
     this->poly.render(screen);
     this->gun.render(screen);
     this->flame.render(screen);
 }
+
 void Player::events(SDL_Event* event, Screen* screen,double dt){
     //semi auto firing
     // if gun is semi auto right mouse was pressed
@@ -81,7 +75,7 @@ void Player::events(SDL_Event* event, Screen* screen,double dt){
 
 void Player::keys(const Uint8* keys,Screen* screen,double dt){
     complex<double> direction = 0.0;
-
+    // TODO: move key specifics to the Keys callback in game.cpp
     if (keys[SDL_SCANCODE_D]){
         direction += {1,0};
     }
@@ -110,6 +104,7 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
         }
     }
 }
+
 void Player::setScreenPos(Screen* screen, double dt){
     // direction of motion is from where screen is to where player is trusting times offset size
     this->relScreenPos = this->screenOffset*this->rb.vel/this->topSpeed;

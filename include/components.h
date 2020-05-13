@@ -1,14 +1,19 @@
-#ifndef components_h
-#define components_h
+#pragma once
+
+#include "config.h"
+
+#include <SDL.h>
+#include <glad/glad.h>
+
 #include <complex>
 #include <cmath>
 #include <vector>
 #include <tuple>
-#include <SDL.h>
 #include <iostream>
-#include <glad/glad.h>
-#include "config.h"
 using namespace std;
+
+#define _USE_MATH_DEFINES
+
 
 class RigidBody{
     public:
@@ -85,6 +90,7 @@ class Point{
         void render(Screen* screen);
         void changeColor(tuple<int,int,int> color);
 };  
+
 class Polygon{
     private:
         //used when finding normals
@@ -135,6 +141,7 @@ class Polygon{
         void render(Screen* screen);
 
 };
+
 class Trail{
     // vertices disappear when theyre timer runs out
     // when vertices disappear, they become the new head of the trail
@@ -170,4 +177,3 @@ class Trail{
         void update(double dt);
         void render(Screen* screen);
 };
-#endif

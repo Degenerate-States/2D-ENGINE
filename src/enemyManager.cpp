@@ -1,5 +1,6 @@
 #include "enemyManager.h"
 
+// Swarmer
 void Swarmer::init(Assets* assets,RigidBody* plrRB, Stats* stats){
     this->ID = assets->getID();
     this->rb.init(1.,0,0,0.0);
@@ -12,15 +13,18 @@ void Swarmer::init(Assets* assets,RigidBody* plrRB, Stats* stats){
     this->plrRB = plrRB;
     this->rb.active = false;
 }
+
 void Swarmer::spawn(complex<double> pos, complex<double> vel){
     this->rb.active = true;
     this->rb.pos = pos;
     this->rb.vel = vel;
 
 }
+
 void Swarmer::die(){
     this->rb.active = false;
 }
+
 void Swarmer::update(double dt){
     // accelerates in direction of player
     complex<double> direction = this->plrRB->pos - this->rb.pos;
@@ -40,13 +44,13 @@ void Swarmer::update(double dt){
     this->rb.update(dt);
     this->poly.update();
 }
+
 void Swarmer::render(Screen* screen){
     this->poly.render(screen);
 }
 
 
-
-
+//Enemy
 void EnemyManager::init(Assets* assets, ProjectileManager* projMan,RigidBody* plrRB, Stats* stats){
     //initalize swarmers
     this->oldestSwarmerIndex = 0;
@@ -67,6 +71,7 @@ void EnemyManager::spawnSwarmer(complex<double> pos, complex<double> vel, double
     this->oldestSwarmerIndex+=1;
     this->oldestSwarmerIndex%=swarmerPoolSize;
 }
+
 void EnemyManager::update(Screen* screen, double dt){
     //swarmers
     for(int i = 0; i < swarmerPoolSize; i++){
@@ -75,6 +80,7 @@ void EnemyManager::update(Screen* screen, double dt){
         }
     }
 }
+
 void EnemyManager::checkCollision(ProjectileManager* projMan,double dt){
     //swarmers
     for(int i = 0; i < swarmerPoolSize; i++){
@@ -83,6 +89,7 @@ void EnemyManager::checkCollision(ProjectileManager* projMan,double dt){
         }
     }
 }
+
 void EnemyManager::render(Screen* screen){
     for(int i = 0; i < swarmerPoolSize; i++){
         if(this->swarmers[i]->rb.active){
@@ -90,5 +97,3 @@ void EnemyManager::render(Screen* screen){
         }
     }
 }
-
-

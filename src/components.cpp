@@ -1,8 +1,4 @@
 #include "components.h"
-#define _USE_MATH_DEFINES
-using namespace std;
-
-
 
 
 //************************//
@@ -17,24 +13,30 @@ void RigidBody::init(double m, double x, double y,double initRot){
     //initalizes rotOp
     this->rotOp = {cos(initRot),sin(initRot)};
 }
+
 void RigidBody::setPos(double x,double y){
     this->pos = {x,y};
 
 }
+
 void RigidBody::displace(double dx,double dy){
     this->pos += {dx,dx};
 }
+
 void RigidBody::fixedDisplace(double vx,double vy, double dt){
     this->pos += {vx*dt,vy*dt};
 }
+
 void RigidBody::setVel(double vx,double vy){
     this->vel = {vx,vy};
 
 }
+
 void RigidBody::applyForce(double fx, double fy,double dt){
     double coeff = dt / this->mass;
     this->vel += {fx*coeff,fy*coeff};
 }
+
 void RigidBody::update(double dt){
     this->pos += this->vel*dt;
     this->rot += this->rotVel*dt;
@@ -42,13 +44,16 @@ void RigidBody::update(double dt){
     //updates rotOp
     this->rotOp = {cos(this->rot),sin(this->rot)};
 }
+
 void RigidBody::setRot(double theta){
     this->rot = fmod(theta,2*M_PI);
 }
+
 void RigidBody::rotate(double dTheta){
     this->rot += dTheta;
     this->rot = fmod(this->rot,2*M_PI);
 }
+
 void RigidBody::fixedRotate(double rotVel,double dt){
     this->rot += rotVel*dt;
     this->rot = fmod(this->rot,2*M_PI);
@@ -67,9 +72,11 @@ void Screen::init(SDL_Window* win, SDL_Renderer* rend, double winAspectRatio){
         this->aspectRatio = winAspectRatio;
         this->zoom = 1.0;
 }
+
 void Screen::update(double dt){
     this->rb.update(dt);
 }
+
 tuple<double,double> Screen::worldToScreen(complex<double> val){
     val -= this->rb.pos;
     //multiplies by conj of rotation operator corrisponds to negative rotation
@@ -79,6 +86,7 @@ tuple<double,double> Screen::worldToScreen(complex<double> val){
     // must multiply y coord by aspect ratio 
     return make_tuple(real(val), imag(val)*(this->aspectRatio));
 }
+
 complex<double> Screen::screenToWorld(double x, double y){
 
     complex<double> val ={x,y/(this->aspectRatio)};
@@ -89,18 +97,21 @@ complex<double> Screen::screenToWorld(double x, double y){
     
     return val;
 }
+
 complex<double> Screen::pixelScreenToWorld(int x, int y){
     double screenX = 2.0*x/windowSizeX - 1.0;
     double screenY = -2.0*y/windowSizeY + 1.0;
     
     return this->screenToWorld(screenX,screenY);
 }
+
 void Screen::changeZoom(double zoomVel,double dt){
     //keeps zoom from becoming negative
     if(this->zoom + zoomVel*dt > 0.0){
         this->zoom += zoomVel*dt;
     }
 }
+
 void Screen::keys(const Uint8* keys,double dt){
     if (keys[SDL_SCANCODE_UP]){
         this->changeZoom(3.0,dt);
@@ -119,6 +130,7 @@ void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter){
     this->rb = rb;
     this->diameter = diameter;
 }
+
 void Point::render(Screen* screen){
     if(this->diameter > minLinThickness){
         glColor3ub(get<0>(color),get<1>(color),get<2>(color));
@@ -130,10 +142,10 @@ void Point::render(Screen* screen){
         glEnd();
     }
 }
+
 void Point::changeColor(tuple<int,int,int> color){
     this->color = color;
 }
-
 
 
 //************************//
@@ -148,6 +160,7 @@ void Polygon::appendPoint(complex<double> pnt){
     this->numVertices+=1;
 
 }
+
 void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){
 
     this->color = color;
@@ -162,12 +175,14 @@ void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color)
         this->appendPoint((*asset)[i]);
     }
 }
+
 complex<double> Polygon::getNormal(int index){
     complex<double> normal = (*this->nextAsset)[(index+1)%this->numVertices] - (*this->nextAsset)[index];
     normal*=this->rotNegative90;
     normal/=abs(normal);
     return normal;
 }
+
 tuple<double,complex<double>> Polygon::getContainingCircle(){
     //radius
     double furthest = 0;
@@ -185,11 +200,13 @@ tuple<double,complex<double>> Polygon::getContainingCircle(){
     center /= this->numVertices;
     return make_tuple(furthest,center);
 }
+
 void Polygon::resetVertexOffsets(){
     for(int i=0; i<this->numVertices; i++){
         this->vertexOffsets[i] = 0;
     }
 }
+
 void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color){
     this->loadAsset(asset,color);
     this->currentAsset = &this->assetWR1;
@@ -200,6 +217,7 @@ void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,i
     this->lineThickness = defaultLineThickness;
     this->scale = 1.0;
 }
+
 void Polygon::update(){
     for(int i=0; i < this->numVertices; i++){
         //rotates and scales polygon after applying warping from vertex offsets
@@ -209,6 +227,7 @@ void Polygon::update(){
 
     }
 }
+
 void Polygon::render(Screen* screen){
     swap(this->nextAsset,this->currentAsset);
     glColor3ub(get<0>(color),get<1>(color),get<2>(color));
@@ -240,6 +259,7 @@ void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTi
         this->vetexTimers.push_back(0.0);
     }
 }
+
 void Trail::reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
     this->headColor=headColor;
     this->tailColor=tailColor;
@@ -269,6 +289,7 @@ void Trail::reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
     }
     
 }
+
 void Trail::update(double dt){
     
     for(int i = 0; i < this->numVertices; i++){
@@ -283,6 +304,7 @@ void Trail::update(double dt){
     }
     this->vertexPos[this->trailHeadIndex] = this->rb->pos;
 }
+
 void Trail::render(Screen* screen){
 
     double thickness;

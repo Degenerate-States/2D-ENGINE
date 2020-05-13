@@ -1,12 +1,12 @@
-#ifndef collisionFuncs_h
-#define collisionFuncs_h
+#pragma once
+#include "components.h"
+#include "projectileManager.h"
+#include "config.h"
+
 #include <complex>
 #include <cmath>
 #include <tuple>
 #include <vector>
-#include "components.h"
-#include "projectileManager.h"
-#include "config.h"
 
 //theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
 double smallestAngle(double theta, double phi);
@@ -21,6 +21,3 @@ bool isPointInPoly(Polygon* poly,complex<double> point);
 // for riccochet application
 complex<double>
 reflectAboutNormal(complex<double> normal, complex<double> vec);
-
-
-#endif

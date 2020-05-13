@@ -1,9 +1,8 @@
-#ifndef assets_h
-#define assets_h
+#pragma once
+
 #include "components.h"
 #include <complex>
 #include <vector>
-using namespace std;
 
 // used to serialize rigged poly joint data
 struct jointInfo{
@@ -35,5 +34,3 @@ class Assets{
 
         int getID();
 };
-
-#endif

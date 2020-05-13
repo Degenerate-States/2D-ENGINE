@@ -1,7 +1,6 @@
-#ifndef config_h
-#define config_h
+#pragma once
 #include <tuple>
-#include <stdint.h>
+
 using namespace std;
 
 //must be known at compile time
@@ -104,4 +103,3 @@ struct Stats{
 
     void init();
 };
-#endif

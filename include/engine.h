@@ -1,21 +1,24 @@
-#ifndef engine_h
-#define engine_h
+#pragma once
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <glad/glad.h>
+
+#include <tuple> // sdl boilerplate
+#include <iostream>  // fps prints and 
+
+// config 
 #include "config.h"
 #include "assets.h"
-#include "SDL.h"
-#include <complex>
-#include "components.h"
-#include "riggedPoly.h"
-#include "projectileManager.h"
-#include "player.h"
-#include "miscGameObjs.h"
-#include <tuple>
+
 
 using namespace std;
 
+
+// Engine Callback API
+// Called once
 extern void Start(Screen* screen, Assets* assets, Stats* stats);
 extern void End();
-
+// Called per frame
 extern void PreUpdate(double dt);
 extern void Update(double dt);
 extern void PostUpdate(double dt);
@@ -24,6 +27,7 @@ extern void Render(double dt);
 
 extern void Events(SDL_Event* event, Screen* screen,double dt);
 extern void Keys(const Uint8* keys,Screen* screen,double dt);
+
 
 class Engine{
     public:
@@ -59,5 +63,3 @@ class Engine{
         void Check_Quit();
 
 };
-
-#endif

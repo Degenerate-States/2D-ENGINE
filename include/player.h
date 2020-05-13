@@ -1,12 +1,15 @@
-#ifndef player_h
-#define player_h
+#pragma once
 #include "components.h"
 #include "projectileManager.h"
 #include "assets.h"
 #include "gun.h"
-#include "SDL.h"
+
 #include <complex>
 #include <vector>
+#include <cmath>
+
+#define _USE_MATH_DEFINES
+
 
 class Flame{
     private:
@@ -54,5 +57,3 @@ class Player{
         //screen controling
         void setScreenPos(Screen* screen, double dt);
 };
-
-#endif

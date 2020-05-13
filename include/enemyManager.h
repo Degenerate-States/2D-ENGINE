@@ -1,5 +1,4 @@
-#ifndef enemyManager_h
-#define enemyManager_h
+#pragma once
 #include "components.h"
 #include "projectileManager.h"
 #include "assets.h"
@@ -44,4 +43,3 @@ class EnemyManager{
         void render(Screen* screen);
 
 };
-#endif

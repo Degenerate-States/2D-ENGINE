@@ -1,5 +1,4 @@
-#ifndef gun_h
-#define gun_h
+#pragma once
 #include "components.h"
 #include "projectileManager.h"
 #include "assets.h"
@@ -41,5 +40,3 @@ class Gun{
         //target is homing target, defaults to null
         void fire(complex<double> fireDirection,RigidBody* target = NULL);
 };
-
-#endif
