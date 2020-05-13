@@ -6,7 +6,7 @@ SRC = src
 BUILD = build
 
 INC = -I lib/SDL/include -I lib/GLAD/include -I include
-EXE = engine.exe
+EXE = game.exe
 
 $(EXE): $(BUILD)\*.obj
 	nmake glad.obj
