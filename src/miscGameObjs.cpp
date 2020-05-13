@@ -7,7 +7,7 @@ using namespace std;
 void Box::init(Assets* assets){
     this->rb.init(1.,0.5,0,0);
     this->rb.rotVel = 1;
-    this->ID = 2;
+    this->ID = assets->getID();
     this->poly.init(&(assets->box),&this->rb,white);
 
 }
@@ -28,7 +28,7 @@ void Box::render(Screen* screen){
 
 void RiggedTest::init(Assets* assets){
     this->rp.init(&assets->testPoly,&assets->testJoints,white);
-    this->ID = 3;
+    this->ID = assets->getID();
 
     this->rp.joints[0]->rb.setPos(-0.5,0);
     this->rp.joints[1]->rb.setPos(-0.5,0);

@@ -59,4 +59,7 @@ void Stats::init(){
     this->plrAcceleration = 4;
     this->plrBulletVel = 4;
     this->plrShotVarience= 1;
+
+    this->swarmerTopSpeed = 3;
+    this->swarmerAcceleration = 2;
 }

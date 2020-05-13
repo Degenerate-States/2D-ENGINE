@@ -34,7 +34,7 @@ void Flame::render(Screen* screen){
 }
 
 void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
-    this->ID = 1;
+    this->ID = assets->getID();
     this->rb.init(1.,0,0,0.0);
     this->relScreenPos = 0.0;
     this->screenOffset = stats->screenOffset;

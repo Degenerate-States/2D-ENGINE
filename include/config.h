@@ -9,6 +9,7 @@ constexpr int bulletPoolSize = 50;
 constexpr int sparkPoolSize = 100;
 constexpr int engBallPoolSize = 30;
 
+constexpr int swarmerPoolSize = 20;
 //global line thickness
 constexpr float defaultLineThickness = 4.0;
 
@@ -21,6 +22,7 @@ constexpr double minLinThickness = 0.1;
 
 constexpr int windowSizeX =  1400;
 constexpr int windowSizeY = 800;
+
 constexpr tuple<int,int,int> white = make_tuple(255,255,255);
 constexpr tuple<int,int,int> black = make_tuple(0, 0, 0);
 constexpr tuple<int,int,int> red = make_tuple(255,0,0);
@@ -89,11 +91,15 @@ struct Stats{
 
 
     //gameplay
+    //player
     double plrTopSpeed;
     double plrAcceleration;
     double plrBulletVel;
     double plrShotVarience;
 
+    // swarmer
+    double swarmerTopSpeed;
+    double swarmerAcceleration;
     void init();
 };
 #endif

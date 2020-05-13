@@ -14,12 +14,16 @@ struct jointInfo{
 };
 
 class Assets{
+    private:
+        int colliderID;
     public:
         // list of all game assets
         vector<complex<double>> plrAsset;
         vector<complex<double>> gunAsset;
         vector<complex<double>> flameAsset;
         vector<complex<double>> box;
+
+        vector<complex<double>> swarmerAsset;
 
         vector<complex<double>> outerEngBall;
         vector<complex<double>> innerEngBall;
@@ -28,6 +32,8 @@ class Assets{
         vector<jointInfo> testJoints;
         //where all the assets are acutally defined
         void init();
+
+        int getID();
 };
 
 #endif
