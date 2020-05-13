@@ -1,2 +1,2 @@
 @echo off
-call "build/engine.exe"
+call "build/game.exe"
