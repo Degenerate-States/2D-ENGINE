@@ -44,17 +44,36 @@ void Swarmer::render(Screen* screen){
 
 
 void EnemyManager::init(Assets* assets, ProjectileManager* projMan,RigidBody* plrRB, Stats* stats){
-
+    //initalize swarmers
+    this->oldestSwarmerIndex = 0;
+    for(int i = 0; i < swarmerPoolSize; i++){
+        this->swarmers[i] = new Swarmer();
+        this->swarmers[i]->init(assets,plrRB,stats);
+    }
 }
 
-void EnemyManager::spawnSwarmer(complex<double> pos){
+void EnemyManager::spawnSwarmer(complex<double> pos, complex<double> vel, double velVarience){
+    vel += randComplex(velVarience);
 
+    this->swarmers[this->oldestSwarmerIndex]->spawn(pos, vel);
+    // change which bullet is considered the oldest
+    this->oldestSwarmerIndex+=1;
+    this->oldestSwarmerIndex%=swarmerPoolSize;
 }
 void EnemyManager::update(Screen* screen, double dt){
-
+    //swarmers
+    for(int i = 0; i < swarmerPoolSize; i++){
+        if(this->swarmers[i]->rb.active){
+            this->swarmers[i]->update(dt);
+        }
+    }
 }
 void EnemyManager::render(Screen* screen){
-
+    for(int i = 0; i < swarmerPoolSize; i++){
+        if(this->swarmers[i]->rb.active){
+            this->swarmers[i]->render(screen);
+        }
+    }
 }
 
 

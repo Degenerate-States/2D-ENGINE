@@ -19,7 +19,7 @@ class Swarmer{
         Polygon poly;
 
         void init(Assets* assets,RigidBody* plrRB, Stats* stats);
-        void spawn(complex<double> pos, complex<double> vel = 0);
+        void spawn(complex<double> pos, complex<double> vel);
         void die();
 
         void update(double dt);
@@ -36,12 +36,10 @@ class EnemyManager{
 
         void init(Assets* assets, ProjectileManager* projMan,RigidBody* plrRB, Stats* stats);
 
-        void spawnSwarmer(complex<double> pos);
+        void spawnSwarmer(complex<double> pos, complex<double> vel = 0, double velVarience = 0);
 
         void update(Screen* screen, double dt);
         void render(Screen* screen);
-
-
 
 };
 #endif

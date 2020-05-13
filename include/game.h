@@ -23,7 +23,7 @@ class Game{
         int tickNumber;
         bool running;
         
-        Screen screen;
+        Screen* screen;
 
         Player plr;
         Box box;

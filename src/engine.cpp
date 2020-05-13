@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     Engine engine;
     engine.init(cfg,assets,stats);
 
-    Start(engine.screen, assets, stats);
+    Start(&engine.screen, assets, stats);
 
     free(assets);
     free(cfg);

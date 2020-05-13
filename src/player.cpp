@@ -73,6 +73,7 @@ void Player::events(SDL_Event* event, Screen* screen,double dt){
     if((!this->gun.fullAuto) && event->type == SDL_MOUSEBUTTONDOWN){
         if (event->button.button == SDL_BUTTON_LEFT){
             complex<double> fireDirection = screen->pixelScreenToWorld(event->button.x,event->button.y) - this->rb.pos;
+            
             this->gun.fire(fireDirection);
         }
     }
@@ -104,6 +105,7 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
         int x,y;
         if (SDL_GetMouseState(&x,&y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
             complex<double> fireDirection = screen->pixelScreenToWorld(x,y) - this->rb.pos;
+
             this->gun.fire(fireDirection);
         }
     }

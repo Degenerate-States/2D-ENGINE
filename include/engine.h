@@ -13,7 +13,7 @@
 
 using namespace std;
 
-extern void Start(Screen screen, Assets* assets, Stats* stats);
+extern void Start(Screen* screen, Assets* assets, Stats* stats);
 extern void End();
 
 extern void PreUpdate(double dt);
