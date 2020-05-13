@@ -56,4 +56,6 @@ class Player{
 
         //screen controling
         void setScreenPos(Screen* screen, double dt);
+
+        void onCollision(int Damage, complex<double> direction);
 };

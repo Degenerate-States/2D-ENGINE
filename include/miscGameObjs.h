@@ -15,6 +15,8 @@ class Box{
         void init(Assets* assets);
         void update(Screen* screen, double dt);
         void render(Screen* screen);
+
+        void onCollision(int Damage, complex<double> direction);
 };
 
 class RiggedTest{
@@ -26,4 +28,6 @@ class RiggedTest{
         void init(Assets* assets);
         void update(double dt);
         void render(Screen* screen);
+
+        void onCollision(int Damage, complex<double> direction);
 };

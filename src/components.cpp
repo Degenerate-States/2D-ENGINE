@@ -182,7 +182,7 @@ complex<double> Polygon::getNormal(int index){
     normal/=abs(normal);
     return normal;
 }
-
+// TODO design better nessisary condition for collision
 tuple<double,complex<double>> Polygon::getContainingCircle(){
     //radius
     double furthest = 0;
@@ -190,14 +190,26 @@ tuple<double,complex<double>> Polygon::getContainingCircle(){
 
     //center
     complex<double> center = 0;
+
+    //averages both current and next vertices
     for(int i=0; i<this->numVertices; i++){
+        //next asset
         current = abs((*this->nextAsset)[i]);
         if(current>furthest){
             furthest = current;
         }
         center+= (*this->nextAsset)[i];
+
+        //current asset
+        current = abs((*this->currentAsset)[i]);
+        if(current>furthest){
+            furthest = current;
+        }
+        center+= (*this->currentAsset)[i];
     }
-    center /= this->numVertices;
+
+
+    center /= 2*this->numVertices;
     return make_tuple(furthest,center);
 }
 

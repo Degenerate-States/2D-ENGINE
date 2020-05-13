@@ -13,7 +13,7 @@ void Gun::init(RigidBody* rb, Assets* assets,ProjectileManager* projMan, project
     //TODO: work the following into stat system
     this->fullAuto = true;
     this->coolDown = 300;
-    this->numShots = 5;
+    this->numShots = 1;
     this->homingRate =2;
 }
 

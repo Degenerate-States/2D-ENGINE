@@ -339,13 +339,16 @@ void ProjectileManager::checkCollisionPoly(Polygon* poly,int ID,double dt){
     // check collision with bullets
     tuple<bool,int,complex<double>> helperReturnVal;
     for(int i = 0; i < bulletPoolSize; i++){
-        helperReturnVal = willBulletHitPoly(poly,this->bullets[i], ID, dt);
-        // if collision occured
-        if  (get<0>(helperReturnVal)){
-            complex<double> normal = poly->getNormal(get<1>(helperReturnVal));
-            complex<double> point = get<2>(helperReturnVal);
-            complex<double> riccochetVel = this->bullets[i]->onCollision(ID,point,normal);
-            this->collisionSparks(riccochetVel,point);
+            //checks if bullet is active and poly isnt the one who fired it
+        if(bullets[i]->rb.active && ID != bullets[i]->shooterID){
+            helperReturnVal = willPointHitPoly(poly,this->bullets[i]->prevPos, this->bullets[i]->rb.pos);
+            // if collision occured
+            if  (get<0>(helperReturnVal)){
+                complex<double> normal = poly->getNormal(get<1>(helperReturnVal));
+                complex<double> point = get<2>(helperReturnVal);
+                complex<double> riccochetVel = this->bullets[i]->onCollision(ID,point,normal);
+                this->collisionSparks(riccochetVel,point);
+            }
         }
     }
 

@@ -1,5 +1,32 @@
 #include "collisionFuncs.h"
+#include "projectileManager.h"
+using namespace std;
 
+//tuple<bool,complex<double>> 
+//doLineSegmentsIntersect 
+//(complex<double> p1, complex<double> p2,
+//complex<double> q1,complex<double> q2)
+//{
+//    double scalar;
+//    complex<double> intersection;
+//    complex<double> divisor = q2-q1-p2+p1;
+//
+//    if (real(divisor)>imag(divisor)){
+//        scalar = real(p1-q1)/real(divisor);
+//    }
+//    else{
+//        scalar = imag(p1-q1)/imag(divisor);
+//    }
+//    
+//    if ((scalar>0.0-pointCollisionPadding) && (scalar<1.0+pointCollisionPadding)){
+//        intersection = p1 + scalar*(p2-p1);
+//        return make_tuple(true,intersection);
+//    }
+//    else{
+//        //divisor is just dummy data here
+//        return make_tuple(false,divisor);
+//    }
+//}
 
 //theta-phi except wrappes around angle seem between 0 and 2phi, (note also returns sign)
 double smallestAngle(double theta, double phi){
@@ -129,52 +156,42 @@ complex<double> endLine1,complex<double> endLine2){
     //all but false is dummy data
     return make_tuple(false,t,point1);
 }
-
 // TODO: circle of influence calculation does not accomidate for previous vertex posisitons
 // this can be changed in poly->getContainingCircle(), however it would double the calculations done in there
 // pointCollisionPadSpatial could be increased to accomidate for this instead
 // furthermore a more efficent system for pre collision checking could be used (ie sector system)
 tuple<bool,int,complex<double>> 
-willBulletHitPoly(Polygon* poly,Bullet* bullet, int polyID,double dt){
-    complex<double> bulletPos = bullet->prevPos;
-    complex<double> bulletNextPos = bullet->rb.pos;
-
+willPointHitPoly(Polygon* poly,complex<double> bulletPos, complex<double> bulletNextPos){
     bool collisionOccured = false;
     complex<double> collisionPoint= bulletPos;
     double minT = 2;
     int minIndex = -1;
 
+    // checks if bullet will be in circle containing polygon
+    tuple<double,complex<double>> polyCircle = poly->getContainingCircle();
+    double possibleCollisonRad = abs(get<1>(polyCircle) - bulletNextPos) + pntCollisionPadSpatial;
+    if (possibleCollisonRad < get<0>(polyCircle)){
+            tuple<bool, double ,complex<double>> helperReturnVal;
+            //updated if a line was hit, updated further if another line was hit with smaller t
+            int iPlus1;
+            for(int i = 0; i < poly->currentAsset->size(); i++){
+            
+                iPlus1 = (i+1)%poly->currentAsset->size();
 
-    //checks if bullet is active and poly isnt the one who fired it
-    if(bullet->rb.active && polyID != bullet->shooterID){
-        // checks if bullet will be in circle containing polygon
-        tuple<double,complex<double>> polyCircle = poly->getContainingCircle();
-        double possibleCollisonRad = abs(get<1>(polyCircle) - bulletNextPos) + pntCollisionPadSpatial;
-        if (possibleCollisonRad < get<0>(polyCircle)){
+                helperReturnVal = willPointHitLine (bulletPos, bulletNextPos, 
+                                                    (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
+                                                    (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
 
-                tuple<bool, double ,complex<double>> helperReturnVal;
-                //updated if a line was hit, updated further if another line was hit with smaller t
-                int iPlus1;
-                for(int i = 0; i < poly->currentAsset->size(); i++){
-                
-                    iPlus1 = (i+1)%poly->currentAsset->size();
-
-                    helperReturnVal = willPointHitLine (bulletPos, bulletNextPos, 
-                                                        (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
-                                                        (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
-
-                    // checks if line was hit, and if was hit before other hit lines
-                    if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
-                        collisionOccured = true;
-                        minT = get<1>(helperReturnVal);
-                        minIndex = i;
-                        collisionPoint = get<2>(helperReturnVal);
-                    }
+                // checks if line was hit, and if was hit before other hit lines
+                if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
+                    collisionOccured = true;
+                    minT = get<1>(helperReturnVal);
+                    minIndex = i;
+                    collisionPoint = get<2>(helperReturnVal);
                 }
+            }
     
         }// end of if collision is possilbe
-
-    }// end of if bullet is active
     return make_tuple(collisionOccured, minIndex, collisionPoint);
 }
 
