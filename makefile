@@ -1,6 +1,6 @@
 CC = cl.exe
 LINK = link.exe
-CFLAGS = -EHsc -Zi -FC -O2 $(INC)
+CFLAGS = -EHsc -Z7 -FC -O2 $(INC)
 LIBS = Shell32.lib SDL2.lib opengl32.lib
 SRC = src
 BUILD = build
@@ -11,8 +11,7 @@ EXE = engine.exe
 $(EXE): $(BUILD)\*.obj
 	nmake glad.obj
 	@if not exist $(BUILD) mkdir $(BUILD)
-	$(LINK) -LIBPATH:lib/SDL/lib/win64 -SUBSYSTEM:CONSOLE -PDB:$(BUILD)/vc140.pdb $** $(LIBS) -OUT:$(BUILD)\$(EXE)
-	@move *.pdb $(BUILD)
+	$(LINK) -LIBPATH:lib/SDL/lib/win64 -SUBSYSTEM:CONSOLE $** $(LIBS) -OUT:"$(BUILD)\$(EXE)" -DEBUG:FULL
 	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL\lib\win64\SDL2.dll $(BUILD)
 
 glad.obj:
