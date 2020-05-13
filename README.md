@@ -1,9 +1,7 @@
-# 2D-ENGINE
+# POLYGUN
 2D geometry game and engine in SDL2/GLAD
 
-## Current Demo Setup
-A simple Controlable polygon is implemented
-### Controls
+### Demo Controls
 
     WASD: movement
     left-click: shoot
