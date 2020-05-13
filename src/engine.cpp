@@ -22,8 +22,7 @@ int main(int argc, char **argv) {
     Engine engine;
     engine.init(cfg,assets,stats);
 
-    // TODO: fix temp abomination
-    Start(engine.screen);
+    Start(engine.screen, assets, stats);
 
     free(assets);
     free(cfg);
@@ -76,35 +75,11 @@ void Engine::events(double dt){
 
     // keypresses
     Keys(this->keys,&this->screen,dt);
-    // TODO move to game
-    this->screen.keys(this->keys,dt);
 }
 
-void Engine::preUpdateInteractions(double dt){
-    //this->screen.rb.rot = this->plr.rb.rot;
-
-}
-void Engine::update(double dt){
-    this->plr.update(&this->screen,dt);
-    this->box.update(&this->screen,dt);
-    this->screen.update(dt);
-    this->projMan.update(dt);
-    this->rigTest.update(dt);
-}
-void Engine::postUpdateInteractions(double dt){
-    this->projMan.checkCollisionPoly(&this->box.poly,this->box.ID,dt);
-    this->projMan.checkCollisionPoly(&this->plr.poly,this->plr.ID,dt);
-    this->projMan.checkCollisionPoly(&this->rigTest.rp.poly,this->rigTest.ID,dt);
-    this->plr.setScreenPos(&screen,dt);
-}
 void Engine::render(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //render everything below
-    //this->plr.render(&this->screen);
-    //this->box.render(&this->screen);
-    //this->projMan.render(&this->screen,this->spf);
-    //s->rigTest.render(&this->screen);
     Render();
 
     SDL_GL_SwapWindow(this->screen.window);
@@ -119,14 +94,10 @@ void Engine::gameLoop(){
         PreUpdate(this->spf);
         Update(this->spf);
         PostUpdate(this->spf);
-        //this->preUpdateInteractions(this->spf);
-        //this->update(this->spf);
-        //this->postUpdateInteractions(this->spf);
         this->render();
         this->fixFramerate();
     }
 }
-
 
 void Engine::clean(){
     // Destroy everything to not leak memory.
@@ -136,6 +107,7 @@ void Engine::clean(){
 
     SDL_Quit();
 }
+
 // from helper
 void Engine::Check_Quit(){
     //events

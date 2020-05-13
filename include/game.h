@@ -23,11 +23,7 @@ class Game{
         int tickNumber;
         bool running;
         
-        SDL_Event event;
-        SDL_GLContext gl_context;
         Screen screen;
-        // holds state of current keys
-        const Uint8* keys;
 
         Player plr;
         Box box;

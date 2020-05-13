@@ -1,32 +1,15 @@
-#include "assets.h"
-#include "config.h"
-#include "components.h"
-
 #include "game.h"
 #include "engine.h"
 
-using namespace std;
-
 Game* game = new Game();
 
-void Start(Screen screen) {
-    Assets* assets = new Assets();
-    //Config* cfg = new Config();
-    Stats* stats = new Stats();
-    assets->init();
-    //cfg->init();
-    stats->init();
-
+void Start(Screen screen, Assets* assets, Stats* stats) {
     // initalize game objects
     game->projMan.init(assets,stats);
     game->plr.init(assets,&game->projMan, stats);
     game->box.init(assets);
     game->rigTest.init(assets);
     game->screen = screen;
-
-    free(assets);
-    //free(cfg);
-    free(stats);
 }
 
 void End() {
@@ -34,7 +17,7 @@ void End() {
 }
 
 void PreUpdate(double dt) {
-
+    //this->screen.rb.rot = this->plr.rb.rot;
 }
 void Update(double dt) {
     game->plr.update(&game->screen,dt);
@@ -62,9 +45,7 @@ void Render() {
 void Events(SDL_Event* event, Screen* screen,double dt) {
     game->plr.events(event,screen,dt);
 }
-
 void Keys(const Uint8* keys,Screen* screen,double dt){
     game->screen.keys(keys,dt);
     game->plr.keys(keys,screen,dt);
 }
-

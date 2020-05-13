@@ -13,7 +13,7 @@
 
 using namespace std;
 
-extern void Start(Screen screen);
+extern void Start(Screen screen, Assets* assets, Stats* stats);
 extern void End();
 
 extern void PreUpdate(double dt);
@@ -33,25 +33,14 @@ class Engine{
         int tickNumber;
         bool running;
         
-        ProjectileManager projMan;
-
         SDL_Event event;
         SDL_GLContext gl_context;
         Screen screen;
         // holds state of current keys
         const Uint8* keys;
 
-        Player plr;
-        Box box;
-        RiggedTest rigTest;
-
-        
         void init(Config* cfg, Assets* assets,Stats* stats);
-
         void events(double dt);
-        void preUpdateInteractions(double dt);
-        void update(double dt);
-        void postUpdateInteractions(double dt);
         void render();
         //also increases ticknumber
         void fixFramerate();
@@ -64,14 +53,10 @@ class Engine{
         //miliseconds per frame
         int mspf;
 
-        //initalizes all internally used values
-        void internalInit(Config*cfg);
         //used in init,returns window and renderer also assigns gl_context
         tuple<SDL_Window*,SDL_Renderer*> SDL_Visuals_Boilerplate(Config* cfg);
 
         void Check_Quit();
-
-        
 
 };
 
