@@ -35,7 +35,7 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
 
     this->poly.init(&assets->plrAsset,&this->rb,white,assets->getID());
 
-    this->gun.init(&this->rb, assets, projMan, bullet, this->poly.colliderID, stats->plrBulletVel, stats->plrShotVarience);
+    this->gun.init(&this->rb, assets, projMan, bullet, &stats->plrGun, this->poly.colliderID);
     this->flame.init(&this->rb,assets,projMan);
 
     //setsup poly collision callbacks

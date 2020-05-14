@@ -56,8 +56,7 @@ void Stats::init(){
     //gameplay
     this->plrTopSpeed = 2;
     this->plrAcceleration = 4;
-    this->plrBulletVel = 5;
-    this->plrShotVarience= 1;
+    this->plrGun.init(4,1,1,true,100,0);
 
     this->swarmerTopSpeed = 3;
     this->swarmerAcceleration = 3;

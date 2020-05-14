@@ -1,20 +1,20 @@
 #include "gun.h"
 
-void Gun::init(RigidBody* rb, Assets* assets,ProjectileManager* projMan, projectileType fireType, int ID, double bulletVel,double shotVarience){
-    this->type = fireType;
+void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, projectileType fireType, GunStats* stats, int ID){
     this->ID = ID;
     this->projMan = projMan;
-    this->bulletVel = bulletVel;
-    this->velVarience = shotVarience;
     this->rb.init(1.,0,0,0.0);
-    this->shooterRb = rb;
+    this->shooterRb = shooterRb;
     this->poly.init(&(assets->gunAsset),&this->rb,white);
 
     //TODO: work the following into stat system
-    this->fullAuto = true;
-    this->coolDown = 300;
-    this->numShots = 1;
-    this->homingRate =2;
+    this->type = fireType;
+    this->projVel = stats->projVel;
+    this->velVarience = stats->projVarience;
+    this->fullAuto = stats->fullAuto;
+    this->coolDown = stats->coolDown;
+    this->projNum = stats->projNum;
+    this->homingRate =stats->homingRate;
 }
 
 void Gun::update(Screen* screen,double dt){
@@ -34,7 +34,7 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
     if(SDL_GetTicks() - this->lastFired >this->coolDown){
         this->lastFired = SDL_GetTicks();
         //fire direction is now velocity vector
-        fireDirection*=this->bulletVel/abs(fireDirection);
+        fireDirection*=this->projVel/abs(fireDirection);
 
         // overrides target if no homing
         if(this-> homingRate == 0){
@@ -42,7 +42,7 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
         }
 
         //fires "numshots" bullets
-        for(int i = 0; i < this->numShots; i++){
+        for(int i = 0; i < this->projNum; i++){
             // its more efficet to put loop inside switch, but less legable 
             switch(this->type){
                 case (bullet): 

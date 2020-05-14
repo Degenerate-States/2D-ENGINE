@@ -20,18 +20,15 @@ class Gun{
         bool fullAuto;
         // in miliseconds
         double coolDown;
-
-        double bulletVel;
+        double projVel;
         double velVarience;
-
-        int numShots;
+        int projNum;
         double homingRate;
 
         //holds reference of shooters rb
         RigidBody* shooterRb;
 
-        void init(RigidBody* plrRb, Assets* assets,ProjectileManager* projMan,projectileType fireType
-                    ,int ID, double bulletVel,double shotVarience);
+        void init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan,projectileType fireType, GunStats* stats, int ID);
         void update(Screen* screen, double dt);
         void render(Screen* screen);
 

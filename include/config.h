@@ -30,6 +30,23 @@ constexpr tuple<int,int,int> blue = make_tuple(0, 0, 255);
 constexpr tuple<int,int,int> green = make_tuple(0, 255, 0);
 constexpr tuple<int,int,int> violet = make_tuple(127, 0, 255);
 
+struct GunStats{
+    double projVel;
+    double projVarience;
+    double projNum;
+    bool fullAuto;
+    double coolDown;
+    double homingRate;
+    //memeber initalization
+    void init(double projVel,double projVarience,double projNum,bool fullAuto,double coolDown,double homingRate){
+        this->projVel = projVel;
+        this->projVarience = projVarience;
+        this->projNum = projNum;
+        this->fullAuto = fullAuto;
+        this->coolDown = coolDown;
+        this->homingRate = homingRate;
+    }
+};
 
 struct Config{
     int fps;
@@ -93,8 +110,7 @@ struct Stats{
     //player
     double plrTopSpeed;
     double plrAcceleration;
-    double plrBulletVel;
-    double plrShotVarience;
+    GunStats plrGun;
 
     // swarmer
     double swarmerTopSpeed;
