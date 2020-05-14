@@ -9,8 +9,6 @@
 
 using namespace std;
 
-enum projectileType{ bullet, spark, energyBall };
-
 complex<double> randComplex(double maxMag);
 
 class Bullet{

@@ -30,7 +30,10 @@ constexpr tuple<int,int,int> blue = make_tuple(0, 0, 255);
 constexpr tuple<int,int,int> green = make_tuple(0, 255, 0);
 constexpr tuple<int,int,int> violet = make_tuple(127, 0, 255);
 
+enum projectileType{ bullet, spark, energyBall };
+
 struct GunStats{
+    projectileType type;
     double projVel;
     double projVarience;
     double projNum;
@@ -38,7 +41,9 @@ struct GunStats{
     double coolDown;
     double homingRate;
     //memeber initalization
-    void init(double projVel,double projVarience,double projNum,bool fullAuto,double coolDown,double homingRate){
+    void init(projectileType type, double projVel,double projVarience,double 
+                projNum,bool fullAuto,double coolDown,double homingRate){
+        this->type = type;
         this->projVel = projVel;
         this->projVarience = projVarience;
         this->projNum = projNum;
@@ -107,15 +112,26 @@ struct Stats{
 
 
     //gameplay
+    //guns
+    GunStats mg;
+    GunStats smg;
+    GunStats shotgun;
+    GunStats autoShotgun;
+    GunStats sniper;
+    GunStats energyRifle;
+    GunStats energyShotgun;
+
     //player
     double plrTopSpeed;
     double plrAcceleration;
-    GunStats plrGun;
+    double plrContactDamage;
 
     // swarmer
     double swarmerTopSpeed;
     double swarmerAcceleration;
     double swarmerDrag;
+    double swarmerContactDamage;
+
 
     void init();
 };

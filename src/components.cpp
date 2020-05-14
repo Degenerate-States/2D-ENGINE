@@ -172,7 +172,6 @@ void Polygon::appendPoint(complex<double> pnt){
 
     this->vertexOffsets.push_back(0);
     this->numVertices+=1;
-
 }
 
 void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){

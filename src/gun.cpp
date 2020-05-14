@@ -1,6 +1,6 @@
 #include "gun.h"
 
-void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, projectileType fireType, GunStats* stats, int ID){
+void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, GunStats* stats, int ID){
     this->ID = ID;
     this->projMan = projMan;
     this->rb.init(1.,0,0,0.0);
@@ -8,7 +8,7 @@ void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, 
     this->poly.init(&(assets->gunAsset),&this->rb,white);
 
     //TODO: work the following into stat system
-    this->type = fireType;
+    this->type = stats->type;
     this->projVel = stats->projVel;
     this->velVarience = stats->projVarience;
     this->fullAuto = stats->fullAuto;

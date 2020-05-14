@@ -28,7 +28,7 @@ class Gun{
         //holds reference of shooters rb
         RigidBody* shooterRb;
 
-        void init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan,projectileType fireType, GunStats* stats, int ID);
+        void init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, GunStats* stats, int ID);
         void update(Screen* screen, double dt);
         void render(Screen* screen);
 
