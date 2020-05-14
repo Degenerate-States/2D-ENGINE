@@ -91,6 +91,9 @@ void Bullet::onCollision(int damage, complex<double> collisionNormal){
 
     // reflects velocity and damps it
     this->rb.vel = this->riccoVelDamping*reflectAboutNormal(collisionNormal , this->rb.vel);
+
+    this->collisonSparksCallback(this->rb.vel,this->rb.pos);
+
 }
 int Bullet::getDamage(){
     return 0;
@@ -291,6 +294,8 @@ void ProjectileManager::init(Assets* assets,Stats* stats){
     for(int i = 0; i < bulletPoolSize; i++){
         this->bullets[i] = new Bullet();
         this->bullets[i]->init(stats);
+        //callback for spawning sparks
+        this->bullets[i]->collisonSparksCallback=bind(&ProjectileManager::collisionSparks,this,_1,_2);
     }
 
     //initalize sparks

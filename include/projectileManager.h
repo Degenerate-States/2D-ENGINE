@@ -25,6 +25,9 @@ class Bullet{
 
         double spawnSpeed;
         double startDiameter;
+
+
+
     public:
         projectileType type;
 
@@ -45,6 +48,10 @@ class Bullet{
         //callback fuctions
         void onCollision(int damage, complex<double> collisionNormal);
         int getDamage();
+
+        //used for spark spawning
+        function<void(complex<double>, complex<double>)>   collisonSparksCallback;
+        
 
 
 };
