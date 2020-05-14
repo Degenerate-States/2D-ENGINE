@@ -10,7 +10,9 @@
 #include <vector>
 #include <tuple>
 #include <iostream>
+#include <functional>
 using namespace std;
+using namespace std::placeholders;
 
 #define _USE_MATH_DEFINES
 
@@ -20,6 +22,7 @@ class RigidBody{
         bool active;
         double mass;
         complex<double> pos;
+        complex<double> prevPos;
         complex<double> vel;
 
         //in radians
@@ -81,14 +84,21 @@ class Point{
     private:
         tuple<int,int,int> color;
 
-        //references to components which polygon depends on (only read by this component)
-        RigidBody* rb;
         
     public:
+        int colliderID;
+        RigidBody* rb;
+        //references to components which point
         float diameter;
-        void init(RigidBody* rb, tuple<int,int,int> color,float diameter);
+        void init(RigidBody* rb, tuple<int,int,int> color,float diameter, int colliderID = -1);
         void render(Screen* screen);
         void changeColor(tuple<int,int,int> color);
+
+        //collision callback functions 
+        function<void(int, complex<double>)>   collisionCallback;
+        function<int()>   getDamageCallback;
+        // if uncalled, collision is disabled.
+        void setCallBacks(function<void(int, complex<double>)> onCollision, function<int()> getDamage);
 };  
 
 class Polygon{
@@ -101,10 +111,11 @@ class Polygon{
         vector<complex<double>> assetWR1;
         vector<complex<double>> assetWR2;
         
-        //references to components which polygon depends on (only read by this component)
-        RigidBody* rb;
         
     public:
+        int colliderID;
+        //references to components which polygon depends on
+        RigidBody* rb;
         int numVertices;
         float lineThickness;
         tuple<int,int,int> color;
@@ -132,7 +143,7 @@ class Polygon{
 
         void resetVertexOffsets();
         
-        void init(vector<complex<double>>* asset, RigidBody* rb, tuple<int,int,int> color);
+        void init(vector<complex<double>>* asset, RigidBody* rb, tuple<int,int,int> color, int colliderID = -1);
 
 
 
@@ -140,6 +151,11 @@ class Polygon{
         void update();
         void render(Screen* screen);
 
+        //collision callback functions 
+        function<void(int, complex<double>)>   collisionCallback;
+        function<int()>   getDamageCallback;
+        // if uncalled, collision is disabled.
+        void setCallBacks(function<void(int, complex<double>)> onCollision, function<int()> getDamage);
 };
 
 class Trail{

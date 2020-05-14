@@ -4,9 +4,14 @@
 void Box::init(Assets* assets){
     this->rb.init(1.,0.5,0,0);
     this->rb.rotVel = 1;
-    this->ID = assets->getID();
-    this->poly.init(&(assets->box),&this->rb,white);
+    this->poly.init(&(assets->box),&this->rb,white,assets->getID());
 
+
+    //setsup poly collision callbacks
+    this->poly.setCallBacks(
+        bind(&Box::onCollision,this,_1,_2),
+        bind(&Box::getDamage,this)
+    );
 }
 
 void Box::update(Screen* screen, double dt){
@@ -24,13 +29,24 @@ void Box::update(Screen* screen, double dt){
 void Box::render(Screen* screen){
     this->poly.render(screen);
 }
+void Box::onCollision(int damage, complex<double> direction){
+
+}
+int Box::getDamage(){
+    return 0;
+}
 
 void RiggedTest::init(Assets* assets){
-    this->rp.init(&assets->testPoly,&assets->testJoints,white);
-    this->ID = assets->getID();
+    this->rp.init(&assets->testPoly,&assets->testJoints,white,assets->getID());
 
     this->rp.joints[0]->rb.setPos(-0.5,0);
     this->rp.joints[1]->rb.setPos(-0.5,0);
+    
+    //setsup poly collision callbacks
+    this->rp.poly.setCallBacks(
+        bind(&RiggedTest::onCollision,this,_1,_2),
+        bind(&RiggedTest::getDamage,this)
+    );
 }
 
 void RiggedTest::update(double dt){
@@ -44,4 +60,10 @@ void RiggedTest::update(double dt){
 
 void RiggedTest::render(Screen* screen){
     this->rp.render(screen);
+}
+void RiggedTest::onCollision(int damage, complex<double> direction){
+
+}
+int RiggedTest::getDamage(){
+    return 0;
 }

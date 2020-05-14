@@ -9,25 +9,25 @@ class Box{
     public:
         RigidBody rb;
         Polygon poly;
-        
-        int ID;
 
         void init(Assets* assets);
         void update(Screen* screen, double dt);
         void render(Screen* screen);
 
-        void onCollision(int Damage, complex<double> direction);
+        //callbacks
+        void onCollision(int damage, complex<double> direction);
+        int getDamage();
 };
 
 class RiggedTest{
     public:
         RiggedPoly rp;
 
-        int ID;
-
         void init(Assets* assets);
         void update(double dt);
         void render(Screen* screen);
 
-        void onCollision(int Damage, complex<double> direction);
+        //callbacks
+        void onCollision(int damage, complex<double> direction);
+        int getDamage();
 };

@@ -1,12 +1,17 @@
 #include "components.h"
 
 
+
+
+
+
 //************************//
 //** RIGIDBODY METHODS  **//
 //************************//
 void RigidBody::init(double m, double x, double y,double initRot){
     this->mass = m;
     this->pos = {x,y};
+    this->prevPos = this->pos;
     this->rot = initRot;
     this->rotVel = 0.0;
     this->active = true;
@@ -38,6 +43,7 @@ void RigidBody::applyForce(double fx, double fy,double dt){
 }
 
 void RigidBody::update(double dt){
+    this->prevPos = this->pos;
     this->pos += this->vel*dt;
     this->rot += this->rotVel*dt;
 
@@ -125,10 +131,15 @@ void Screen::keys(const Uint8* keys,double dt){
 //************************//
 //**   Point Methods    **//
 //************************//
-void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter){
+void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter, int colliderID){
     this->color = color;
     this->rb = rb;
     this->diameter = diameter;
+
+    this->colliderID = colliderID;
+    //defaults callback functions to null
+    this->collisionCallback = NULL;
+    this->getDamageCallback = NULL;
 }
 
 void Point::render(Screen* screen){
@@ -142,9 +153,12 @@ void Point::render(Screen* screen){
         glEnd();
     }
 }
-
 void Point::changeColor(tuple<int,int,int> color){
     this->color = color;
+}
+void Point::setCallBacks(function<void(int, complex<double>)> onCollision, function<int()> getDamage){
+        this->collisionCallback = onCollision;
+        this->getDamageCallback = getDamage;
 }
 
 
@@ -219,7 +233,7 @@ void Polygon::resetVertexOffsets(){
     }
 }
 
-void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color){
+void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color, int colliderID){
     this->loadAsset(asset,color);
     this->currentAsset = &this->assetWR1;
     this->nextAsset = &this->assetWR2;
@@ -228,6 +242,11 @@ void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,i
     this->rotNegative90 = {0,-1};
     this->lineThickness = defaultLineThickness;
     this->scale = 1.0;
+
+    this->colliderID = colliderID;
+    //defaults callback functions to null
+    this->collisionCallback = NULL;
+    this->getDamageCallback = NULL;
 }
 
 void Polygon::update(){
@@ -254,6 +273,13 @@ void Polygon::render(Screen* screen){
     }
     glEnd();
 }
+void Polygon::setCallBacks(function<void(int, complex<double>)> onCollision, function<int()> getDamage){
+        this->collisionCallback = onCollision;
+        this->getDamageCallback = getDamage;
+}
+
+
+
 
 void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTime){
     this->rb = rb;

@@ -12,6 +12,12 @@ void Swarmer::init(Assets* assets,RigidBody* plrRB, Stats* stats){
     this->poly.init(&assets->swarmerAsset,&this->rb,red);
     this->plrRB = plrRB;
     this->rb.active = false;
+
+    //setsup poly collision callbacks
+    this->poly.setCallBacks(
+        bind(&Swarmer::onCollision,this,_1,_2),
+        bind(&Swarmer::getDamage,this)
+    );
 }
 
 void Swarmer::spawn(complex<double> pos, complex<double> vel){
@@ -48,7 +54,12 @@ void Swarmer::update(double dt){
 void Swarmer::render(Screen* screen){
     this->poly.render(screen);
 }
+void Swarmer::onCollision(int damage, complex<double> direction){
 
+}
+int Swarmer::getDamage(){
+    return 0;
+}
 
 //Enemy
 void EnemyManager::init(Assets* assets, ProjectileManager* projMan,RigidBody* plrRB, Stats* stats){
@@ -84,9 +95,7 @@ void EnemyManager::update(Screen* screen, double dt){
 void EnemyManager::checkCollision(ProjectileManager* projMan,double dt){
     //swarmers
     for(int i = 0; i < swarmerPoolSize; i++){
-        if(this->swarmers[i]->rb.active){
-            projMan->checkCollisionPoly(&this->swarmers[i]->poly,this->swarmers[i]->ID,dt);
-        }
+        projMan->checkCollisionPoly(&this->swarmers[i]->poly);
     }
 }
 

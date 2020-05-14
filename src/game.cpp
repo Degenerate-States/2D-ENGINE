@@ -31,9 +31,9 @@ void Update(double dt) {
 }
 
 void PostUpdate(double dt) {
-    game->projMan.checkCollisionPoly(&game->box.poly,game->box.ID,dt);
-    game->projMan.checkCollisionPoly(&game->plr.poly,game->plr.ID,dt);
-    game->projMan.checkCollisionPoly(&game->rigTest.rp.poly,game->rigTest.ID,dt);
+    game->projMan.checkCollisionPoly(&game->box.poly);
+    game->projMan.checkCollisionPoly(&game->plr.poly);
+    game->projMan.checkCollisionPoly(&game->rigTest.rp.poly);
     game->enemyMan.checkCollision(&game->projMan,dt);
     game->plr.setScreenPos(game->screen,dt);
 }

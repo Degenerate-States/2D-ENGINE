@@ -2,6 +2,8 @@
 #include "projectileManager.h"
 using namespace std;
 
+
+
 //tuple<bool,complex<double>> 
 //doLineSegmentsIntersect 
 //(complex<double> p1, complex<double> p2,
@@ -161,15 +163,15 @@ complex<double> endLine1,complex<double> endLine2){
 // pointCollisionPadSpatial could be increased to accomidate for this instead
 // furthermore a more efficent system for pre collision checking could be used (ie sector system)
 tuple<bool,int,complex<double>> 
-willPointHitPoly(Polygon* poly,complex<double> bulletPos, complex<double> bulletNextPos){
+willPointHitPoly(Polygon* poly,complex<double> pointPos, complex<double> pointNextPos){
     bool collisionOccured = false;
-    complex<double> collisionPoint= bulletPos;
+    complex<double> collisionPoint= pointPos;
     double minT = 2;
     int minIndex = -1;
 
     // checks if bullet will be in circle containing polygon
     tuple<double,complex<double>> polyCircle = poly->getContainingCircle();
-    double possibleCollisonRad = abs(get<1>(polyCircle) - bulletNextPos) + pntCollisionPadSpatial;
+    double possibleCollisonRad = abs(get<1>(polyCircle) - pointNextPos) + pntCollisionPadSpatial;
     if (possibleCollisonRad < get<0>(polyCircle)){
             tuple<bool, double ,complex<double>> helperReturnVal;
             //updated if a line was hit, updated further if another line was hit with smaller t
@@ -178,7 +180,7 @@ willPointHitPoly(Polygon* poly,complex<double> bulletPos, complex<double> bullet
             
                 iPlus1 = (i+1)%poly->currentAsset->size();
 
-                helperReturnVal = willPointHitLine (bulletPos, bulletNextPos, 
+                helperReturnVal = willPointHitLine (pointPos, pointNextPos, 
                                                     (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
                                                     (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
 
@@ -216,4 +218,41 @@ reflectAboutNormal(complex<double> normal, complex<double> vec){
     double dotProd = real(normal)*real(vec)+imag(normal)*imag(vec);
     vec += 2*abs(dotProd)*normal;
     return vec;
+}
+
+void pointPolyCollision(Polygon* poly,Point* pnt,collisionType type){
+    //required conditions for collision to be enabled
+    if(poly->rb->active && pnt->rb->active && poly->collisionCallback != NULL && 
+        pnt->collisionCallback != NULL && poly->colliderID != pnt->colliderID){
+        switch(type){
+
+            case(pointHitPoly):
+            {
+                tuple<bool,int,complex<double>> returnVal = willPointHitPoly(poly,pnt->rb->prevPos,pnt->rb->pos);
+                if (get<0>(returnVal)){
+                    //disables future collision
+                    pnt-> colliderID = poly ->colliderID;
+                    //moves point to collision point
+                    pnt->rb->pos = get<2>(returnVal);
+                    
+                    //calls callbacks
+                    complex<double> normal = poly->getNormal(get<1>(returnVal));
+                    poly->collisionCallback(pnt->getDamageCallback(),-normal);
+                    pnt->collisionCallback(poly->getDamageCallback(),normal);
+                }
+            break;
+            }
+            case(pointInPoly):
+            {
+                bool collisionOccured = isPointInPoly(poly, pnt->rb->pos);
+                if (collisionOccured){
+                    complex<double> direction = pnt->rb->pos - poly->rb->pos;
+                    poly->collisionCallback(pnt->getDamageCallback(),-direction);
+                    pnt->collisionCallback(poly->getDamageCallback(),direction);
+                }
+            }
+            break;
+        }
+    }
+
 }

@@ -23,11 +23,13 @@ class Joint{
 
 class RiggedPoly{
     public:
+        // rigidbody is required for collision engine to test if poly is active
+        RigidBody rb;
         Polygon poly;
         vector<Joint*> joints;
         int numJoints;
 
-        void init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, tuple<int,int,int> color);
+        void init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, tuple<int,int,int> color, int ID);
 
         void update(double dt);
         void render(Screen* screen);

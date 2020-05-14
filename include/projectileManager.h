@@ -28,9 +28,6 @@ class Bullet{
     public:
         projectileType type;
 
-        // 0 is all, 1 is all but player, 2 is all but enemies 
-        int shooterID;
-        complex<double> prevPos;
         RigidBody rb;
         Point pnt;
         Trail trail;
@@ -45,8 +42,11 @@ class Bullet{
         void update(double dt);
         void render(Screen* screen,double dt);
 
-        //returns riccochet direction
-        complex<double> onCollision(int hitID,complex<double> collisionPoint, complex<double> collisionNormal);
+        //callback fuctions
+        void onCollision(int damage, complex<double> collisionNormal);
+        int getDamage();
+
+
 };
 
 class Spark{
@@ -91,9 +91,10 @@ class EnergyBall{
         Polygon outerPoly;
         Polygon innerPoly;
 
-        int shooterID;
+        //not rendered, used by collision engine
+        Point pnt;
+
         bool exploding;
-        complex<double> prevPos;
 
 
         void init(Assets* assets,Stats* stats);
@@ -102,7 +103,10 @@ class EnergyBall{
                         complex<double> vel, RigidBody* homingTarget, double homingRate);
         void update(double dt);
         void render(Screen* screen);
-        void onCollision();
+
+        //callback fuctions
+        void onCollision(int damage, complex<double> direction);
+        int getDamage();
 };
 
 class ProjectileManager{
@@ -137,7 +141,7 @@ class ProjectileManager{
         
         void update(double dt);
         // checks polygon against all bullets
-        void checkCollisionPoly(Polygon* poly,int ID,double dt);
+        void checkCollisionPoly(Polygon* poly);
         void render(Screen* screen,double dt);
 
         void collisionSparks(complex<double> direction,complex<double> point);

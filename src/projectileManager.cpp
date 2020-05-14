@@ -19,7 +19,6 @@ complex<double> randComplex(double maxMag){
 void Bullet::init(Stats* stats){
     this->type = bullet;
     this->rb.init(1.0,0.0,0.0,0.0);
-    this->prevPos=rb.pos;
 
     this->pnt.init(&this->rb,white,stats->bulletDiameter);
     this->trail.init(&this->rb,stats->bulletDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
@@ -31,15 +30,21 @@ void Bullet::init(Stats* stats){
     this->startDiameter = stats->bulletDiameter;
     
     this->rb.active = false;
+
+    //setsup poly collision callbacks
+    this->pnt.setCallBacks(
+        bind(&Bullet::onCollision,this,_1,_2),
+        bind(&Bullet::getDamage,this)
+    );
 }
 
 void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
                         complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
-    this->shooterID = shooterID;
     this->rb.pos = pos;
     this->rb.vel = vel;
 
     this->pnt.changeColor(headColor);
+    this->pnt.colliderID = shooterID;
     this->trail.reset(headColor,tailColor);
 
     this->homingTarget = homingTarget;
@@ -67,7 +72,6 @@ void Bullet::update(double dt){
     this->trail.headThickness =newDiameter;
     this->pnt.diameter = newDiameter;
 
-    this->prevPos = this->rb.pos;
     this->rb.update(dt);
     if(speed < this->minVel){
         this->rb.active = false;
@@ -81,21 +85,15 @@ void Bullet::render(Screen* screen,double dt){
     this->pnt.render(screen);
 }
 
-complex<double> Bullet::onCollision(int hitID,complex<double> collisionPoint, complex<double> collisionNormal){
+void Bullet::onCollision(int damage, complex<double> collisionNormal){
     //disables homing on hit
     this->homingTarget = NULL;
 
-    this->prevPos = collisionPoint;
-    this->shooterID = hitID;
-    // undoes update movement, you could also move bullet to collision point, although this may cause double hits
-    this->rb.pos = this->prevPos;
-
     // reflects velocity and damps it
     this->rb.vel = this->riccoVelDamping*reflectAboutNormal(collisionNormal , this->rb.vel);
-    
-    
-    //returns riccochet direction
-    return this->rb.vel;
+}
+int Bullet::getDamage(){
+    return 0;
 }
 
 
@@ -154,7 +152,6 @@ void Spark::render(Screen* screen,double dt){
 void EnergyBall::init(Assets* assets,Stats* stats){    
     this->type = energyBall;
     this->rb.init(1.0,0.0,0.0,0.0);
-    this->prevPos=rb.pos;
 
     this->vibeAmp = stats->engBallVibrateAmplitude;
     this->vibeFreq = stats->engBallVibrateFreq;
@@ -171,13 +168,19 @@ void EnergyBall::init(Assets* assets,Stats* stats){
     this->innerPoly.init(&assets->innerEngBall,&this->rb,violet);
     this->outerPoly.init(&assets->outerEngBall,&this->rb,blue);
 
+    this->pnt.init(&this->rb,black,1);
     this->rb.active = false;
     this->exploding = false;
+
+    //setsup poly collision callbacks
+    this->pnt.setCallBacks(
+        bind(&EnergyBall::onCollision,this,_1,_2),
+        bind(&EnergyBall::getDamage,this)
+    );
 }
 
 void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, 
                         complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
-    this->shooterID = shooterID;
     this->rb.pos = pos;
     this->rb.vel = vel;
 
@@ -185,6 +188,8 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
     this->outerPoly.color = outerColor;
 
     this->rb.active = true;
+    this->pnt.colliderID = shooterID;
+
     this->exploding = false;
     this->innerPoly.resetVertexOffsets();
     this->outerPoly.resetVertexOffsets();
@@ -215,7 +220,6 @@ void EnergyBall::update(double dt){
             }
         }
 
-        this->prevPos = this->rb.pos;
         this->rb.update(dt);
 
         // inner polygon morphing
@@ -263,10 +267,13 @@ void EnergyBall::explode(double dt){
     }
 }
 
-void EnergyBall::onCollision(){
+void EnergyBall::onCollision(int damage, complex<double> direction){
     this->rb.active = false;
     this->exploding = true;
     this->explosionTimeRemaining = this->explosionTotalTime;
+}
+int EnergyBall::getDamage(){
+    return 0;
 }
 
 
@@ -334,32 +341,17 @@ void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,
     this->oldestEngBallIndex%=engBallPoolSize;
 }
 
-void ProjectileManager::checkCollisionPoly(Polygon* poly,int ID,double dt){
+void ProjectileManager::checkCollisionPoly(Polygon* poly){
 
     // check collision with bullets
     tuple<bool,int,complex<double>> helperReturnVal;
     for(int i = 0; i < bulletPoolSize; i++){
-            //checks if bullet is active and poly isnt the one who fired it
-        if(bullets[i]->rb.active && ID != bullets[i]->shooterID){
-            helperReturnVal = willPointHitPoly(poly,this->bullets[i]->prevPos, this->bullets[i]->rb.pos);
-            // if collision occured
-            if  (get<0>(helperReturnVal)){
-                complex<double> normal = poly->getNormal(get<1>(helperReturnVal));
-                complex<double> point = get<2>(helperReturnVal);
-                complex<double> riccochetVel = this->bullets[i]->onCollision(ID,point,normal);
-                this->collisionSparks(riccochetVel,point);
-            }
-        }
+        pointPolyCollision(poly, &this->bullets[i]->pnt, pointHitPoly);
     }
 
     // check collision with energy balls
     for(int i = 0; i < engBallPoolSize; i++){
-        if (this->engBalls[i]->rb.active && this->engBalls[i]->shooterID != ID){
-            bool collisionOccured = isPointInPoly(poly,this->engBalls[i]->rb.pos);
-            if (collisionOccured){
-                this->engBalls[i]->onCollision();
-            }
-        }
+        pointPolyCollision(poly,&this->engBalls[i]->pnt, pointInPoly);
     }
 }
 

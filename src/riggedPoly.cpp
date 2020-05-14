@@ -23,9 +23,10 @@ void Joint::update(double dt){
     }
 }
 
-void RiggedPoly::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, tuple<int,int,int> color){
+void RiggedPoly::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, tuple<int,int,int> color,int ID){
     //Rigidbody reference is set to null, polygons behavior is largly overrided by joint
-    this->poly.init(polyAsset,NULL,color);
+    this->rb.init(1,0,0,0);
+    this->poly.init(polyAsset,&this->rb,color, ID);
     this->numJoints = jointData->size();
 
     for(int i = 0; i < this->numJoints; i++){

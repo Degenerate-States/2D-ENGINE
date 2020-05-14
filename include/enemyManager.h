@@ -26,6 +26,7 @@ class Swarmer{
         void render(Screen* screen);
 
         void onCollision(int Damage, complex<double> direction);
+        int getDamage();
 };
 
 class EnemyManager{

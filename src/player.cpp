@@ -25,7 +25,6 @@ void Flame::render(Screen* screen){
 }
 
 void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
-    this->ID = assets->getID();
     this->rb.init(1.,0,0,0.0);
     this->relScreenPos = 0.0;
     this->screenOffset = stats->screenOffset;
@@ -34,10 +33,16 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
     this->topSpeed = stats->plrTopSpeed;
     this->acceleration = stats->plrAcceleration;
 
-    this->poly.init(&assets->plrAsset,&this->rb,white);
+    this->poly.init(&assets->plrAsset,&this->rb,white,assets->getID());
 
-    this->gun.init(&this->rb, assets, projMan, bullet, this->ID, stats->plrBulletVel, stats->plrShotVarience);
+    this->gun.init(&this->rb, assets, projMan, energyBall, this->poly.colliderID, stats->plrBulletVel, stats->plrShotVarience);
     this->flame.init(&this->rb,assets,projMan);
+
+    //setsup poly collision callbacks
+    this->poly.setCallBacks(
+        bind(&Player::onCollision,this,_1,_2),
+        bind(&Player::getDamage,this)
+    );
 }
 
 void Player::update(Screen* screen,double dt){
@@ -104,10 +109,15 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
         }
     }
 }
-
 void Player::setScreenPos(Screen* screen, double dt){
     // direction of motion is from where screen is to where player is trusting times offset size
     this->relScreenPos = this->screenOffset*this->rb.vel/this->topSpeed;
     // sets screen posisiton to player posistion plus relative posisiton
     screen->rb.pos = this->rb.pos + this->relScreenPos;
+}
+void Player::onCollision(int damage, complex<double> direction){
+
+}
+int Player::getDamage(){
+    return 0;
 }

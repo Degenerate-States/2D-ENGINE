@@ -35,7 +35,6 @@ class Player{
         // how far the screen points in the direction of thrusting
         double screenOffset;
     public:
-        int ID;
         RigidBody rb;
         Polygon poly;
         Gun gun;
@@ -57,5 +56,8 @@ class Player{
         //screen controling
         void setScreenPos(Screen* screen, double dt);
 
-        void onCollision(int Damage, complex<double> direction);
+
+        //callback functions used in collision
+        void onCollision(int damage, complex<double> direction);
+        int getDamage();
 };
