@@ -17,3 +17,5 @@ complex<double>
 reflectAboutNormal(complex<double> normal, complex<double> vec);
 
 void pointPolyCollision(Polygon* poly,Point* pnt,collisionType type);
+
+void polyPolyCollision(Polygon* poly1, Polygon* poly2,collisionType type);

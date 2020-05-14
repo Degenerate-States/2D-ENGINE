@@ -163,37 +163,32 @@ complex<double> endLine1,complex<double> endLine2){
 // pointCollisionPadSpatial could be increased to accomidate for this instead
 // furthermore a more efficent system for pre collision checking could be used (ie sector system)
 tuple<bool,int,complex<double>> 
-willPointHitPoly(Polygon* poly,complex<double> pointPos, complex<double> pointNextPos){
+willPointHitPoly(Polygon* poly,tuple<double,complex<double>> polyCircle,
+                complex<double> pointPos, complex<double> pointNextPos){
     bool collisionOccured = false;
     complex<double> collisionPoint= pointPos;
     double minT = 2;
     int minIndex = -1;
 
-    // checks if bullet will be in circle containing polygon
-    tuple<double,complex<double>> polyCircle = poly->getContainingCircle();
-    double possibleCollisonRad = abs(get<1>(polyCircle) - pointNextPos) + pntCollisionPadSpatial;
-    if (possibleCollisonRad < get<0>(polyCircle)){
-            tuple<bool, double ,complex<double>> helperReturnVal;
-            //updated if a line was hit, updated further if another line was hit with smaller t
-            int iPlus1;
-            for(int i = 0; i < poly->currentAsset->size(); i++){
-            
-                iPlus1 = (i+1)%poly->currentAsset->size();
+        tuple<bool, double ,complex<double>> helperReturnVal;
+        //updated if a line was hit, updated further if another line was hit with smaller t
+        int iPlus1;
+        for(int i = 0; i < poly->currentAsset->size(); i++){
+        
+            iPlus1 = (i+1)%poly->currentAsset->size();
 
-                helperReturnVal = willPointHitLine (pointPos, pointNextPos, 
-                                                    (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
-                                                    (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
+            helperReturnVal = willPointHitLine (pointPos, pointNextPos, 
+                                                (*poly->currentAsset)[i],(*poly->currentAsset)[iPlus1], 
+                                                (*poly->nextAsset)[i],(*poly->nextAsset)[iPlus1]);
 
-                // checks if line was hit, and if was hit before other hit lines
-                if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
-                    collisionOccured = true;
-                    minT = get<1>(helperReturnVal);
-                    minIndex = i;
-                    collisionPoint = get<2>(helperReturnVal);
-                }
+            // checks if line was hit, and if was hit before other hit lines
+            if (get<0>(helperReturnVal) && get<1>(helperReturnVal) < minT){
+                collisionOccured = true;
+                minT = get<1>(helperReturnVal);
+                minIndex = i;
+                collisionPoint = get<2>(helperReturnVal);
             }
-    
-        }// end of if collision is possilbe
+        }
     return make_tuple(collisionOccured, minIndex, collisionPoint);
 }
 
@@ -224,35 +219,77 @@ void pointPolyCollision(Polygon* poly,Point* pnt,collisionType type){
     //required conditions for collision to be enabled
     if(poly->rb->active && pnt->rb->active && poly->collisionCallback != NULL && 
         pnt->collisionCallback != NULL && poly->colliderID != pnt->colliderID){
-        switch(type){
+        
+        // checks if bullet will be in circle containing polygon
+        tuple<double, complex<double>> polyCircle = poly->getContainingCircle();
+        double possibleCollisonRad = abs(get<1>(polyCircle) - pnt->rb->pos) + pntCollisionPadSpatial;
+        if (possibleCollisonRad < get<0>(polyCircle) +abs(pnt->rb->pos -pnt->rb->prevPos)){
+            switch(type){
 
-            case(pointHitPoly):
-            {
-                tuple<bool,int,complex<double>> returnVal = willPointHitPoly(poly,pnt->rb->prevPos,pnt->rb->pos);
-                if (get<0>(returnVal)){
-                    //disables future collision
-                    pnt-> colliderID = poly ->colliderID;
-                    //moves point to collision point
-                    pnt->rb->pos = get<2>(returnVal);
-                    
-                    //calls callbacks
-                    complex<double> normal = poly->getNormal(get<1>(returnVal));
-                    poly->collisionCallback(pnt->getDamageCallback(),-normal);
-                    pnt->collisionCallback(poly->getDamageCallback(),normal);
+                case(pointHitPoly):
+                {   
+                    tuple<bool,int,complex<double>> returnVal = willPointHitPoly(poly,polyCircle,pnt->rb->prevPos,pnt->rb->pos);
+                    if (get<0>(returnVal)){
+                        //disables future collision
+                        pnt-> colliderID = poly ->colliderID;
+                        //moves point to collision point
+                        pnt->rb->pos = get<2>(returnVal);
+
+                        //calls callbacks
+                        complex<double> normal = poly->getNormal(get<1>(returnVal));
+                        poly->collisionCallback(pnt->getDamageCallback(),-normal);
+                        pnt->collisionCallback(poly->getDamageCallback(),normal);
+                    }
+                break;
                 }
-            break;
-            }
-            case(pointInPoly):
-            {
-                bool collisionOccured = isPointInPoly(poly, pnt->rb->pos);
-                if (collisionOccured){
-                    complex<double> direction = pnt->rb->pos - poly->rb->pos;
-                    poly->collisionCallback(pnt->getDamageCallback(),-direction);
-                    pnt->collisionCallback(poly->getDamageCallback(),direction);
+                case(pointInPoly):
+                {
+                    bool collisionOccured = isPointInPoly(poly, pnt->rb->pos);
+                    if (collisionOccured){
+                        complex<double> direction = pnt->rb->pos - poly->rb->pos;
+                        poly->collisionCallback(pnt->getDamageCallback(),-direction);
+                        pnt->collisionCallback(poly->getDamageCallback(),direction);
+                    }
                 }
+                break;
             }
-            break;
         }
     }
 
+}
+
+
+void polyPolyCollision(Polygon* poly1, Polygon* poly2, collisionType type){
+    switch(type){
+        case(polyPoly):
+        {
+            if(poly1->rb->active && poly2->rb->active && poly1->collisionCallback != NULL && 
+                poly2->collisionCallback != NULL && poly1->colliderID != poly2->colliderID){
+                
+                tuple<double,complex<double>> poly1Circ = poly1->getContainingCircle();
+                tuple<double,complex<double>> poly2Circ = poly2->getContainingCircle();
+                //checks if collision is possible
+                if(abs(get<1>(poly2Circ) - get<1>(poly1Circ)) < get<0>(poly1Circ) + get<0>(poly2Circ)){
+
+                    bool collisionOccured = false;
+                    for(int i = 0; i < poly1->numVertices; i++){
+                        collisionOccured = isPointInPoly(poly2, (*poly1->nextAsset)[i]) || collisionOccured;
+                    }
+                        for(int i = 0; i < poly2->numVertices; i++){
+                        collisionOccured = isPointInPoly(poly1, (*poly1->nextAsset)[i]) || collisionOccured;
+                    }
+
+                    // collision resolution
+                    if(collisionOccured){
+                        complex<double> direction = get<1>(poly2Circ) - get<1>(poly1Circ);
+
+                            poly1->collisionCallback(poly2->getDamageCallback(),-direction);
+                            poly2->collisionCallback(poly1->getDamageCallback(),direction);
+                    }
+                }
+            }
+        }
+        break;
+        //put additional poly poly collision types here
+    }
 }
