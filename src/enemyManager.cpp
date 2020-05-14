@@ -2,17 +2,17 @@
 
 // Swarmer
 void Swarmer::init(Assets* assets,RigidBody* plrRB, Stats* stats){
-    this->ID = assets->getID();
     this->rb.init(1.,0,0,0.0);
 
     this->topSpeed = stats->swarmerTopSpeed;
     this->acceleration = stats->swarmerAcceleration;
     this->drag = stats->swarmerDrag;
 
-    this->poly.init(&assets->swarmerAsset,&this->rb,red);
+    this->poly.init(&assets->swarmerAsset,&this->rb,red,assets->getID());
     this->plrRB = plrRB;
     this->rb.active = false;
 
+    this->startHealth = stats->swarmerHealth;
     //setsup poly collision callbacks
     this->poly.setCallBacks(
         bind(&Swarmer::onCollision,this,_1,_2),
@@ -25,10 +25,12 @@ void Swarmer::spawn(complex<double> pos, complex<double> vel){
     this->rb.pos = pos;
     this->rb.vel = vel;
 
+    this->health = this->startHealth;
 }
 
 void Swarmer::die(){
     this->rb.active = false;
+    cout<<"Debug: Swarmer died"<<endl;
 }
 
 void Swarmer::update(double dt){
@@ -49,16 +51,21 @@ void Swarmer::update(double dt){
 
     this->rb.update(dt);
     this->poly.update();
+
+    if (this->health <= 0){
+        this->die();
+    }
 }
 
 void Swarmer::render(Screen* screen){
     this->poly.render(screen);
 }
 void Swarmer::onCollision(int damage, complex<double> direction){
-    cout<<"Debug: swarmer hit"<<endl;
+    this->health-=damage;
+    cout<<"Debug: swarmer hit...   Health:"<<" "<<this->health<<endl;
 }
 int Swarmer::getDamage(){
-    return 0;
+    return this->contactDamage;
 }
 
 //Enemy

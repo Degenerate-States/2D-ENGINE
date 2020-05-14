@@ -9,6 +9,7 @@ void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, 
 
     //TODO: work the following into stat system
     this->type = stats->type;
+    this->baseDamage = stats->baseDamage;
     this->projVel = stats->projVel;
     this->velVarience = stats->projVarience;
     this->fullAuto = stats->fullAuto;
@@ -46,7 +47,7 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
             // its more efficet to put loop inside switch, but less legable 
             switch(this->type){
                 case (bullet): 
-                    this->projMan->fireBullet(white,orange, this->ID, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
+                    this->projMan->fireBullet(white,orange, this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
                 break;
 
                 case(spark):
@@ -54,7 +55,7 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
                 break;
 
                 case(energyBall):
-                    this->projMan->fireEngBall(orange,red,this->ID, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
+                    this->projMan->fireEngBall(orange,red,this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
                 break;
             }
 

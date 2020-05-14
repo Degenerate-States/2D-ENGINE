@@ -34,6 +34,8 @@ enum projectileType{ bullet, spark, energyBall };
 
 struct GunStats{
     projectileType type;
+    //note for bullets, damage is calculated using projectile vel and baseDamage
+    double baseDamage;
     double projVel;
     double projVarience;
     double projNum;
@@ -41,8 +43,9 @@ struct GunStats{
     double coolDown;
     double homingRate;
     //memeber initalization
-    void init(projectileType type, double projVel,double projVarience,double 
+    void init(projectileType type,double baseDamage, double projVel,double projVarience,double 
                 projNum,bool fullAuto,double coolDown,double homingRate){
+        this->baseDamage = baseDamage;
         this->type = type;
         this->projVel = projVel;
         this->projVarience = projVarience;
@@ -124,12 +127,14 @@ struct Stats{
     //player
     double plrTopSpeed;
     double plrAcceleration;
+    double plrHealth;
     double plrContactDamage;
 
     // swarmer
     double swarmerTopSpeed;
     double swarmerAcceleration;
     double swarmerDrag;
+    double swarmerHealth;
     double swarmerContactDamage;
 
 

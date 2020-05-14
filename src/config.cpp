@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 void Config::init(){
     //note vsync will cap this value
     this->fps = 60;
@@ -56,21 +55,22 @@ void Stats::init(){
     //gameplay
 
     //guns
-    this->mg.init(bullet,7,1.5,1,true,100,0);
-    this->smg.init(bullet,5,2,1,true,50,0);
-    this->shotgun.init(bullet,4,1.5,7,false,400,0);
-    this->autoShotgun.init(bullet,4,1.5,5,true,300,0);
-    this->sniper.init(bullet,10,0,1,false,500,0);
-    this->energyRifle.init(energyBall,4,0,1,false,150,0);
-    this->energyShotgun.init(energyBall,2,1,5,false,200,0);
-
+    this->mg.init(bullet,1,7,1.5,1,true,100,0);
+    this->smg.init(bullet,1,5,2,1,true,50,0);
+    this->shotgun.init(bullet,1,4,1.5,7,false,400,0);
+    this->autoShotgun.init(bullet,1,4,1.5,5,true,300,0);
+    this->sniper.init(bullet,1,10,0,1,false,500,0);
+    this->energyRifle.init(energyBall,10,4,0,1,false,150,0);
+    this->energyShotgun.init(energyBall,10,2,1,5,false,200,0);
     //player
     this->plrTopSpeed = 2;
     this->plrAcceleration = 4;
+    this->plrHealth = 100;
     this->plrContactDamage = 100;
 
     this->swarmerTopSpeed = 3;
     this->swarmerAcceleration = 3;
     this->swarmerDrag = 1;
+    this->swarmerHealth = 50;
     this->swarmerContactDamage = 20;
 }

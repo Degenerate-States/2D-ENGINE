@@ -36,15 +36,22 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
     this->poly.init(&assets->plrAsset,&this->rb,white,assets->getID());
 
     this->gun.init(&this->rb, assets, projMan, &stats->energyShotgun, this->poly.colliderID);
+    cout<<stats->energyShotgun.baseDamage<<endl;
     this->flame.init(&this->rb,assets,projMan);
 
+    this->contactDamage = stats->plrContactDamage;
+    this->startHealth = stats->plrHealth;
     //setsup poly collision callbacks
     this->poly.setCallBacks(
         bind(&Player::onCollision,this,_1,_2),
         bind(&Player::getDamage,this)
     );
 }
-
+void Player::spawn(complex<double> pos){
+    this->rb.active = true;
+    this->rb.pos = pos;
+    this->health = this->startHealth;
+}
 void Player::update(Screen* screen,double dt){
     //points in direction of motion
     this->rb.setRot(arg(this->rb.vel));
@@ -116,8 +123,13 @@ void Player::setScreenPos(Screen* screen, double dt){
     screen->rb.pos = this->rb.pos + this->relScreenPos;
 }
 void Player::onCollision(int damage, complex<double> direction){
-    cout<<"Debug: player hit"<<endl;
+    this->health-=damage;
+    cout<<"Debug: Player hit...   Health:"<<" "<<this->health<<endl;
 }
 int Player::getDamage(){
-    return 0;
+    return this->contactDamage;
+}
+void Player::die(){
+    this->rb.active = false;
+    cout<<"Debug: Player Died";
 }

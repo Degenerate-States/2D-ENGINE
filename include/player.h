@@ -34,7 +34,12 @@ class Player{
         double screenVel;
         // how far the screen points in the direction of thrusting
         double screenOffset;
+
+        int contactDamage;
+        int startHealth;
     public:
+        int health;
+
         RigidBody rb;
         Polygon poly;
         Gun gun;
@@ -44,6 +49,7 @@ class Player{
         double acceleration;
         
         void init(Assets* assets,ProjectileManager* projMan, Stats* stats);
+        void spawn(complex<double> pos);
         void update(Screen* screen,double dt);
         void render(Screen* screen);
 
@@ -60,4 +66,5 @@ class Player{
         //callback functions used in collision
         void onCollision(int damage, complex<double> direction);
         int getDamage();
+        void die();
 };

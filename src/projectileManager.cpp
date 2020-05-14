@@ -38,7 +38,7 @@ void Bullet::init(Stats* stats){
     );
 }
 
-void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
+void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, double baseDamage, 
                         complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
     this->rb.pos = pos;
     this->rb.vel = vel;
@@ -51,6 +51,8 @@ void Bullet::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
     this->homingRate = homingRate;
     this->spawnSpeed = abs(vel);
     this->rb.active = true;
+
+    this->baseDamage = baseDamage;
 }
 
 void Bullet::update(double dt){
@@ -96,7 +98,7 @@ void Bullet::onCollision(int damage, complex<double> collisionNormal){
 
 }
 int Bullet::getDamage(){
-    return 0;
+    return (int)this->baseDamage*abs(this->rb.vel);
 }
 
 
@@ -183,8 +185,8 @@ void EnergyBall::init(Assets* assets,Stats* stats){
     );
 }
 
-void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, 
-                        complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
+void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, double baseDamage,
+                            complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate){
     this->rb.pos = pos;
     this->rb.vel = vel;
 
@@ -202,6 +204,8 @@ void EnergyBall::activate(tuple<int,int,int> innerColor,tuple<int,int,int> outer
 
     this->homingTarget = homingTarget;
     this->homingRate = homingRate;
+
+    this->baseDamage = baseDamage;
 }
 
 void EnergyBall::update(double dt){
@@ -277,7 +281,7 @@ void EnergyBall::onCollision(int damage, complex<double> direction){
     this->explosionTimeRemaining = this->explosionTotalTime;
 }
 int EnergyBall::getDamage(){
-    return 0;
+    return (int)this->baseDamage;
 }
 
 
@@ -318,12 +322,12 @@ void ProjectileManager::init(Assets* assets,Stats* stats){
     this->totalColliders = bulletPoolSize + engBallPoolSize;
 }
 
-void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
-        complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
+void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, double baseDamage,
+                complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
     //applies velocity varience
     vel += randComplex(velVarience);        
 
-    this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID, pos, vel,homingTarget,homingRate);
+    this->bullets[this->oldestBulletIndex]->activate(headColor,tailColor, shooterID,baseDamage, pos, vel,homingTarget,homingRate);
     // change which bullet is considered the oldest
     this->oldestBulletIndex+=1;
     this->oldestBulletIndex%=bulletPoolSize;
@@ -341,11 +345,12 @@ void ProjectileManager::fireSpark(tuple<int,int,int> headColor,tuple<int,int,int
     this->oldestSparkIndex%=sparkPoolSize;
 }
 
-void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, complex<double> pos, 
-                        complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
+void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, double baseDamage, 
+        complex<double> pos, complex<double> vel, double velVarience, RigidBody* homingTarget,double homingRate){
     //applies velocity varience
+    
     vel += randComplex(velVarience);
-    this->engBalls[this->oldestEngBallIndex]->activate(innerColor,outerColor, shooterID, pos, vel, homingTarget, homingRate);
+    this->engBalls[this->oldestEngBallIndex]->activate(innerColor,outerColor, shooterID, baseDamage, pos, vel, homingTarget, homingRate);
     // change which bullet is considered the oldest
     this->oldestEngBallIndex+=1;
     this->oldestEngBallIndex%=engBallPoolSize;

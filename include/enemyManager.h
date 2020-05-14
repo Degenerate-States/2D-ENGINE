@@ -14,9 +14,11 @@ class Swarmer{
         double acceleration;
         double drag;
 
-
+        int startHealth;
+        int contactDamage;
     public:
-        int ID;
+        int health;
+
         RigidBody rb;
         Polygon poly;
 

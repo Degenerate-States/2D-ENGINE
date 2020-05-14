@@ -24,7 +24,8 @@ class Bullet{
 
         double spawnSpeed;
         double startDiameter;
-
+        
+        double baseDamage;
     public:
         projectileType type;
 
@@ -37,8 +38,8 @@ class Bullet{
 
         void init(Stats* stats);
         //homing target defaults to null, if target is null no homing is applied, likewise if the target is inactive
-        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, 
-                        complex<double> vel, RigidBody* homingTarget, double homingRate);
+        void activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, double baseDamage,
+                    complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate);
         void update(double dt);
         void render(Screen* screen,double dt);
 
@@ -89,6 +90,8 @@ class EnergyBall{
         double homingRate;
 
         void explode(double dt);
+
+        double baseDamage;
     public:
         projectileType type;
         RigidBody rb;
@@ -103,8 +106,8 @@ class EnergyBall{
 
         void init(Assets* assets,Stats* stats);
 
-        void activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, complex<double> pos, 
-                        complex<double> vel, RigidBody* homingTarget, double homingRate);
+        void activate(tuple<int,int,int> innerColor,tuple<int,int,int> outerColor, int shooterID, double baseDamage,
+                                complex<double> pos, complex<double> vel, RigidBody* homingTarget, double homingRate);
         void update(double dt);
         void render(Screen* screen);
 
@@ -137,12 +140,12 @@ class ProjectileManager{
         void init(Assets* assets, Stats* stats);
 
         //vel varience is maximum deviation from vel (think radius of circle around vel)
-        void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, 
+        void fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, double baseDamage, complex<double> pos,  
                         complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
         void fireSpark(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
                         complex<double> pos, complex<double> vel, double velVarience);
         //vel varience is maximum deviation from vel (think radius of circle around vel)
-        void fireEngBall(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, complex<double> pos, 
+        void fireEngBall(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, double baseDamage, complex<double> pos, 
                         complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
         
         void update(double dt);

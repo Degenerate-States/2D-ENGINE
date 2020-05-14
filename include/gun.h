@@ -7,6 +7,7 @@
 class Gun{
     private:
         int lastFired;
+
     public:
         projectileType type;
         RigidBody rb;
@@ -24,6 +25,7 @@ class Gun{
         double velVarience;
         int projNum;
         double homingRate;
+        double baseDamage;
 
         //holds reference of shooters rb
         RigidBody* shooterRb;
