@@ -1,2 +1,2 @@
 @echo off
-call "build/game.exe"
+if exist build/game.exe call "build/game.exe"
