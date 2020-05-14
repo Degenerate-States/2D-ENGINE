@@ -1,5 +1,4 @@
 #include "collisionFuncs.h"
-#include "projectileManager.h"
 using namespace std;
 
 
@@ -276,7 +275,7 @@ void polyPolyCollision(Polygon* poly1, Polygon* poly2, collisionType type){
                         collisionOccured = isPointInPoly(poly2, (*poly1->nextAsset)[i]) || collisionOccured;
                     }
                         for(int i = 0; i < poly2->numVertices; i++){
-                        collisionOccured = isPointInPoly(poly1, (*poly1->nextAsset)[i]) || collisionOccured;
+                        collisionOccured = isPointInPoly(poly1, (*poly2->nextAsset)[i]) || collisionOccured;
                     }
 
                     // collision resolution

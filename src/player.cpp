@@ -116,7 +116,7 @@ void Player::setScreenPos(Screen* screen, double dt){
     screen->rb.pos = this->rb.pos + this->relScreenPos;
 }
 void Player::onCollision(int damage, complex<double> direction){
-
+    cout<<"Debug: player hit"<<endl;
 }
 int Player::getDamage(){
     return 0;

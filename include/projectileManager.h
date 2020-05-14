@@ -1,5 +1,6 @@
 #pragma once
 #include "components.h"
+#include "collisionFuncs.h"
 #include "config.h"
 #include "assets.h"
 
@@ -23,8 +24,6 @@ class Bullet{
 
         double spawnSpeed;
         double startDiameter;
-
-
 
     public:
         projectileType type;
@@ -131,8 +130,10 @@ class ProjectileManager{
         double riccoSparkVelDamping;
         double riccoSparkVelVarience;
 
-
+        //iterating pools
+        int nextCollider;
     public:
+        int totalColliders;
         void init(Assets* assets, Stats* stats);
 
         //vel varience is maximum deviation from vel (think radius of circle around vel)
@@ -145,9 +146,9 @@ class ProjectileManager{
                         complex<double> vel, double velVarience, RigidBody* homingTarget = NULL,double homingRate = 0.0);
         
         void update(double dt);
-        // checks polygon against all bullets
-        void checkCollisionPoly(Polygon* poly);
         void render(Screen* screen,double dt);
 
         void collisionSparks(complex<double> direction,complex<double> point);
+
+        Point* getNextCollider();
 };

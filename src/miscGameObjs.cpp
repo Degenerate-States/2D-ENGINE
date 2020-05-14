@@ -30,7 +30,7 @@ void Box::render(Screen* screen){
     this->poly.render(screen);
 }
 void Box::onCollision(int damage, complex<double> direction){
-
+    cout<<"Debug: Box hit"<<endl;
 }
 int Box::getDamage(){
     return 0;
@@ -62,7 +62,7 @@ void RiggedTest::render(Screen* screen){
     this->rp.render(screen);
 }
 void RiggedTest::onCollision(int damage, complex<double> direction){
-
+    cout<<"Debug: rigged test hit"<<endl;
 }
 int RiggedTest::getDamage(){
     return 0;

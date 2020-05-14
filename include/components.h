@@ -16,6 +16,7 @@ using namespace std::placeholders;
 
 #define _USE_MATH_DEFINES
 
+enum collisionType{ pointHitPoly, pointInPoly, polyPoly };
 
 class RigidBody{
     public:
@@ -87,10 +88,11 @@ class Point{
         
     public:
         int colliderID;
+        collisionType collisType;
         RigidBody* rb;
         //references to components which point
         float diameter;
-        void init(RigidBody* rb, tuple<int,int,int> color,float diameter, int colliderID = -1);
+        void init(RigidBody* rb, tuple<int,int,int> color,float diameter, int colliderID = -1, collisionType = pointHitPoly);
         void render(Screen* screen);
         void changeColor(tuple<int,int,int> color);
 

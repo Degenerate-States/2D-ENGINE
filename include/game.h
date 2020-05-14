@@ -6,6 +6,7 @@
 
 #include "riggedPoly.h"
 #include "projectileManager.h"
+#include "collisionFuncs.h"
 #include "enemyManager.h"
 
 #include "player.h"
@@ -21,6 +22,9 @@ class Game{
         RiggedTest rigTest;
         ProjectileManager projMan;
         EnemyManager enemyMan;
+
+        //TODO find better collision organization
+        vector<Polygon*> nonEnemyPolys;
 };
 
 #endif

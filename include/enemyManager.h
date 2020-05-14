@@ -13,6 +13,8 @@ class Swarmer{
         double topSpeed;
         double acceleration;
         double drag;
+
+
     public:
         int ID;
         RigidBody rb;
@@ -34,14 +36,21 @@ class EnemyManager{
 
         int oldestSwarmerIndex;
         Swarmer* swarmers[swarmerPoolSize];
+
+        //collider iteration
+        int nextCollider;
     public:
+        
 
         void init(Assets* assets, ProjectileManager* projMan,RigidBody* plrRB, Stats* stats);
 
         void spawnSwarmer(complex<double> pos, complex<double> vel = 0, double velVarience = 0);
 
         void update(Screen* screen, double dt);
-        void checkCollision(ProjectileManager* projMan,double dt);
         void render(Screen* screen);
 
+        //collider iteration
+        int totalColliders;
+        Polygon* getNextCollider();
+        void EnemyManager::skipCollider();
 };

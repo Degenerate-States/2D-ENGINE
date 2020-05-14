@@ -55,7 +55,7 @@ void Swarmer::render(Screen* screen){
     this->poly.render(screen);
 }
 void Swarmer::onCollision(int damage, complex<double> direction){
-
+    cout<<"Debug: swarmer hit"<<endl;
 }
 int Swarmer::getDamage(){
     return 0;
@@ -72,6 +72,10 @@ void EnemyManager::init(Assets* assets, ProjectileManager* projMan,RigidBody* pl
 
     //TODO remove tester swarmer spawn below
     this->spawnSwarmer({1,1});
+
+    // for iterating through pools
+    this->totalColliders = swarmerPoolSize;
+    this->nextCollider = 0;
 }
 
 void EnemyManager::spawnSwarmer(complex<double> pos, complex<double> vel, double velVarience){
@@ -91,18 +95,29 @@ void EnemyManager::update(Screen* screen, double dt){
         }
     }
 }
-
-void EnemyManager::checkCollision(ProjectileManager* projMan,double dt){
-    //swarmers
-    for(int i = 0; i < swarmerPoolSize; i++){
-        projMan->checkCollisionPoly(&this->swarmers[i]->poly);
-    }
-}
-
 void EnemyManager::render(Screen* screen){
     for(int i = 0; i < swarmerPoolSize; i++){
         if(this->swarmers[i]->rb.active){
             this->swarmers[i]->render(screen);
         }
     }
+}
+
+Polygon* EnemyManager::getNextCollider(){
+    Polygon* polyPointer;
+    if(this->nextCollider<bulletPoolSize){
+        polyPointer = &this->swarmers[this->nextCollider]->poly;
+    }
+    //additional pools here
+    else{
+        cout<<"Debug: getNextCollider, Collider Index out of Range"<<endl;
+    }
+    this->nextCollider++;
+    this->nextCollider%=this->totalColliders;
+
+    return polyPointer;
+}
+void EnemyManager::skipCollider(){
+    this->nextCollider++;
+    this->nextCollider%=this->totalColliders;
 }

@@ -1,5 +1,5 @@
 #include "projectileManager.h"
-#include "collisionFuncs.h"
+
 
 double randDouble(double max){
     return max* (double)rand()/RAND_MAX;
@@ -20,7 +20,7 @@ void Bullet::init(Stats* stats){
     this->type = bullet;
     this->rb.init(1.0,0.0,0.0,0.0);
 
-    this->pnt.init(&this->rb,white,stats->bulletDiameter);
+    this->pnt.init(&this->rb,white,stats->bulletDiameter,1,pointHitPoly);
     this->trail.init(&this->rb,stats->bulletDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
     this->riccoVelDamping = stats->riccoBulletVelDamping;
@@ -154,6 +154,7 @@ void Spark::render(Screen* screen,double dt){
 //************************//
 void EnergyBall::init(Assets* assets,Stats* stats){    
     this->type = energyBall;
+
     this->rb.init(1.0,0.0,0.0,0.0);
 
     this->vibeAmp = stats->engBallVibrateAmplitude;
@@ -171,7 +172,7 @@ void EnergyBall::init(Assets* assets,Stats* stats){
     this->innerPoly.init(&assets->innerEngBall,&this->rb,violet);
     this->outerPoly.init(&assets->outerEngBall,&this->rb,blue);
 
-    this->pnt.init(&this->rb,black,1);
+    this->pnt.init(&this->rb,black,1,1,pointInPoly);
     this->rb.active = false;
     this->exploding = false;
 
@@ -311,6 +312,10 @@ void ProjectileManager::init(Assets* assets,Stats* stats){
         this->engBalls[i] = new EnergyBall();
         this->engBalls[i]->init(assets,stats);
     }
+
+    //initalizes collider iteration
+    this->nextCollider = 0;
+    this->totalColliders = bulletPoolSize + engBallPoolSize;
 }
 
 void ProjectileManager::fireBullet(tuple<int,int,int> headColor,tuple<int,int,int> tailColor, int shooterID, 
@@ -344,20 +349,6 @@ void ProjectileManager::fireEngBall(tuple<int,int,int> innerColor,tuple<int,int,
     // change which bullet is considered the oldest
     this->oldestEngBallIndex+=1;
     this->oldestEngBallIndex%=engBallPoolSize;
-}
-
-void ProjectileManager::checkCollisionPoly(Polygon* poly){
-
-    // check collision with bullets
-    tuple<bool,int,complex<double>> helperReturnVal;
-    for(int i = 0; i < bulletPoolSize; i++){
-        pointPolyCollision(poly, &this->bullets[i]->pnt, pointHitPoly);
-    }
-
-    // check collision with energy balls
-    for(int i = 0; i < engBallPoolSize; i++){
-        pointPolyCollision(poly,&this->engBalls[i]->pnt, pointInPoly);
-    }
 }
 
 void ProjectileManager::collisionSparks(complex<double> direction,complex<double> point){
@@ -409,4 +400,20 @@ void ProjectileManager::render(Screen* screen,double dt){
             this->engBalls[i]->render(screen);
         }
     }
+}
+Point* ProjectileManager::getNextCollider(){
+    Point* pntPointer;
+    if(this->nextCollider<bulletPoolSize){
+        pntPointer = &this->bullets[this->nextCollider]->pnt;
+    }
+    else if(this->nextCollider < bulletPoolSize + engBallPoolSize){
+        pntPointer = &this->engBalls[this->nextCollider - bulletPoolSize]->pnt;
+    }
+    else{
+        cout<<"Debug: getNextCollider, Collider Index out of Range"<<endl;
+    }
+    this->nextCollider++;
+    this->nextCollider%=this->totalColliders;
+
+    return pntPointer;
 }

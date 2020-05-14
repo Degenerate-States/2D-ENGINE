@@ -131,12 +131,13 @@ void Screen::keys(const Uint8* keys,double dt){
 //************************//
 //**   Point Methods    **//
 //************************//
-void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter, int colliderID){
+void Point::init(RigidBody* rb, tuple<int,int,int> color, float diameter, int colliderID,collisionType collisType){
     this->color = color;
     this->rb = rb;
     this->diameter = diameter;
 
     this->colliderID = colliderID;
+    this->collisType = collisType;
     //defaults callback functions to null
     this->collisionCallback = NULL;
     this->getDamageCallback = NULL;
