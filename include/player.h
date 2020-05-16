@@ -29,6 +29,7 @@ class Player{
     private: 
         // current screen posisiton relative to player
         complex<double> relScreenPos;
+        vector<GunStats> gunBar;
 
         // how quickly the screen snaps to direction of thrusting 
         double screenVel;

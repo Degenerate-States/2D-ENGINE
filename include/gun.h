@@ -38,4 +38,6 @@ class Gun{
         void events(SDL_Event* event, Screen* screen ,double dt);
         //target is homing target, defaults to null
         void fire(complex<double> fireDirection,RigidBody* target = NULL);
+        //wrapper for loading in gun stats
+        void equip(GunStats* stats);
 };

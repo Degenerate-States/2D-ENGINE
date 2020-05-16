@@ -6,7 +6,10 @@ void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, 
     this->rb.init(1.,0,0,0.0);
     this->shooterRb = shooterRb;
     this->poly.init(&(assets->gunAsset),&this->rb,white);
+    this->equip(stats);
+}
 
+void Gun::equip(GunStats* stats) {
     //TODO: work the following into stat system
     this->type = stats->type;
     this->baseDamage = stats->baseDamage;

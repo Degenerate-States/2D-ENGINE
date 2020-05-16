@@ -6,6 +6,7 @@
     WASD: movement
     left-click: shoot
     UP/Down: camera zoom
+    1-7: guns
 
 ## Engine API
 ```c++

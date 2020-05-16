@@ -35,7 +35,16 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
 
     this->poly.init(&assets->plrAsset,&this->rb,white,assets->getID());
 
-    this->gun.init(&this->rb, assets, projMan, &stats->energyShotgun, this->poly.colliderID);
+    // TEMP: gunBar
+    this->gunBar.push_back(stats->mg);
+    this->gunBar.push_back(stats->smg);
+    this->gunBar.push_back(stats->shotgun);
+    this->gunBar.push_back(stats->autoShotgun);
+    this->gunBar.push_back(stats->sniper);
+    this->gunBar.push_back(stats->energyRifle);
+    this->gunBar.push_back(stats->energyShotgun);
+
+    this->gun.init(&this->rb, assets, projMan, &gunBar[6], this->poly.colliderID);
     cout<<stats->energyShotgun.baseDamage<<endl;
     this->flame.init(&this->rb,assets,projMan);
 
@@ -99,6 +108,29 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
     }
     if (keys[SDL_SCANCODE_S]){
         direction += {0,-1};
+    }
+
+    // TEMP
+    if (keys[SDL_SCANCODE_1]){
+        this->gun.equip(&gunBar[0]);
+    }
+    if (keys[SDL_SCANCODE_2]){
+        this->gun.equip(&gunBar[1]);
+    }
+    if (keys[SDL_SCANCODE_3]){
+        this->gun.equip(&gunBar[2]);
+    }
+    if (keys[SDL_SCANCODE_4]){
+        this->gun.equip(&gunBar[3]);
+    }
+    if (keys[SDL_SCANCODE_5]){
+        this->gun.equip(&gunBar[4]);
+    }
+    if (keys[SDL_SCANCODE_6]){
+        this->gun.equip(&gunBar[5]);
+    }
+    if (keys[SDL_SCANCODE_7]){
+        this->gun.equip(&gunBar[6]);
     }
 
     if (abs(direction)!=0.0){
