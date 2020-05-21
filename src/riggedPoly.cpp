@@ -4,8 +4,10 @@
 void Joint::init(Polygon* poly, vector<int>* indices,complex<double> initPos){
     this->numVerticies = indices->size();
     this->poly = poly;
-    this->posRelAsset = initPos;
     this->rb.init(1.0,0,0,0);
+    this->rb.pos = initPos;
+    this->posRelAsset = initPos;
+    this->scale = 1;
     for(int i = 0; i<this->numVerticies; i++){
         this->attachedVerts.push_back((*indices)[i]);
     }
@@ -16,10 +18,12 @@ void Joint::update(double dt){
     for(int i=0; i < this->numVerticies; i++){
         int index = this->attachedVerts[i];
         //rotates and scales polygon after applying warping from vertex offsets
-        (*this->poly->nextAsset)[index] = this->poly->assetRE[index] - this->posRelAsset + this->poly->vertexOffsets[index];
-        (*this->poly->nextAsset)[index] *= this->poly->scale * this->rb.rotOp;
+        (*this->poly->nextAsset)[index] = this->poly->assetRE[index] -this->posRelAsset + this->poly->vertexOffsets[index];
+        
+        //joint scale overrides polygon scale
+        (*this->poly->nextAsset)[index] *= this->scale * this->rb.rotOp;
         //translates polygon
-        (*this->poly->nextAsset)[index] += this->rb.pos + this->posRelAsset;
+        (*this->poly->nextAsset)[index] += this->rb.pos;// + this->posRelAsset;
     }
 }
 
@@ -45,4 +49,127 @@ void RiggedPoly::update(double dt){
 
 void RiggedPoly::render(Screen* screen){
     this->poly.render(screen);
+}
+
+
+
+void Snake::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, 
+                    tuple<int,int,int> color, double speed, double turnSpeed, int ID,double spf){
+
+    this->rp.init(polyAsset,jointData,color,ID);
+    this->speed = speed;
+    this->turnSpeed = turnSpeed;
+    
+    //iterates through segments
+    double len;
+    double segmentLen;
+    
+    int index = 0;
+    this->vertexIndexOffsets.push_back(index); // head index has no offset
+    this->pathTraveled.push_back({0,0});
+    for(int i = 1; i < this->rp.numJoints; i++){
+        len = 0;
+        segmentLen = abs(this->rp.joints[i]->rb.pos - this->rp.joints[i-1]->rb.pos);
+
+        //appends new point to point history path
+        while (len < segmentLen){
+            this->pathTraveled.push_back({0,0});
+            len += speed*spf;
+            index +=1;
+        }
+        // i th vertex is at head index + this offset
+        this->vertexIndexOffsets.push_back(index);
+        this->segmentLens.push_back(segmentLen);
+    }
+    this->pathTraveledLen = this->pathTraveled.size();
+}
+void Snake::spawn(complex<double> pos, double rot,double spf){
+
+    this->headIndex = 0;
+
+    complex<double> tailDirection = {-cos(rot), -sin(rot)};
+
+    //unrolls prevPosistions
+    for(int i = 0; i <this->pathTraveledLen; i++){
+        this->pathTraveled[i] = pos + (double)i*this->speed*spf*tailDirection;
+    }
+}
+
+void Snake::update(double turn, double dt){
+    //movement
+    this->rot += turn*this->turnSpeed*dt;
+    this->rp.joints[0]->rb.fixedDisplace(this->speed*cos(this->rot),this->speed*sin(this->rot),dt);
+    this->rp.joints[0]->rb.setRot(this->rot);
+
+    this->headIndex -=1;
+    this->headIndex = ( this->pathTraveledLen + (this->headIndex% this->pathTraveledLen)) %  this->pathTraveledLen;
+    //this->headIndex %= this->pathTraveledLen;
+    
+    //updates path traveled with new point
+    this->pathTraveled[headIndex] = this->rp.joints[0]->rb.pos;
+    
+    //updates Joint Pos
+    int index;
+    for(int i = 1; i < this->rp.numJoints; i++){
+        index = headIndex + this->vertexIndexOffsets[i];
+        index %= this->pathTraveledLen;
+
+        this->rp.joints[i]->rb.pos = this->pathTraveled[index];
+    }
+
+    //joint rotation and thickness
+    complex<double> prevPos;
+    complex<double> currentPos;
+    complex<double> nextPos;
+    double theta;
+    double phi;
+    double deltaAngle; 
+
+    for(int i = 1; i <this->rp.numJoints-1; i++){
+        prevPos = this->rp.joints[i-1]->rb.pos;
+        currentPos = this->rp.joints[i]->rb.pos;
+        nextPos = this->rp.joints[i+1]->rb.pos;
+
+        theta = arg(nextPos-currentPos);
+        phi = arg(currentPos-prevPos);
+        
+        deltaAngle = smallestAngle(theta,phi);
+
+        //angle setting and turn smoothing
+        //angle of joint is set to halfway between the angle of the segments
+        this->rp.joints[i]->rb.setRot(M_PI+theta-0.5*deltaAngle);
+
+        //segment must widen to maintain thickness while turning
+        this->rp.joints[i]->scale = 1/cos(0.5*deltaAngle);
+    }
+    this->rp.joints[this->rp.numJoints-1]->rb.setRot(M_PI+theta);
+
+    this->rp.update(dt);
+}
+
+void Snake::render(Screen* screen){
+    this->rp.render(screen);
+
+
+
+    double thickness;
+    int index;
+    tuple<double,double> coord1;
+    tuple<double,double> coord2;
+
+    coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
+    glLineWidth(defaultLineThickness);
+    glColor3ub(get<0>(white), get<1>(white), get<2>(white));
+    for(int i = 1; i < this->rp.numJoints; i++){
+        coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
+
+
+
+        glBegin(GL_LINES);
+        glVertex2d(get<0>(coord1), get<1>(coord1));
+        glVertex2d(get<0>(coord2), get<1>(coord2));
+        glEnd();
+
+        coord1 = coord2;
+    }
 }

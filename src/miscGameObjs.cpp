@@ -67,3 +67,19 @@ void RiggedTest::onCollision(int damage, complex<double> direction){
 int RiggedTest::getDamage(){
     return 0;
 }
+
+
+
+void SnakeTest::init(Assets* assets,double spf){
+    this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,1,8,assets->getID(),spf);
+    this->snake.spawn({0,0},0,spf);
+    
+}
+void SnakeTest::update(double dt){
+    double turn = (double)(SDL_GetTicks()%1000)/ 1000 -0.5;
+    this->snake.update(turn,dt);
+}
+void SnakeTest::render(Screen* screen){
+    this->snake.render(screen);
+}
+

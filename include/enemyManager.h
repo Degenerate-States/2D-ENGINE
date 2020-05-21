@@ -16,6 +16,8 @@ class Swarmer{
 
         int startHealth;
         int contactDamage;
+
+        void animate();
     public:
         int health;
 
@@ -29,9 +31,44 @@ class Swarmer{
         void update(double dt);
         void render(Screen* screen);
 
+        //callbacks
         void onCollision(int Damage, complex<double> direction);
         int getDamage();
 };
+
+class Host{
+    private:
+        RigidBody* plrRB;
+
+        //stats
+        double speed;
+
+        int startHealth;
+        int contactDamage;
+
+        void animate();
+
+    public:
+        int health;
+
+        RigidBody rb;
+        Polygon poly;
+
+        void init(Assets* assets,RigidBody* plrRB, Stats* stats);
+        void spawn(complex<double> pos, complex<double> vel);
+        void die();
+
+        void update(double dt);
+        void render(Screen* screen);
+
+        //callbacks
+        void onCollision(int Damage, complex<double> direction);
+        int getDamage();
+};
+
+
+
+
 
 class EnemyManager{
     private:

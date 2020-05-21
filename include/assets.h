@@ -29,6 +29,9 @@ class Assets{
 
         vector<complex<double>> testPoly;
         vector<jointInfo> testJoints;
+
+        vector<complex<double>> testSnakePoly;
+        vector<jointInfo> testSnakeJoints;
         //where all the assets are acutally defined
         void init();
 

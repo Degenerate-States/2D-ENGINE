@@ -55,18 +55,20 @@ void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, Playe
     polyPolyCollision(&box->poly,&riggedBox->rp.poly);
 }
 
-void Start(Screen* screen, Assets* assets, Stats* stats) {
+void Start(Screen* screen, Assets* assets, Stats* stats,double dt) {
     // initalize game objects
     game->projMan.init(assets,stats);
     game->plr.init(assets,&game->projMan, stats);
     game->enemyMan.init(assets,&game->projMan,&game->plr.rb,stats);
     game->box.init(assets);
     game->rigTest.init(assets);
+    game->snakeTest.init(assets,dt);
     game->screen = screen;
 
     game->nonEnemyPolys.push_back(&game->plr.poly);
     game->nonEnemyPolys.push_back(&game->box.poly);
     game->nonEnemyPolys.push_back(&game->rigTest.rp.poly);
+    game->nonEnemyPolys.push_back(&game->snakeTest.snake.rp.poly);
 }
 
 void End() {
@@ -84,6 +86,7 @@ void Update(double dt) {
     game->projMan.update(dt);
     game->enemyMan.update(game->screen,dt);
     game->rigTest.update(dt);
+    game->snakeTest.update(dt);
 }
 
 void PostUpdate(double dt) {
@@ -98,6 +101,7 @@ void Render(double dt) {
     game->projMan.render(game->screen,dt);
     game->enemyMan.render(game->screen);
     game->rigTest.render(game->screen);
+    game->snakeTest.render(game->screen);
 }
 
 void Events(SDL_Event* event, Screen* screen,double dt) {

@@ -20,6 +20,7 @@ class Game{
         Player plr;
         Box box;
         RiggedTest rigTest;
+        SnakeTest snakeTest;
         ProjectileManager projMan;
         EnemyManager enemyMan;
 

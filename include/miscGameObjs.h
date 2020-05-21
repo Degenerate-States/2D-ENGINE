@@ -31,3 +31,12 @@ class RiggedTest{
         void onCollision(int damage, complex<double> direction);
         int getDamage();
 };
+
+class SnakeTest{
+    public: 
+        Snake snake;
+
+        void init(Assets* assets,double spf);
+        void update(double dt);
+        void render(Screen* screen);
+};

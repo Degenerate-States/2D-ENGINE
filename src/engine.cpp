@@ -107,13 +107,14 @@ int main(int argc, char **argv) {
     Engine engine;
     engine.init(cfg,assets,stats);
 
-    Start(&engine.screen, assets, stats);
+    Start(&engine.screen, assets, stats,cfg->spf);
 
     free(assets);
     free(cfg);
     free(stats);
 
     // fire audio thread
+
     init_audio();
     SDL_Thread *audioThread;
     audioThread = SDL_CreateThread(playMusic, "AudioThread", (void *)NULL);

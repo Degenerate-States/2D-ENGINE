@@ -27,12 +27,10 @@ void Swarmer::spawn(complex<double> pos, complex<double> vel){
 
     this->health = this->startHealth;
 }
-
 void Swarmer::die(){
     this->rb.active = false;
     cout<<"Debug: Swarmer died"<<endl;
 }
-
 void Swarmer::update(double dt){
     // accelerates in direction of player
     complex<double> direction = this->plrRB->pos - this->rb.pos;
@@ -49,6 +47,9 @@ void Swarmer::update(double dt){
     double speed = abs(this->rb.vel);
     this->rb.vel -= this->drag*dt*this->rb.vel;
 
+    //animates
+    this->animate();
+
     this->rb.update(dt);
     this->poly.update();
 
@@ -60,6 +61,7 @@ void Swarmer::update(double dt){
 void Swarmer::render(Screen* screen){
     this->poly.render(screen);
 }
+    //Callbacks
 void Swarmer::onCollision(int damage, complex<double> direction){
     this->health-=damage;
     cout<<"Debug: swarmer hit...   Health:"<<" "<<this->health<<endl;
@@ -67,8 +69,19 @@ void Swarmer::onCollision(int damage, complex<double> direction){
 int Swarmer::getDamage(){
     return this->contactDamage;
 }
+    //Private
+void Swarmer::animate(){
+    //chomp
+    this->poly.vertexOffsets[0] = {0,0.01*cos(0.03*SDL_GetTicks())};
+    this->poly.vertexOffsets[4] = {0,-0.01*cos(0.03*SDL_GetTicks())};
+}
 
-//Enemy
+
+
+
+
+
+//EnemyManager
 void EnemyManager::init(Assets* assets, ProjectileManager* projMan,RigidBody* plrRB, Stats* stats){
     //initalize swarmers
     this->oldestSwarmerIndex = 0;

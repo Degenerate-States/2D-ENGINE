@@ -16,7 +16,7 @@ using namespace std;
 
 // Engine Callback API
 // Called once
-extern void Start(Screen* screen, Assets* assets, Stats* stats);
+extern void Start(Screen* screen, Assets* assets, Stats* stats,double dt);
 extern void End();
 // Called per frame
 extern void PreUpdate(double dt);
