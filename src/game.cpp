@@ -3,23 +3,19 @@
 Game* game = new Game();
 
 //TODO replace box and rigged box when testing is done
-void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, Player* plr,Box* box, RiggedTest* riggedBox){
+void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, vector<Polygon*>* nonEnemyPolys){
     //iterates through projectiles
     Point* pntPointer;
     for(int i = 0; i <projman->totalColliders; i++){
         pntPointer = projman->getNextCollider();
-        //enemy projectile
+        //enemy / projectile
         for(int j = 0; j<enemyMan->totalColliders; j++){
             pointPolyCollision(enemyMan->getNextCollider(),pntPointer,pntPointer->collisType);
         }
-        //plr projectile
-        pointPolyCollision(&plr->poly,pntPointer,pntPointer->collisType);
-
-        //box projectile
-        pointPolyCollision(&box->poly,pntPointer,pntPointer->collisType);
-
-        //rigged box
-        pointPolyCollision(&riggedBox->rp.poly,pntPointer,pntPointer->collisType);
+        //non enemy / projectile
+        for(int j = 0; j<nonEnemyPolys->size(); j++){
+            pointPolyCollision((*nonEnemyPolys)[j],pntPointer,pntPointer->collisType);
+        }
     }
 
     //iterates through enemies
@@ -27,14 +23,10 @@ void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, Playe
     for(int i = 0; i < enemyMan->totalColliders; i++){
         enemyPointer = enemyMan -> getNextCollider();
 
-        //plr enemy
-        polyPolyCollision(&plr->poly,enemyPointer);
-
-        //box enemy
-        polyPolyCollision(&box->poly,enemyPointer);
-
-        //rigged box enemy
-        polyPolyCollision(&riggedBox->rp.poly,enemyPointer);
+        //non enemy / enemy
+        for(int j = 0; j<nonEnemyPolys->size(); j++){
+            polyPolyCollision((*nonEnemyPolys)[j],enemyPointer);
+        }
 
         //enemy enemy (-1 is so its not checking collison with itself)
         for(int i = 0; i < enemyMan->totalColliders-1; i++){
@@ -44,15 +36,12 @@ void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, Playe
         enemyMan->skipCollider();
     }
 
-    //unmanaged stuff
-    //plr box
-    polyPolyCollision(&plr->poly,&box->poly);
-
-    //plr rigged Box
-    polyPolyCollision(&plr->poly,&riggedBox->rp.poly);
-
-    //box  rigged box
-    polyPolyCollision(&box->poly,&riggedBox->rp.poly);
+    //non enemy / non enemy
+    for(int i = 0; i<nonEnemyPolys->size()-1; i++){
+        for(int j = i+1; j<nonEnemyPolys->size();j++){
+            polyPolyCollision((*nonEnemyPolys)[i],(*nonEnemyPolys)[j]);
+        }
+    }
 }
 
 void Start(Screen* screen, Assets* assets, Stats* stats,double dt) {
@@ -90,7 +79,7 @@ void Update(double dt) {
 }
 
 void PostUpdate(double dt) {
-    checkAllCollision(&game->projMan, &game->enemyMan, &game->plr, &game->box, &game->rigTest);
+    checkAllCollision(&game->projMan, &game->enemyMan,&game->nonEnemyPolys);
     game->plr.setScreenPos(game->screen,dt);
 }
 

@@ -39,4 +39,8 @@ class SnakeTest{
         void init(Assets* assets,double spf);
         void update(double dt);
         void render(Screen* screen);
+
+        //callbacks
+        void onCollision(int damage, complex<double> direction);
+        int getDamage();
 };

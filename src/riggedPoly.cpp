@@ -15,15 +15,16 @@ void Joint::init(Polygon* poly, vector<int>* indices,complex<double> initPos){
 
 void Joint::update(double dt){
     this->rb.update(dt);
+    int index;
     for(int i=0; i < this->numVerticies; i++){
-        int index = this->attachedVerts[i];
+        index = this->attachedVerts[i];
         //rotates and scales polygon after applying warping from vertex offsets
         (*this->poly->nextAsset)[index] = this->poly->assetRE[index] -this->posRelAsset + this->poly->vertexOffsets[index];
         
         //joint scale overrides polygon scale
         (*this->poly->nextAsset)[index] *= this->scale * this->rb.rotOp;
         //translates polygon
-        (*this->poly->nextAsset)[index] += this->rb.pos;// + this->posRelAsset;
+        (*this->poly->nextAsset)[index] += this->rb.pos;
     }
 }
 
@@ -86,13 +87,17 @@ void Snake::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointDat
 void Snake::spawn(complex<double> pos, double rot,double spf){
 
     this->headIndex = 0;
-
+    this->rp.joints[this->headIndex]->rb.pos=pos;
     complex<double> tailDirection = {-cos(rot), -sin(rot)};
 
     //unrolls prevPosistions
     for(int i = 0; i <this->pathTraveledLen; i++){
         this->pathTraveled[i] = pos + (double)i*this->speed*spf*tailDirection;
     }
+
+    for(int i = 0; i <this->rp.numJoints-1; i++){
+    }
+
 }
 
 void Snake::update(double turn, double dt){
@@ -103,7 +108,6 @@ void Snake::update(double turn, double dt){
 
     this->headIndex -=1;
     this->headIndex = ( this->pathTraveledLen + (this->headIndex% this->pathTraveledLen)) %  this->pathTraveledLen;
-    //this->headIndex %= this->pathTraveledLen;
     
     //updates path traveled with new point
     this->pathTraveled[headIndex] = this->rp.joints[0]->rb.pos;
@@ -150,26 +154,23 @@ void Snake::update(double turn, double dt){
 void Snake::render(Screen* screen){
     this->rp.render(screen);
 
+    //TODO debug rendering add to debug system
+    //double thickness;
+    //int index;
+    //tuple<double,double> coord1;
+    //tuple<double,double> coord2;
 
+    //coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
+    //glLineWidth(defaultLineThickness);
+    //glColor3ub(get<0>(white), get<1>(white), get<2>(white));
+    //for(int i = 1; i < this->rp.numJoints; i++){
+    //    coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
 
-    double thickness;
-    int index;
-    tuple<double,double> coord1;
-    tuple<double,double> coord2;
+    //    glBegin(GL_LINES);
+    //    glVertex2d(get<0>(coord1), get<1>(coord1));
+    //    glVertex2d(get<0>(coord2), get<1>(coord2));
+    //    glEnd();
 
-    coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
-    glLineWidth(defaultLineThickness);
-    glColor3ub(get<0>(white), get<1>(white), get<2>(white));
-    for(int i = 1; i < this->rp.numJoints; i++){
-        coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
-
-
-
-        glBegin(GL_LINES);
-        glVertex2d(get<0>(coord1), get<1>(coord1));
-        glVertex2d(get<0>(coord2), get<1>(coord2));
-        glEnd();
-
-        coord1 = coord2;
-    }
+    //    coord1 = coord2;
+    //}
 }

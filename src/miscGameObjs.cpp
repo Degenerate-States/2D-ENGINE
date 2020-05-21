@@ -38,9 +38,6 @@ int Box::getDamage(){
 
 void RiggedTest::init(Assets* assets){
     this->rp.init(&assets->testPoly,&assets->testJoints,white,assets->getID());
-
-    this->rp.joints[0]->rb.setPos(-0.5,0);
-    this->rp.joints[1]->rb.setPos(-0.5,0);
     
     //setsup poly collision callbacks
     this->rp.poly.setCallBacks(
@@ -71,15 +68,25 @@ int RiggedTest::getDamage(){
 
 
 void SnakeTest::init(Assets* assets,double spf){
-    this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,1,8,assets->getID(),spf);
+    this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,2,3,assets->getID(),spf);
     this->snake.spawn({0,0},0,spf);
-    
+    //setsup poly collision callbacks
+    this->snake.rp.poly.setCallBacks(
+        bind(&SnakeTest::onCollision,this,_1,_2),
+        bind(&SnakeTest::getDamage,this)
+    );
 }
 void SnakeTest::update(double dt){
-    double turn = (double)(SDL_GetTicks()%1000)/ 1000 -0.5;
+    double turn = sin(0.005*SDL_GetTicks());
+    
     this->snake.update(turn,dt);
 }
 void SnakeTest::render(Screen* screen){
     this->snake.render(screen);
 }
-
+void SnakeTest::onCollision(int damage, complex<double> direction){
+    cout<<"Debug: snake test hit"<<endl;
+}
+int SnakeTest::getDamage(){
+    return 0;
+}

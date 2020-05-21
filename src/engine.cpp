@@ -115,9 +115,10 @@ int main(int argc, char **argv) {
 
     // fire audio thread
 
-    init_audio();
-    SDL_Thread *audioThread;
-    audioThread = SDL_CreateThread(playMusic, "AudioThread", (void *)NULL);
+    // TODO: re-enable music (disabled for sanity)
+    //init_audio();
+    //SDL_Thread *audioThread;
+    //audioThread = SDL_CreateThread(playMusic, "AudioThread", (void *)NULL);
     
 	
     engine.gameLoop();
