@@ -44,7 +44,7 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
     this->gunBar.push_back(stats->energyRifle);
     this->gunBar.push_back(stats->energyShotgun);
 
-    this->gun.init(&this->rb, assets, projMan, &gunBar[6], this->poly.colliderID);
+    this->gun.init(&this->rb, assets, projMan, &gunBar[0], this->poly.colliderID);
     cout<<stats->energyShotgun.baseDamage<<endl;
     this->flame.init(&this->rb,assets,projMan);
 

@@ -121,6 +121,7 @@ class Polygon{
         int numVertices;
         float lineThickness;
         tuple<int,int,int> color;
+        vector<double> alphas;
         //reference to a list of complex points, length depends on whats given when intitalized. Read only
         vector<complex<double>> assetRE;
 

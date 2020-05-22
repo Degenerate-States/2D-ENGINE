@@ -1,5 +1,5 @@
 #include "riggedPoly.h"
-
+#define renderSpine false
 
 void Joint::init(Polygon* poly, vector<int>* indices,complex<double> initPos){
     this->numVerticies = indices->size();
@@ -154,23 +154,24 @@ void Snake::update(double turn, double dt){
 void Snake::render(Screen* screen){
     this->rp.render(screen);
 
-    //TODO debug rendering add to debug system
-    //double thickness;
-    //int index;
-    //tuple<double,double> coord1;
-    //tuple<double,double> coord2;
+    #if renderSpine
+    double thickness;
+    int index;
+    tuple<double,double> coord1;
+    tuple<double,double> coord2;
 
-    //coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
-    //glLineWidth(defaultLineThickness);
-    //glColor3ub(get<0>(white), get<1>(white), get<2>(white));
-    //for(int i = 1; i < this->rp.numJoints; i++){
-    //    coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
+    coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
+    glLineWidth(defaultLineThickness);
+    glColor3ub(get<0>(white), get<1>(white), get<2>(white));
+    for(int i = 1; i < this->rp.numJoints; i++){
+        coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
 
-    //    glBegin(GL_LINES);
-    //    glVertex2d(get<0>(coord1), get<1>(coord1));
-    //    glVertex2d(get<0>(coord2), get<1>(coord2));
-    //    glEnd();
+        glBegin(GL_LINES);
+        glVertex2d(get<0>(coord1), get<1>(coord1));
+        glVertex2d(get<0>(coord2), get<1>(coord2));
+        glEnd();
 
-    //    coord1 = coord2;
-    //}
+        coord1 = coord2;
+    }
+    #endif
 }

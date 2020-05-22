@@ -68,7 +68,7 @@ int RiggedTest::getDamage(){
 
 
 void SnakeTest::init(Assets* assets,double spf){
-    this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,2,3,assets->getID(),spf);
+    this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,1,3,assets->getID(),spf);
     this->snake.spawn({0,0},0,spf);
     //setsup poly collision callbacks
     this->snake.rp.poly.setCallBacks(

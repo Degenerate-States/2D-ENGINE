@@ -171,6 +171,8 @@ void Polygon::appendPoint(complex<double> pnt){
     this->assetWR1.push_back(pnt);
     this->assetWR2.push_back(pnt);
 
+    this->alphas.push_back(255);
+
     this->vertexOffsets.push_back(0);
     this->numVertices+=1;
 }
@@ -261,14 +263,14 @@ void Polygon::update(){
 
 void Polygon::render(Screen* screen){
     swap(this->nextAsset,this->currentAsset);
-    glColor3ub(get<0>(color),get<1>(color),get<2>(color));
 
     tuple<double,double> coord;
 
     glLineWidth(this->lineThickness*screen->zoom);
     glBegin(GL_LINE_LOOP);
     for(int i=0; i < this->currentAsset->size(); i++){
-        coord = (*screen).worldToScreen((*this->currentAsset)[i]);
+        coord = screen->worldToScreen((*this->currentAsset)[i]);
+        glColor4ub(get<0>(color),get<1>(color),get<2>(color),this->alphas[i]);
         glVertex2d(get<0>(coord), get<1>(coord));
     }
     glEnd();
