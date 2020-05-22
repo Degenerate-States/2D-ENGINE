@@ -292,6 +292,7 @@ void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTi
     this->decayTime = decayTime;
 
     this->segmentColors.resize(numVertices-1);
+    this->alphas.resize(numVertices-1);
 
     complex<double> zero = {0,0};
     for(int i = 0; i < numVertices; i++){
@@ -314,11 +315,14 @@ void Trail::reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor){
     }
 
     // determines colors of each segment as gradient between head and tail color
+    // also sets alphas 
     int  red,green,blue;
     double colorWeight;
-    for(int i = 0; i < this->numVertices-1; i++){
+    for(int i = 0; i < this->numVertices; i++){
         
-        colorWeight = ((double)(i)/(double)(this->numVertices-2));
+        colorWeight = ((double)(i)/(double)(this->numVertices-1));
+        this->alphas[i] = 255*(1-colorWeight);
+
         red = get<0>(this->headColor)*(1-colorWeight);
         red += get<0>(this->tailColor)*colorWeight;
         green = get<1>(this->headColor)*(1-colorWeight);
@@ -347,34 +351,18 @@ void Trail::update(double dt){
 
 void Trail::render(Screen* screen){
 
-    double thickness;
+    double thickness =screen->zoom*this->headThickness;
     int index;
-    tuple<double,double> coord1;
-    tuple<double,double> coord2;
+    tuple<double,double> coord;
 
-    coord1 = screen->worldToScreen(this->vertexPos[this->trailHeadIndex]);
-
-    for(int i = 1; i < this->numVertices; i++){
+    glLineWidth(thickness);
+    glBegin(GL_LINE_STRIP);
+    for(int i = 0; i < this->numVertices; i++){
         index = (trailHeadIndex+i)%this->numVertices;
-        thickness = screen->zoom*(this->vetexTimers[index]/this->decayTime)*this->headThickness;
-        coord2 = screen->worldToScreen(this->vertexPos[index]);
-
-        glLineWidth(thickness);
-
-        //sets color to gradient calculated in reset method
-        if(thickness > minLinThickness){
-            glColor3ub(get<0>(this->segmentColors[i-1]), 
-                get<1>(this->segmentColors[i-1]), get<2>(this->segmentColors[i-1]));
-        }else{
-            glColor3ub(get<0>(black),get<1>(black),get<2>(black));
-        }
-
-
-        glBegin(GL_LINES);
-        glVertex2d(get<0>(coord1), get<1>(coord1));
-        glVertex2d(get<0>(coord2), get<1>(coord2));
-        glEnd();
-
-        coord1 = coord2;
+        coord = screen->worldToScreen(this->vertexPos[index]);
+        glColor4ub(get<0>(this->segmentColors[i]), get<1>(this->segmentColors[i]), get<2>(this->segmentColors[i]),this->alphas[i]);
+        
+        glVertex2d(get<0>(coord), get<1>(coord));
     }
+    glEnd();
 }

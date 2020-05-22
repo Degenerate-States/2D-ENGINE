@@ -174,7 +174,7 @@ class Trail{
     private:
         tuple<int,int,int> headColor;
         tuple<int,int,int> tailColor;
-
+        vector<double> alphas;
         vector<tuple<int,int,int>> segmentColors;
         int trailHeadIndex;
 
