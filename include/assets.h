@@ -8,8 +8,11 @@
 struct jointInfo{
     vector<int> indices;
     complex<double> pos;
+
+    vector<complex<double>> visualAsset;
     //member initalizer
-    jointInfo(vector<int> indices,complex<double> pos) : indices(indices), pos(pos){}
+    jointInfo(vector<int> indices,complex<double> pos,vector<complex<double>> visualAsset = {}) : 
+                indices(indices), pos(pos), visualAsset(visualAsset){}
 };
 
 class Assets{
@@ -32,6 +35,8 @@ class Assets{
 
         vector<complex<double>> testSnakePoly;
         vector<jointInfo> testSnakeJoints;
+
+        vector<complex<double>> testEye;
         //where all the assets are acutally defined
         void init();
 

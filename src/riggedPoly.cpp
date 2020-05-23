@@ -38,18 +38,38 @@ void RiggedPoly::init(vector<complex<double>>* polyAsset, vector<jointInfo>* joi
         this->joints.push_back(new Joint());
         // gives reference to poly, reference to vector of indices, and inital posistion of joint
         this->joints[i]->init(&this->poly,&(*jointData)[i].indices, (*jointData)[i].pos);
+
+        //if joint has a visual asset, its initalized and added to visPolys
+        if ((*jointData)[i].visualAsset.size() > 0){
+            this->visPolys.push_back(new VisualPolygon());
+            this->visPolys[i]->init(&(*jointData)[i].visualAsset,&this->joints[i]->rb,color);
+            this->visPolys[i]->rebase((*jointData)[i].pos);
+        }
     }
+    this->numVisPolys = this->visPolys.size();
 }
 
 void RiggedPoly::update(double dt){
+    //updates joints
     for(int i = 0; i < this->numJoints; i++){
         // gives reference to poly, reference to vector of indices, and inital posistion of joint
         this->joints[i]->update(dt);
     }
+    //updates visual polygons
+    for (int i = 0; i < this->numVisPolys; i++){
+        this->visPolys[i]->update();
+    }
+    
+
 }
 
 void RiggedPoly::render(Screen* screen){
     this->poly.render(screen);
+
+    //renders visual polygons
+    for (int i = 0; i < this->numVisPolys; i++){
+        this->visPolys[i]->render(screen);
+    }
 }
 
 

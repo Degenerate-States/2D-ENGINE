@@ -161,6 +161,39 @@ class Polygon{
         void setCallBacks(function<void(int, complex<double>)> onCollision, function<int()> getDamage);
 };
 
+class VisualPolygon{
+    public:
+        vector<complex<double>> assetRE;
+        vector<complex<double>> currentAsset;
+
+        RigidBody* rb;
+        int numVertices;
+        float lineThickness;
+        tuple<int,int,int> color;
+        vector<double> alphas;
+        double scale;
+
+        //used for morphing the shape
+        vector<complex<double>> vertexOffsets;
+
+        void resetVertexOffsets();
+
+        //can be called during runtime, do so before update
+        void appendPoint(complex<double> pnt);
+        void loadAsset(vector<complex<double>>* asset, tuple<int,int,int> color);
+        
+        // used to move asset origin, used by joint in rigged poly
+        // mutates assetRE!!
+        void rebase(complex<double>);
+        
+        void init(vector<complex<double>>* asset, RigidBody* rb, tuple<int,int,int> color);
+        
+        //updates assetWR using posistion and rotation values from RigidBody
+        void update();
+        void render(Screen* screen);
+};
+
+
 class Trail{
     // vertices disappear when theyre timer runs out
     // when vertices disappear, they become the new head of the trail

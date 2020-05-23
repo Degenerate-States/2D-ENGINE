@@ -84,7 +84,6 @@ void Bullet::update(double dt){
 void Bullet::render(Screen* screen,double dt){
     this->trail.update(dt);
     this->trail.render(screen);
-    this->pnt.render(screen);
 }
 
 void Bullet::onCollision(int damage, complex<double> collisionNormal){
@@ -109,7 +108,6 @@ void Spark::init(Stats* stats){
     this->type = spark;
     this->rb.init(1.0,0.0,0.0,0.0);
 
-    this->pnt.init(&this->rb,white,stats->sparkDiameter);
     this->trail.init(&this->rb,stats->sparkDiameter,stats->bulletTrailSegments,stats->bulletTrailDecay);
 
     this->velDamping = stats->sparkVelDamping;
@@ -123,7 +121,6 @@ void Spark::activate(tuple<int,int,int> headColor,tuple<int,int,int> tailColor,
     this->rb.pos = pos;
     this->rb.vel = vel;
 
-    this->pnt.changeColor(headColor);
     this->trail.reset(headColor,tailColor);
     this->spawnSpeed = abs(vel);
     this->rb.active = true;
@@ -135,7 +132,6 @@ void Spark::update(double dt){
 
     double newDiameter = this->startDiameter*(speed)/ this->spawnSpeed;
     this->trail.headThickness =newDiameter;
-    this->pnt.diameter = newDiameter;
 
     this->rb.update(dt);
     if(speed < this->minVel){
@@ -147,7 +143,6 @@ void Spark::update(double dt){
 void Spark::render(Screen* screen,double dt){
     this->trail.update(dt);
     this->trail.render(screen);
-    this->pnt.render(screen);
 }
 
 

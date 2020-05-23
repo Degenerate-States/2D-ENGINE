@@ -281,6 +281,73 @@ void Polygon::setCallBacks(function<void(int, complex<double>)> onCollision, fun
 }
 
 
+//*************************//
+//**VisualPolygon Methods**//
+//*************************//
+void VisualPolygon::appendPoint(complex<double> pnt){
+    this->assetRE.push_back(pnt);
+    this->currentAsset.push_back(pnt);
+
+    this->alphas.push_back(255);
+
+    this->vertexOffsets.push_back(0);
+    this->numVertices+=1;
+}
+void VisualPolygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color){
+
+    this->color = color;
+
+    this->assetRE.clear();
+    this->currentAsset.clear();
+
+    this->vertexOffsets.clear();
+    this->numVertices = 0;
+    for(int i = 0; i < asset->size(); i++){
+
+        this->appendPoint((*asset)[i]);
+    }
+}
+void VisualPolygon::rebase(complex<double> pos){
+    for(int i = 0; i < this->numVertices; i++){
+        this->assetRE[i]-=pos;
+    }
+}
+void VisualPolygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color){
+    this->loadAsset(asset,color);
+
+    this->rb = rb;
+    this->lineThickness = defaultLineThickness;
+    this->scale = 1.0;
+}
+void VisualPolygon::resetVertexOffsets(){
+    for(int i=0; i<this->numVertices; i++){
+        this->vertexOffsets[i] = 0;
+    }
+}
+void VisualPolygon::update(){
+    for(int i=0; i < this->numVertices; i++){
+        //rotates and scales polygon after applying warping from vertex offsets
+        (this->currentAsset)[i] =this->scale * this->rb->rotOp *( (this->assetRE)[i] + this->vertexOffsets[i]);
+        //translates polygon
+        (this->currentAsset)[i] += this->rb->pos;
+
+    }
+}
+
+void VisualPolygon::render(Screen* screen){
+
+    tuple<double,double> coord;
+
+    glLineWidth(this->lineThickness*screen->zoom);
+    glBegin(GL_LINE_LOOP);
+    for(int i=0; i < this->currentAsset.size(); i++){
+        coord = screen->worldToScreen((this->currentAsset)[i]);
+        glColor4ub(get<0>(color),get<1>(color),get<2>(color),this->alphas[i]);
+        glVertex2d(get<0>(coord), get<1>(coord));
+    }
+    glEnd();
+}
+
 
 
 void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTime){

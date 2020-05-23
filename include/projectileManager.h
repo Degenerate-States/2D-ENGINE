@@ -30,6 +30,7 @@ class Bullet{
         projectileType type;
 
         RigidBody rb;
+        // not rendered, used by collision engine
         Point pnt;
         Trail trail;
         //bool must be checked to see if you should apply render, collision and update 
@@ -95,8 +96,8 @@ class EnergyBall{
     public:
         projectileType type;
         RigidBody rb;
-        Polygon outerPoly;
-        Polygon innerPoly;
+        VisualPolygon outerPoly;
+        VisualPolygon innerPoly;
 
         //not rendered, used by collision engine
         Point pnt;

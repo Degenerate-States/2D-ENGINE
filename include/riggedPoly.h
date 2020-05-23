@@ -6,11 +6,12 @@
 class Joint{
     private:
         Polygon* poly;
+        VisualPolygon visPoly;
         complex<double> posRelAsset;
+
     public:
 
         RigidBody rb;
-        tuple<int,int,int> color;
 
         //used to change distance from join rb 
         double scale;
@@ -20,6 +21,7 @@ class Joint{
 
         void init(Polygon* poly, vector<int>* indices,complex<double> initPos);
         void update(double dt);
+        void render();
 
 };
 
@@ -30,6 +32,10 @@ class RiggedPoly{
         Polygon poly;
         vector<Joint*> joints;
         int numJoints;
+
+        // visual assets attached to the joints
+        vector<VisualPolygon*> visPolys;
+        int numVisPolys;
 
         void init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, tuple<int,int,int> color, int ID);
 
