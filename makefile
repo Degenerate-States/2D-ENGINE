@@ -6,6 +6,7 @@ SRC = src
 BUILD = build
 
 INC = -I lib/SDL/include -I lib/GLAD/include -I include
+DEFINES = -D SOUND=false -D RENDER_SPINE=false
 EXE = game.exe
 
 $(EXE): $(BUILD)\*.obj
@@ -20,7 +21,7 @@ glad.obj:
 
 {$(SRC)}.cpp{$(BUILD)}.obj:: 
 	@if not exist $(BUILD) mkdir $(BUILD)
-	$(CC) $(CFLAGS) -Fo:$(BUILD)\ -c $< 
+	$(CC) $(CFLAGS) $(DEFINES) -Fo:$(BUILD)\ -c $<
 
 clean:
-	del $(BUILD)\$(EXE)
+	del /s /q "build\*"

@@ -1,5 +1,6 @@
 #include "riggedPoly.h"
-#define renderSpine false
+
+//#define RENDER_SPINE true
 
 void Joint::init(Polygon* poly, vector<int>* indices,complex<double> initPos){
     this->numVerticies = indices->size();
@@ -174,7 +175,7 @@ void Snake::update(double turn, double dt){
 void Snake::render(Screen* screen){
     this->rp.render(screen);
 
-    #if renderSpine
+    #if RENDER_SPINE
     double thickness;
     int index;
     tuple<double,double> coord1;

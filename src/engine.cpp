@@ -1,5 +1,7 @@
 #include "engine.h"
 
+//#define SOUND true
+
 class Engine{
     public:
         int fps;
@@ -35,65 +37,6 @@ class Engine{
 
 };
 
-// TODO: move audio into a class
-static Uint8 *audio_pos; // global pointer to the audio buffer to be played
-static Uint32 audio_len; // remaining length of the sample we have to play
-
-#define MUS_PATH "assets/music/metal.wav"
-#define VOLUME SDL_MIX_MAXVOLUME/3
-
-static Uint32 wav_length; // length of our sample
-static Uint8 *wav_buffer; // buffer containing our audio file
-static SDL_AudioSpec wav_spec; // the specs of our piece of music
-
-// sdl audio callback
-void my_audio_callback(void *userdata, Uint8 *stream, int len) {
-	
-	if (audio_len ==0)
-		return;
-	
-	len = ( len > audio_len ? audio_len : len );
-	SDL_memset(stream, 0, len);
-	SDL_MixAudio(stream, audio_pos, len, VOLUME);// mix from one buffer into another
-	
-	audio_pos += len;
-	audio_len -= len;
-}
-
-void init_audio() {
-	if (SDL_Init(SDL_INIT_AUDIO) < 0)
-	    exit(-1);
-
-	if( SDL_LoadWAV(MUS_PATH, &wav_spec, &wav_buffer, &wav_length) == NULL ){
-	  cerr << "Couldn't load wave: " << SDL_GetError() << endl;
-	  exit(-1);
-	}
-
-	wav_spec.callback = my_audio_callback;
-	wav_spec.userdata = NULL;
-    
-	audio_pos = wav_buffer;
-	audio_len = wav_length;
-	
-	if ( SDL_OpenAudio(&wav_spec, NULL) < 0 ){
-	  cerr << "Couldn't open audio: " << SDL_GetError() << endl;
-	  exit(-1);
-	}
-	
-}
-
-// for audio thread
-static int playMusic(void *ptr) {
-	SDL_PauseAudio(0);
-
-	while ( audio_len > 0 ) {
-		SDL_Delay(10); 
-	}
-
-    return 0;
-}
-
-
 
 
 int main(int argc, char **argv) {
@@ -113,19 +56,15 @@ int main(int argc, char **argv) {
     free(cfg);
     free(stats);
 
-    // fire audio thread
+    #if SOUND
+        start_audio_thread();
+    #endif
 
-    // TODO: re-enable music (disabled for sanity)
-    //init_audio();
-    //SDL_Thread *audioThread;
-    //audioThread = SDL_CreateThread(playMusic, "AudioThread", (void *)NULL);
-    
-	
     engine.gameLoop();
 
-    // TEMP audio cleanup
-	SDL_CloseAudio();
-	SDL_FreeWAV(wav_buffer);
+    #if SOUND
+        audio_clean();
+    #endif
 
     End();
 
