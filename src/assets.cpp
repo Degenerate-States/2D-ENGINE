@@ -30,12 +30,13 @@ void Assets::init(){
     vector<complex<double>> testPattern2 = { {0.1, 0.0}, {0.13333, -0.03333}, {0.16667, 0.0}, {0.13333, 0.03333} };
     vector<complex<double>> testPattern3 = { {-0.1, 0.0}, {-0.06667, -0.03333}, {-0.03333, 0.0}, {-0.06667, 0.03333} };
     vector<complex<double>> testPattern4 = { {-0.3, 0.0}, {-0.26667, -0.03333}, {-0.23333, 0.0}, {-0.26667, 0.03333} };
+    vector<complex<double>> testPattern5 = { {-0.4, -0.03333}, {-0.43333, 0.0}, {-0.4, 0.03333}, {-0.56667, 0.0} };
     this->testSnakeJoints = { jointInfo( {34, 35, 36, 37, 0, 1, 2, 3, 4, 5, 6}, { 0.5, 0.0 },testEye), 
                             jointInfo( {7, 8, 9, 31, 32, 33}, { 0.33333, 0.0 },testPattern1), 
                             jointInfo( {28, 29, 30, 10, 11, 12}, { 0.13333, 0.0 },testPattern2), 
                             jointInfo( {25, 26, 27, 13, 14, 15}, { -0.06667, 0.0 },testPattern3), 
                             jointInfo( {22, 23, 24, 16, 17, 18}, { -0.26667, 0.0 },testPattern4), 
-                            jointInfo( {19, 20, 21}, { -0.43333, 0.0 }) };
+                            jointInfo( {19, 20, 21}, { -0.43333, 0.0 },testPattern5) };
 }   
 
 

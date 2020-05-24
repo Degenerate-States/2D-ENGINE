@@ -14,6 +14,13 @@ struct jointInfo{
     jointInfo(vector<int> indices,complex<double> pos,vector<complex<double>> visualAsset = {}) : 
                 indices(indices), pos(pos), visualAsset(visualAsset){}
 };
+// used by skeleton to store info on joint connnections
+struct linkInfo{
+    vector<int> indices;
+    vector<double> rigidity;
+    linkInfo(vector<int> indices,vector<double> rigidity) :  indices(indices), rigidity(rigidity){}
+
+};
 
 class Assets{
     private:

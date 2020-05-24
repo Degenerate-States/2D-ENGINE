@@ -2,15 +2,15 @@
 #include "components.h"
 #include "assets.h"
 #include "collisionFuncs.h" // only used for smallestAngle function
+#include <queue>
 
 class Joint{
     private:
         Polygon* poly;
         VisualPolygon visPoly;
-        complex<double> posRelAsset;
-
+    
     public:
-
+        complex<double> posRelAsset;
         RigidBody rb;
 
         //used to change distance from join rb 
@@ -76,4 +76,34 @@ class Snake{
         void update(double turn, double dt);
         void render(Screen* screen);
         
+};
+
+
+// used to avoid tree traversal during runtime
+struct link{
+    int headIndex;
+    int tailIndex;
+    double rigidity;
+    complex<double> relPos;
+    double len;
+};
+// one base joint which controls movment other joints follow with a preference to remain straight
+class Skeleton{
+    private:
+        vector<link*> links;
+        int numLinks;
+
+    public:
+        RiggedPoly rp;
+        
+        // points to head joints rigidbody
+        RigidBody* rb;
+
+        void init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, 
+                tuple<int,int,int> color,int ID, vector<linkInfo>* linking);
+
+        void spawn(complex<double> pos, double rot);
+
+        void update(double dt);
+        void render(Screen* screen);
 };

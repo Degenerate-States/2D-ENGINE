@@ -196,3 +196,130 @@ void Snake::render(Screen* screen){
     }
     #endif
 }
+
+void Skeleton::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, 
+                tuple<int,int,int> color,int ID, vector<linkInfo>* linkingInfo){
+
+    this->rp.init(polyAsset,jointData,color,ID);
+    this->rb = &this->rp.joints[0]->rb;
+
+    // index queue system ensures this->links is sorted by number of links to root joint 0,
+    // this way when skeleton is updated, its done outwards from the root joint.
+    int headIndex;
+    int tailIndex;
+    int linkNum;
+    queue<int> indexQueue;
+    indexQueue.push(0);
+
+    while (indexQueue.size()>0){
+        headIndex = indexQueue.front();
+        indexQueue.pop();
+
+        for(int j = 0; j < (*linkingInfo)[headIndex].indices.size(); j++){
+
+            tailIndex = (*linkingInfo)[headIndex].indices[j];
+    
+            indexQueue.push(tailIndex);
+
+            this->links.push_back(new link());
+            linkNum = this->links.size()-1;
+            this->links[linkNum]->headIndex = headIndex;
+            this->links[linkNum]->tailIndex = tailIndex;
+            this->links[linkNum]->relPos = this->rp.joints[tailIndex]->posRelAsset - this->rp.joints[headIndex]->posRelAsset;
+            this->links[linkNum]->len = abs(this->links[linkNum]->relPos);
+            this->links[linkNum]->rigidity = (*linkingInfo)[headIndex].rigidity[j];
+            
+        }
+        
+    }
+    this->numLinks = this->links.size();
+}
+void Skeleton::spawn(complex<double> pos, double rot){
+    this->rb->pos = pos;
+    this->rb->setRot(rot);
+
+    //updating rb calcuates its rotation operator which is used to determine connected joint posisitons
+    this->rb->update(0);
+
+    complex<double> relPos;
+    Joint* headJoint;
+    Joint* tailJoint;
+    for (int i = 0; i < this->numLinks; i++)
+    {
+        headJoint = this->rp.joints[this->links[i]->headIndex];
+        tailJoint = this->rp.joints[this->links[i]->tailIndex];
+        relPos = headJoint->rb.rotOp * this->links[i]->relPos;
+
+        //tailJoints rotaiton is set to face headJoint
+        tailJoint->rb.setRot(-arg(relPos));
+
+        tailJoint->rb.pos = headJoint->rb.pos + relPos;
+
+        //updates rotOp for tailJoint to be used when it is headJoint
+        tailJoint->rb.update(0);
+    }
+    
+}
+void Skeleton::update(double dt){
+    //updating rb calcuates its rotation operator which is used to determine connected joint posisitons
+    this->rp.joints[0]->update(dt);
+
+    complex<double> equilibrumPos;
+    complex<double> relPos;
+    Joint* headJoint;
+    Joint* tailJoint;
+
+    double theta;
+    for (int i = 0; i < this->numLinks; i++)
+    {
+        headJoint = this->rp.joints[this->links[i]->headIndex];
+        tailJoint = this->rp.joints[this->links[i]->tailIndex];
+        equilibrumPos = headJoint->rb.rotOp * this->links[i]->relPos;
+        relPos = tailJoint->rb.pos - headJoint->rb.pos;
+
+        // scales to proper length
+        relPos*= this->links[i]->len / abs(relPos);
+
+        //moves towards proper angle
+        theta = smallestAngle(arg(equilibrumPos),arg(relPos)) * dt * this->links[i]->rigidity;
+        relPos*={cos(theta),sin(theta)};
+
+        tailJoint->rb.pos = headJoint->rb.pos + relPos;
+        tailJoint->rb.setRot(-arg(relPos));
+
+        tailJoint->rb.update(dt);
+    }
+    
+}
+void Skeleton::render(Screen* screen){
+    this->rp.render(screen);
+
+
+
+    #if RENDER_SPINE
+    double thickness;
+    int index;
+
+    Joint* headJoint;
+    Joint* tailJoint;
+    tuple<double,double> coord1;
+    tuple<double,double> coord2;
+    
+    glLineWidth(defaultLineThickness);
+    glColor3ub(get<0>(white), get<1>(white), get<2>(white));
+
+    for(int i = 0; i < this->numLinks; i++){
+
+        headJoint = this->rp.joints[this->links[i]->headIndex];
+        tailJoint = this->rp.joints[this->links[i]->tailIndex];
+
+        coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
+        coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
+
+        glBegin(GL_LINES);
+        glVertex2d(get<0>(coord1), get<1>(coord1));
+        glVertex2d(get<0>(coord2), get<1>(coord2));
+        glEnd();
+    }
+    #endif
+}
