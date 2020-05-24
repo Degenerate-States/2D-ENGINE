@@ -44,3 +44,16 @@ class SnakeTest{
         void onCollision(int damage, complex<double> direction);
         int getDamage();
 };
+
+class SkeletonTest{
+    public: 
+        Skeleton skele;
+
+        void init(Assets* assets);
+        void update(double dt);
+        void render(Screen* screen);
+
+        //callbacks
+        void onCollision(int damage, complex<double> direction);
+        int getDamage();
+};

@@ -7,7 +7,6 @@
 class Joint{
     private:
         Polygon* poly;
-        VisualPolygon visPoly;
     
     public:
         complex<double> posRelAsset;
@@ -100,7 +99,7 @@ class Skeleton{
         RigidBody* rb;
 
         void init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, 
-                tuple<int,int,int> color,int ID, vector<linkInfo>* linking);
+                 vector<linkInfo>* linking, tuple<int,int,int> color,int ID);
 
         void spawn(complex<double> pos, double rot);
 

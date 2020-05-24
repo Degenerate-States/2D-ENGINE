@@ -52,12 +52,14 @@ void Start(Screen* screen, Assets* assets, Stats* stats,double dt) {
     game->box.init(assets);
     game->rigTest.init(assets);
     game->snakeTest.init(assets,dt);
+    game->skeleTest.init(assets);
     game->screen = screen;
 
     game->nonEnemyPolys.push_back(&game->plr.poly);
     game->nonEnemyPolys.push_back(&game->box.poly);
     game->nonEnemyPolys.push_back(&game->rigTest.rp.poly);
     game->nonEnemyPolys.push_back(&game->snakeTest.snake.rp.poly);
+    game->nonEnemyPolys.push_back(&game->skeleTest.skele.rp.poly);
 }
 
 void End() {
@@ -76,6 +78,7 @@ void Update(double dt) {
     game->enemyMan.update(game->screen,dt);
     game->rigTest.update(dt);
     game->snakeTest.update(dt);
+    game->skeleTest.update(dt);
 }
 
 void PostUpdate(double dt) {
@@ -91,6 +94,7 @@ void Render(double dt) {
     game->enemyMan.render(game->screen);
     game->rigTest.render(game->screen);
     game->snakeTest.render(game->screen);
+    game->skeleTest.render(game->screen);
 }
 
 void Events(SDL_Event* event, Screen* screen,double dt) {

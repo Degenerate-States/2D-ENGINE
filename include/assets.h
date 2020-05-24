@@ -44,6 +44,10 @@ class Assets{
         vector<jointInfo> testSnakeJoints;
 
         vector<complex<double>> testEye;
+
+        vector<complex<double>> hostPoly;
+        vector<jointInfo> hostJoints;
+        vector<linkInfo> hostLinks;
         //where all the assets are acutally defined
         void init();
 

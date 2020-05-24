@@ -69,7 +69,7 @@ int RiggedTest::getDamage(){
 
 void SnakeTest::init(Assets* assets,double spf){
     this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,1,3,assets->getID(),spf);
-    this->snake.spawn({0,0},0,spf);
+    this->snake.spawn({-1,-1},0,spf);
     //setsup poly collision callbacks
     this->snake.rp.poly.setCallBacks(
         bind(&SnakeTest::onCollision,this,_1,_2),
@@ -88,5 +88,30 @@ void SnakeTest::onCollision(int damage, complex<double> direction){
     cout<<"Debug: snake test hit"<<endl;
 }
 int SnakeTest::getDamage(){
+    return 0;
+}
+
+
+
+void SkeletonTest::init(Assets* assets){
+    this->skele.init(&assets->hostPoly,&assets->hostJoints,&assets->hostLinks,red,assets->getID());
+    this->skele.spawn({1,1},2);
+    //setsup poly collision callbacks
+    this->skele.rp.poly.setCallBacks(
+        bind(&SkeletonTest::onCollision,this,_1,_2),
+        bind(&SkeletonTest::getDamage,this)
+    );
+}
+void SkeletonTest::update(double dt){
+    this->skele.rb->setRot(M_PI*sin(0.001*SDL_GetTicks()));
+    this->skele.update(dt);
+}
+void SkeletonTest::render(Screen* screen){
+    this->skele.render(screen);
+}
+void SkeletonTest::onCollision(int damage, complex<double> direction){
+    cout<<"Debug: skeleton test hit"<<endl;
+}
+int SkeletonTest::getDamage(){
     return 0;
 }

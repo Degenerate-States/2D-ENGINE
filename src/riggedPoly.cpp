@@ -198,7 +198,7 @@ void Snake::render(Screen* screen){
 }
 
 void Skeleton::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, 
-                tuple<int,int,int> color,int ID, vector<linkInfo>* linkingInfo){
+                    vector<linkInfo>* linkingInfo, tuple<int,int,int> color,int ID){
 
     this->rp.init(polyAsset,jointData,color,ID);
     this->rb = &this->rp.joints[0]->rb;
@@ -216,7 +216,7 @@ void Skeleton::init(vector<complex<double>>* polyAsset, vector<jointInfo>* joint
         indexQueue.pop();
 
         for(int j = 0; j < (*linkingInfo)[headIndex].indices.size(); j++){
-
+            
             tailIndex = (*linkingInfo)[headIndex].indices[j];
     
             indexQueue.push(tailIndex);
@@ -251,7 +251,7 @@ void Skeleton::spawn(complex<double> pos, double rot){
         relPos = headJoint->rb.rotOp * this->links[i]->relPos;
 
         //tailJoints rotaiton is set to face headJoint
-        tailJoint->rb.setRot(-arg(relPos));
+        tailJoint->rb.setRot(arg(-relPos));
 
         tailJoint->rb.pos = headJoint->rb.pos + relPos;
 
@@ -262,7 +262,7 @@ void Skeleton::spawn(complex<double> pos, double rot){
 }
 void Skeleton::update(double dt){
     //updating rb calcuates its rotation operator which is used to determine connected joint posisitons
-    this->rp.joints[0]->update(dt);
+    this->rp.joints[0]->update(0);
 
     complex<double> equilibrumPos;
     complex<double> relPos;
@@ -281,15 +281,15 @@ void Skeleton::update(double dt){
         relPos*= this->links[i]->len / abs(relPos);
 
         //moves towards proper angle
-        theta = smallestAngle(arg(equilibrumPos),arg(relPos)) * dt * this->links[i]->rigidity;
+        theta = smallestAngle(arg(equilibrumPos),arg(relPos)) * dt *10* this->links[i]->rigidity;
         relPos*={cos(theta),sin(theta)};
-
-        tailJoint->rb.pos = headJoint->rb.pos + relPos;
-        tailJoint->rb.setRot(-arg(relPos));
-
-        tailJoint->rb.update(dt);
-    }
     
+        tailJoint->rb.pos = headJoint->rb.pos + relPos;
+        tailJoint->rb.setRot(arg(-relPos));
+
+        tailJoint->rb.update(0);
+    }
+    this->rp.update(dt);
 }
 void Skeleton::render(Screen* screen){
     this->rp.render(screen);
@@ -313,8 +313,8 @@ void Skeleton::render(Screen* screen){
         headJoint = this->rp.joints[this->links[i]->headIndex];
         tailJoint = this->rp.joints[this->links[i]->tailIndex];
 
-        coord1 = screen->worldToScreen(this->rp.joints[0]->rb.pos);
-        coord2 = screen->worldToScreen(this->rp.joints[i]->rb.pos);
+        coord1 = screen->worldToScreen(headJoint->rb.pos);
+        coord2 = screen->worldToScreen(tailJoint->rb.pos);
 
         glBegin(GL_LINES);
         glVertex2d(get<0>(coord1), get<1>(coord1));
