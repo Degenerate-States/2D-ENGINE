@@ -5,15 +5,15 @@ LIBS = Shell32.lib SDL2.lib opengl32.lib
 SRC = src
 BUILD = build
 
-INC = -I lib/SDL/include -I lib/GLAD/include -I include
+INC = -I lib/SDL2/include -I lib/GLAD/include -I include
 DEFINES = -D SOUND=false -D RENDER_SPINE=false
 EXE = game.exe
 
 $(EXE): $(BUILD)\*.obj
 	nmake glad.obj
 	@if not exist $(BUILD) mkdir $(BUILD)
-	$(LINK) -LIBPATH:lib/SDL/lib/win64 -SUBSYSTEM:CONSOLE $** $(LIBS) -OUT:"$(BUILD)\$(EXE)" -DEBUG:FULL
-	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL\lib\win64\SDL2.dll $(BUILD)
+	$(LINK) -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:CONSOLE $** $(LIBS) -OUT:"$(BUILD)\$(EXE)" -DEBUG:FULL
+	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL2\lib\win64\SDL2.dll $(BUILD)
 
 glad.obj:
 	@if not exist $(BUILD) mkdir $(BUILD)

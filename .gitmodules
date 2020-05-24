@@ -1,0 +1,3 @@
+[submodule "lib/SDL2"]
+	path = lib/SDL2
+	url = git@github.com:Degenerate-States/SDL2
