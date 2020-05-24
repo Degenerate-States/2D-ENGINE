@@ -6,7 +6,7 @@ SRC = src
 BUILD = build
 
 INC = -I lib/SDL2/include -I lib/GLAD/include -I include
-EXE = game.exe
+PROGRAM_NAME = POLYGUN
 
 # global defines
 DEFINES = -D SOUND=false -D RENDER_SPINE=false
@@ -15,7 +15,7 @@ DEFINES = -D SOUND=false -D RENDER_SPINE=false
 debug: $(BUILD)\*.obj
 	nmake glad.obj
 	@if not exist $(BUILD) mkdir $(BUILD)
-	$(LINK) -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:CONSOLE $** $(LIBS) -OUT:"$(BUILD)\$(EXE)" -DEBUG:FULL
+	$(LINK) -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:CONSOLE $** $(LIBS) -OUT:"$(BUILD)\$(PROGRAM_NAME).exe" -DEBUG:FULL
 	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL2\lib\win64\SDL2.dll $(BUILD)
 
 glad.obj:
@@ -31,7 +31,7 @@ exe: *.*
 	@if not exist $(BUILD) mkdir $(BUILD)
 	$(CC) -EHsc -O2 \
     src\* lib\GLAD\src\glad.c \
-	$(DEFINES) -Fe:$(BUILD)\$(EXE) -Fo:$(BUILD)\ $(INC) $(LIBS) \
+	$(DEFINES) -Fe:$(BUILD)\$(PROGRAM_NAME).exe -Fo:$(BUILD)\ $(INC) $(LIBS) \
     -link -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:CONSOLE -PDB:vc140.pdb 
 	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL2\lib\win64\SDL2.dll $(BUILD)
 
@@ -39,4 +39,7 @@ clean:
 	del /s /q "build\*"
 
 run:
-	@if exist $(BUILD)\$(EXE) $(BUILD)\$(EXE) 
+	@if exist $(BUILD)\$(PROGRAM_NAME).exe $(BUILD)\$(PROGRAM_NAME).exe 
+
+zip:
+	@if not exist $(PROGRAM_NAME).zip powershell "Compress-Archive build POLYGUN.zip"
