@@ -1,3 +1,6 @@
 [submodule "lib/SDL2"]
 	path = lib/SDL2
 	url = git@github.com:Degenerate-States/SDL2
+[submodule "lib/GLAD"]
+	path = lib/GLAD
+	url = git@github.com:Degenerate-States/GLAD
