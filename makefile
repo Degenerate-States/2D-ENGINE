@@ -6,10 +6,13 @@ SRC = src
 BUILD = build
 
 INC = -I lib/SDL2/include -I lib/GLAD/include -I include
-DEFINES = -D SOUND=false -D RENDER_SPINE=false
 EXE = game.exe
 
-$(EXE): $(BUILD)\*.obj
+# global defines
+DEFINES = -D SOUND=false -D RENDER_SPINE=false
+
+# incremental debug build
+debug: $(BUILD)\*.obj
 	nmake glad.obj
 	@if not exist $(BUILD) mkdir $(BUILD)
 	$(LINK) -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:CONSOLE $** $(LIBS) -OUT:"$(BUILD)\$(EXE)" -DEBUG:FULL
@@ -23,5 +26,17 @@ glad.obj:
 	@if not exist $(BUILD) mkdir $(BUILD)
 	$(CC) $(CFLAGS) $(DEFINES) -Fo:$(BUILD)\ -c $<
 
+# single pass build
+exe: *.*
+	@if not exist $(BUILD) mkdir $(BUILD)
+	$(CC) -EHsc -O2 \
+    src\* lib\GLAD\src\glad.c \
+	$(DEFINES) -Fe:$(BUILD)\$(EXE) -Fo:$(BUILD)\ $(INC) $(LIBS) \
+    -link -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:CONSOLE -PDB:vc140.pdb 
+	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL2\lib\win64\SDL2.dll $(BUILD)
+
 clean:
 	del /s /q "build\*"
+
+run:
+	@if exist $(BUILD)\$(EXE) $(BUILD)\$(EXE) 

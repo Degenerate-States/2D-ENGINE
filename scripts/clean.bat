@@ -1,2 +1,2 @@
 @echo off
-del /s /q "build\*"
+nmake clean
