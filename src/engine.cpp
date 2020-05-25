@@ -60,6 +60,25 @@ int main(int argc, char **argv) {
         start_audio_thread();
     #endif
 
+    /*
+    //  
+    float verts[6] = {
+        -0.5f, -0.5f, 
+        0.0f, 0.5f, 
+        0.5f, -0.5f
+    };
+
+    VertexBuffer* testBuffer = new VertexBuffer();
+    testBuffer->init(verts, 6 * sizeof(float));
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0,2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0); 
+
+    Shader* testShader = new Shader();
+    testShader->init("assets/shaders/test.vert", "assets/shaders/test.frag");
+    //testShader->Bind();
+    */
+
     engine.gameLoop();
 
     #if SOUND
