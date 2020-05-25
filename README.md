@@ -1,21 +1,24 @@
 # POLYGUN
-2D geometry game and engine in SDL2/GLAD
+2D geometry game and engine for x64 Windows 10
 
-## build
+## Setup
+Submodule setup after initial clone
+
+    git submodule update --init --recursive
+
 Inject the vc build environment:
-```bat
-scripts\shell
-```
-Compile
-```bat
-nmake 
-```
-Run
-```bat
-nmake run 
-```
 
-### Demo Controls
+    scripts\shell
+
+Compile
+
+    nmake 
+
+Run
+
+    nmake run 
+
+## Demo Controls
 
     WASD: movement
     left-click: shoot
