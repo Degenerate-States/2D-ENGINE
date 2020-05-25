@@ -2,9 +2,9 @@
 2D geometry game and engine for x64 Windows 10
 
 ## Setup
-Submodule setup after initial clone
+Clone
 
-    git submodule update --init --recursive
+    git clone --recursive git@github.com:Degenerate-States/POLYGUN.git
 
 Inject the vc build environment:
 
