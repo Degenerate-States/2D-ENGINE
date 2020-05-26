@@ -48,6 +48,15 @@ class Assets{
         vector<complex<double>> hostPoly;
         vector<jointInfo> hostJoints;
         vector<linkInfo> hostLinks;
+
+        vector<complex<double>> skeleTestPoly;
+        vector<jointInfo> skeleTestJoints;
+        vector<linkInfo> skeleTestLinks;
+
+            
+        vector<complex<double>> sunPoly;
+        vector<jointInfo> sunJoints;
+        vector<linkInfo> sunLinks;
         //where all the assets are acutally defined
         void init();
 

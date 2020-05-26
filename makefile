@@ -1,6 +1,6 @@
 CC = cl.exe
 LINK = link.exe
-CFLAGS = -EHsc -Z7 -FC -O2 $(INC)
+CFLAGS = -EHsc -Z7 -FC $(INC)
 LIBS = Shell32.lib SDL2.lib opengl32.lib
 SRC = src
 BUILD = build

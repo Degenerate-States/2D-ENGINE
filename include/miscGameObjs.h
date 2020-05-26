@@ -19,19 +19,6 @@ class Box{
         int getDamage();
 };
 
-class RiggedTest{
-    public:
-        RiggedPoly rp;
-
-        void init(Assets* assets);
-        void update(double dt);
-        void render(Screen* screen);
-
-        //callbacks
-        void onCollision(int damage, complex<double> direction);
-        int getDamage();
-};
-
 class SnakeTest{
     public: 
         Snake snake;

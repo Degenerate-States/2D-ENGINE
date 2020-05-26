@@ -52,7 +52,8 @@ void RigidBody::update(double dt){
 }
 
 void RigidBody::setRot(double theta){
-    this->rot = fmod(theta,2*M_PI);
+    // math modulo
+    this->rot = fmod(fmod(theta,2*M_PI)+2*M_PI,2*M_PI);
 }
 
 void RigidBody::rotate(double dTheta){

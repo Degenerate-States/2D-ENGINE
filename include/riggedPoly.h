@@ -78,18 +78,35 @@ class Snake{
 };
 
 
+//**************//
+//Skeleton Stuff//
+//**************//
+
 // used to avoid tree traversal during runtime
 struct link{
     int headIndex;
     int tailIndex;
     double rigidity;
     complex<double> relPos;
+    double relAngle;
     double len;
+};
+// put into vector, ith object corrisponds to ith joint in rigidpoly
+// holds infomration on which other joints are connected
+// used to adjust rotation and joint scaling to maintain constant width
+struct jointLink{
+    // index of joint puppeting this one
+    int base;
+    double relAngle;
+    // indices of joints this joint puppets
+    vector<int> branches;
+    int numBranches;
 };
 // one base joint which controls movment other joints follow with a preference to remain straight
 class Skeleton{
     private:
         vector<link*> links;
+        vector<jointLink*> jointLinks;
         int numLinks;
 
     public:

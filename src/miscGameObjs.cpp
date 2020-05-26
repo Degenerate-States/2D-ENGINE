@@ -36,36 +36,6 @@ int Box::getDamage(){
     return 0;
 }
 
-void RiggedTest::init(Assets* assets){
-    this->rp.init(&assets->testPoly,&assets->testJoints,white,assets->getID());
-    
-    //setsup poly collision callbacks
-    this->rp.poly.setCallBacks(
-        bind(&RiggedTest::onCollision,this,_1,_2),
-        bind(&RiggedTest::getDamage,this)
-    );
-}
-
-void RiggedTest::update(double dt){
-
-    this->rp.joints[0]->rb.setRot(sin(0.001*SDL_GetTicks()));
-    this->rp.joints[0]->rb.fixedDisplace(0,-0.1*sin(0.001*SDL_GetTicks()),dt);
-    this->rp.joints[1]->rb.setRot(cos(0.001*SDL_GetTicks()));
-    this->rp.joints[1]->rb.fixedDisplace(0,-0.1*cos(0.001*SDL_GetTicks()),dt);
-    this->rp.update(dt);
-}
-
-void RiggedTest::render(Screen* screen){
-    this->rp.render(screen);
-}
-void RiggedTest::onCollision(int damage, complex<double> direction){
-    cout<<"Debug: rigged test hit"<<endl;
-}
-int RiggedTest::getDamage(){
-    return 0;
-}
-
-
 
 void SnakeTest::init(Assets* assets,double spf){
     this->snake.init(&assets->testSnakePoly,&assets->testSnakeJoints,red,1,3,assets->getID(),spf);
@@ -94,8 +64,8 @@ int SnakeTest::getDamage(){
 
 
 void SkeletonTest::init(Assets* assets){
-    this->skele.init(&assets->hostPoly,&assets->hostJoints,&assets->hostLinks,red,assets->getID());
-    this->skele.spawn({1,1},2);
+    this->skele.init(&assets->skeleTestPoly,&assets->skeleTestJoints,&assets->skeleTestLinks,red,assets->getID());
+    this->skele.spawn({1,1},0);
     //setsup poly collision callbacks
     this->skele.rp.poly.setCallBacks(
         bind(&SkeletonTest::onCollision,this,_1,_2),

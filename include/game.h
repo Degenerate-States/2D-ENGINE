@@ -19,7 +19,6 @@ class Game{
         Screen* screen;
         Player plr;
         Box box;
-        RiggedTest rigTest;
         SnakeTest snakeTest;
         SkeletonTest skeleTest;
         ProjectileManager projMan;

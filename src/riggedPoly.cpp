@@ -2,6 +2,7 @@
 
 //#define RENDER_SPINE true
 
+
 void Joint::init(Polygon* poly, vector<int>* indices,complex<double> initPos){
     this->numVerticies = indices->size();
     this->poly = poly;
@@ -226,6 +227,7 @@ void Skeleton::init(vector<complex<double>>* polyAsset, vector<jointInfo>* joint
             this->links[linkNum]->headIndex = headIndex;
             this->links[linkNum]->tailIndex = tailIndex;
             this->links[linkNum]->relPos = this->rp.joints[tailIndex]->posRelAsset - this->rp.joints[headIndex]->posRelAsset;
+            this->links[linkNum]->relAngle = arg(this->links[linkNum]->relPos);
             this->links[linkNum]->len = abs(this->links[linkNum]->relPos);
             this->links[linkNum]->rigidity = (*linkingInfo)[headIndex].rigidity[j];
             
@@ -233,6 +235,25 @@ void Skeleton::init(vector<complex<double>>* polyAsset, vector<jointInfo>* joint
         
     }
     this->numLinks = this->links.size();
+
+    //jointLinks initalization
+    for (int i = 0; i < this->rp.numJoints; i++){
+        this->jointLinks.push_back(new jointLink());
+    }
+    for (int i = 0; i < this->numLinks; i++){
+        tailIndex = this->links[i]->tailIndex;
+        headIndex = this->links[i]->headIndex;
+        this->jointLinks[tailIndex]->base = headIndex;
+
+        this->jointLinks[tailIndex]->relAngle = arg(this->rp.joints[tailIndex]->posRelAsset - this->rp.joints[headIndex]->posRelAsset);
+        this->jointLinks[headIndex]->branches.push_back(tailIndex);
+    }
+    for (int i = 0; i < this->rp.numJoints; i++){
+        this->jointLinks[i]->numBranches = this->jointLinks[i]->branches.size();
+    }
+    // root joint doesnt have a head, so its just set to -1
+    this->jointLinks[0]->base= -1;
+    
 }
 void Skeleton::spawn(complex<double> pos, double rot){
     this->rb->pos = pos;
@@ -248,15 +269,11 @@ void Skeleton::spawn(complex<double> pos, double rot){
     {
         headJoint = this->rp.joints[this->links[i]->headIndex];
         tailJoint = this->rp.joints[this->links[i]->tailIndex];
-        relPos = headJoint->rb.rotOp * this->links[i]->relPos;
-
+        relPos =this->rb->rotOp * this->links[i]->relPos;
         //tailJoints rotaiton is set to face headJoint
         tailJoint->rb.setRot(arg(-relPos));
 
         tailJoint->rb.pos = headJoint->rb.pos + relPos;
-
-        //updates rotOp for tailJoint to be used when it is headJoint
-        tailJoint->rb.update(0);
     }
     
 }
@@ -270,25 +287,57 @@ void Skeleton::update(double dt){
     Joint* tailJoint;
 
     double theta;
-    for (int i = 0; i < this->numLinks; i++)
-    {
+    //joint placement
+    for (int i = 0; i < this->numLinks; i++){
         headJoint = this->rp.joints[this->links[i]->headIndex];
         tailJoint = this->rp.joints[this->links[i]->tailIndex];
         equilibrumPos = headJoint->rb.rotOp * this->links[i]->relPos;
         relPos = tailJoint->rb.pos - headJoint->rb.pos;
-
         // scales to proper length
         relPos*= this->links[i]->len / abs(relPos);
-
+        
         //moves towards proper angle
-        theta = smallestAngle(arg(equilibrumPos),arg(relPos)) * dt *10* this->links[i]->rigidity;
+        theta = smallestAngle(arg(equilibrumPos),arg(relPos)) * dt * this->links[i]->rigidity;
         relPos*={cos(theta),sin(theta)};
-    
+        
+
         tailJoint->rb.pos = headJoint->rb.pos + relPos;
-        tailJoint->rb.setRot(arg(-relPos));
+        tailJoint->rb.setRot(arg(relPos)-this->links[i]->relAngle);
 
         tailJoint->rb.update(0);
     }
+
+    //joint rotation
+    complex<double> outVec;
+    complex<double> inVec;
+    double phi;
+    double deltaAngle;
+    for (int i = 1; i < this->rp.numJoints; i++){
+        //invec = this joints pos - base joints pos
+        inVec = this->rp.joints[i]->rb.pos - this->rp.joints[this->jointLinks[i]->base]->rb.pos;
+        //outvec is average of all the branch vectors (its len is irrelevent so we dont divide)
+        outVec = 0;
+        for (int j = 0; j < this->jointLinks[i]->numBranches; j++){
+            // branch joints pos - this joint pos
+            outVec += this->rp.joints[this->jointLinks[i]->branches[j]]->rb.pos - this->rp.joints[i]->rb.pos;
+        }
+        //if there are no branches, it defaults to inVec
+        if(this->jointLinks[i]->numBranches==0){
+            outVec = inVec;
+        }
+
+        theta = arg(outVec);
+        phi = arg(inVec);
+        
+        deltaAngle = smallestAngle(theta,phi);
+        
+        //here we set the angle of the joint to be half way between outVec and inVec
+        this->rp.joints[i]->rb.setRot(theta-0.5*deltaAngle - this->jointLinks[i]->relAngle);
+        //segment must widen to maintain thickness while turning
+        this->rp.joints[i]->scale = 1/cos(0.5*deltaAngle);
+        
+    }
+    //update polygon now
     this->rp.update(dt);
 }
 void Skeleton::render(Screen* screen){
