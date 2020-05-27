@@ -336,7 +336,7 @@ void Skeleton::update(double dt){
         this->rp.joints[i]->scale = 1/cos(0.5*deltaAngle);
         
     }
-    //update polygon now
+    //update rigged polygon now
     this->rp.update(dt);
 }
 void Skeleton::render(Screen* screen){
