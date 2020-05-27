@@ -100,30 +100,30 @@ passed through its init method
 Also a collider, and controlled by a reference to a rigidBody. most of the external functionaly of this component
 is quite simple.
 ### Assets
-See asssets section
+    See asssets section
 #### Movement
-with translate and rotate based on the movement of the rigidbody passed in init
+    with translate and rotate based on the movement of the rigidbody passed in init
 #### Collision
-See section on collsion
+    See section on collsion
 #### Visuals
-Simple stuff:
-- color is controlled by color member
-- transparency of each vertex is controlled by alphas vector (0 to 255 double)
-- line thickness is controlled through lineThickness memeber float
+    Simple stuff:
+    - color is controlled by color member
+    - transparency of each vertex is controlled by alphas vector (0 to 255 double)
+    - line thickness is controlled through lineThickness memeber float
 
-Animation:
-The polygon can be morphed through the vertexOffsets member, this is a vector of complex doubles that corrisponding
-to exach vertex in the polygon. changing these values will move the vertices around individually, the coordinates
-are relative to the asset and do not depend on the polygons current rotation (see asset loading for more info on
-how polygon assets are defined)
+    Animation:
+    The polygon can be morphed through the vertexOffsets member, this is a vector of complex doubles that corrisponding
+    to exach vertex in the polygon. changing these values will move the vertices around individually, the coordinates
+    are relative to the asset and do not depend on the polygons current rotation (see asset loading for more info on
+    how polygon assets are defined)
 #### Misc
-Polygon also has other utilities which are primarly used by collsion such as getNormal, getContainingCircle (returns
-center and radius of the smallest circle which contains the polygon)
+    Polygon also has other utilities which are primarly used by collsion such as getNormal, getContainingCircle 
+    (returns center and radius of the smallest circle which contains the polygon)
 
-If you need access to the polygons vertices you can use the currentAsset member (does not contain vertex offsets), 
-or assetRE if you need the un translated, un rotated polygon.
+    If you need access to the polygons vertices you can use the currentAsset member 
+    (does not contain vertex offsets), or assetRE if you need the un translated, un rotated polygon.
 
-lastly the polygons scale can be changed using the scale member (1 is default)
+    lastly the polygons scale can be changed using the scale member (1 is default)
 
 ### Visual Polygon
 Just polygon with no collision utilities, also has the rebase mehtod which mutates assetRE by resetting the 
