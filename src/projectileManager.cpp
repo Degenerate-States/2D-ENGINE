@@ -71,7 +71,7 @@ void Bullet::update(double dt){
     double speed = abs(this->rb.vel);
     this->rb.vel -= velDamping*dt*this->rb.vel;
     double newDiameter = this->startDiameter*(speed)/ this->spawnSpeed;
-    this->trail.headThickness =newDiameter;
+    this->trail.thickness =newDiameter;
     this->pnt.diameter = newDiameter;
 
     this->rb.update(dt);
@@ -131,7 +131,7 @@ void Spark::update(double dt){
     this->rb.vel -= velDamping*dt*this->rb.vel;
 
     double newDiameter = this->startDiameter*(speed)/ this->spawnSpeed;
-    this->trail.headThickness =newDiameter;
+    this->trail.thickness =newDiameter;
 
     this->rb.update(dt);
     if(speed < this->minVel){

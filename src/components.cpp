@@ -354,7 +354,7 @@ void VisualPolygon::render(Screen* screen){
 void Trail::init(RigidBody* rb, double thickness, int numVertices,double decayTime){
     this->rb = rb;
 
-    this->headThickness = thickness;
+    this->thickness = thickness;
     
     this->numVertices = numVertices;
     this->decayTime = decayTime;
@@ -419,7 +419,7 @@ void Trail::update(double dt){
 
 void Trail::render(Screen* screen){
 
-    double thickness =screen->zoom*this->headThickness;
+    double thickness =screen->zoom*this->thickness;
     int index;
     tuple<double,double> coord;
 

@@ -222,7 +222,7 @@ class Trail{
         //references to components which polygon depends on (only read by this component)
         RigidBody* rb;
     public:
-        double headThickness;
+        double thickness;
         void init(RigidBody* rb,double thickness, int numVertices, double decayTime);
         void reset(tuple<int,int,int> headColor,tuple<int,int,int> tailColor);
 
