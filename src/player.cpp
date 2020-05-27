@@ -3,25 +3,22 @@
 
 void Flame::init(RigidBody* plrRb, Assets* assets,ProjectileManager* projMan){
     this->plrRb = plrRb;
-    this->rb.init(1.0,0,0,0);
-    this->poly.init(&assets->flameAsset,&this->rb,red);
+    this->skele.init(&assets->flameAsset,&assets->flameJoints,&assets->flameLinks,red,-1);
     this->projMan = projMan;
 }
 
 void Flame::update(Screen* screen, double dt){
-    this->rb.setRot(this->plrRb->rot);
-    this->rb.pos = this->plrRb->pos;
+    this->skele.rb->setRot(this->plrRb->rot);
+    this->skele.rb->pos = this->plrRb->pos;
 
     double flameLen = fmod(-0.001*SDL_GetTicks(),0.12) +0.08;
-    this->poly.vertexOffsets[0] = flameLen;
+    this->skele.rp.poly.vertexOffsets[0] = flameLen;
 
-
-    this->rb.update(dt);
-    this->poly.update();
+    this->skele.update(dt);
 }
 
 void Flame::render(Screen* screen){
-    this->poly.render(screen);
+    this->skele.render(screen);
 }
 
 void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
@@ -45,7 +42,6 @@ void Player::init(Assets* assets,ProjectileManager* projMan, Stats* stats){
     this->gunBar.push_back(stats->energyShotgun);
 
     this->gun.init(&this->rb, assets, projMan, &gunBar[0], this->poly.colliderID);
-    cout<<stats->energyShotgun.baseDamage<<endl;
     this->flame.init(&this->rb,assets,projMan);
 
     this->contactDamage = stats->plrContactDamage;
@@ -156,12 +152,16 @@ void Player::setScreenPos(Screen* screen, double dt){
 }
 void Player::onCollision(int damage, complex<double> direction){
     this->health-=damage;
+    #if COLLISION_PRINT
     cout<<"Debug: Player hit...   Health:"<<" "<<this->health<<endl;
+    #endif
 }
 int Player::getDamage(){
     return this->contactDamage;
 }
 void Player::die(){
     this->rb.active = false;
+    #if COLLISION_PRINT
     cout<<"Debug: Player Died";
+    #endif
 }

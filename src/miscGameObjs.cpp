@@ -30,7 +30,9 @@ void Box::render(Screen* screen){
     this->poly.render(screen);
 }
 void Box::onCollision(int damage, complex<double> direction){
+    #if COLLISION_PRINT
     cout<<"Debug: Box hit"<<endl;
+    #endif
 }
 int Box::getDamage(){
     return 0;
@@ -55,7 +57,9 @@ void SnakeTest::render(Screen* screen){
     this->snake.render(screen);
 }
 void SnakeTest::onCollision(int damage, complex<double> direction){
+    #if COLLISION_PRINT
     cout<<"Debug: snake test hit"<<endl;
+    #endif
 }
 int SnakeTest::getDamage(){
     return 0;
@@ -80,7 +84,9 @@ void SkeletonTest::render(Screen* screen){
     this->skele.render(screen);
 }
 void SkeletonTest::onCollision(int damage, complex<double> direction){
+    #if COLLISION_PRINT
     cout<<"Debug: skeleton test hit"<<endl;
+    #endif
 }
 int SkeletonTest::getDamage(){
     return 0;

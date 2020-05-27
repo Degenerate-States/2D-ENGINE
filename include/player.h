@@ -1,5 +1,6 @@
 #pragma once
 #include "components.h"
+#include "riggedPoly.h"
 #include "projectileManager.h"
 #include "assets.h"
 #include "gun.h"
@@ -14,12 +15,11 @@
 class Flame{
     private:
         RigidBody* plrRb;
-        Polygon poly;
+        Skeleton skele;
         //holds reference to projectile manager so it can make sparks
         ProjectileManager* projMan;
     
     public:
-        RigidBody rb;
         void init(RigidBody* plrRb, Assets* assets,ProjectileManager* projMan);
         void update(Screen* screen, double dt);
         void render(Screen* screen);

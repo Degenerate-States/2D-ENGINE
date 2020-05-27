@@ -64,7 +64,9 @@ void Swarmer::render(Screen* screen){
     //Callbacks
 void Swarmer::onCollision(int damage, complex<double> direction){
     this->health-=damage;
+    #if COLLISION_PRINT
     cout<<"Debug: swarmer hit...   Health:"<<" "<<this->health<<endl;
+    #endif
 }
 int Swarmer::getDamage(){
     return this->contactDamage;

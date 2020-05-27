@@ -217,7 +217,6 @@ void Skeleton::init(vector<complex<double>>* polyAsset, vector<jointInfo>* joint
         indexQueue.pop();
 
         for(int j = 0; j < (*linkingInfo)[headIndex].indices.size(); j++){
-            
             tailIndex = (*linkingInfo)[headIndex].indices[j];
     
             indexQueue.push(tailIndex);

@@ -9,7 +9,7 @@ INC = -I lib/SDL2/include -I lib/GLAD/include -I include
 PROGRAM_NAME = POLYGUN
 
 # global defines
-DEFINES = -D SOUND=false -D RENDER_SPINE=false
+DEFINES = -D SOUND=false -D RENDER_SPINE=false -D COLLISION_PRINT=false
 
 # incremental debug build
 debug: $(BUILD)\*.obj

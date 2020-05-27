@@ -29,7 +29,11 @@ class Assets{
         // list of all game assets
         vector<complex<double>> plrAsset;
         vector<complex<double>> gunAsset;
+        
         vector<complex<double>> flameAsset;
+        vector<jointInfo> flameJoints;
+        vector<linkInfo> flameLinks;
+
         vector<complex<double>> box;
 
         vector<complex<double>> swarmerAsset;
