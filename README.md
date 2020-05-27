@@ -70,7 +70,8 @@ void Keys(const Uint8* keys,Screen* screen,double dt);
 ```
 
 ## Components
-this section contains specifics on various components the engine has
+this section contains specifics on various components the engine has, as a general rule, their API is similar
+to the engine in that they contain an update and render method where applicable. 
 ### RigidBody
 used for posistion, velocity, rotation, and rotational velocity of game objects. has various getters and setters for
 nearly all its parameters however most of these are just a convience as you can just manually set its parameters. 
@@ -98,7 +99,7 @@ passed through its init method
 
 ### Polygon
 Also a collider, and controlled by a reference to a rigidBody. most of the external functionaly of this component
-is quite simple. Its specifics are numbered below
+is quite simple. Its specifics are numbered below:
 #### 1. Assets
     See asssets section
 #### 2. Movement
@@ -251,9 +252,9 @@ corrisponds to a joint which controls the polygon. jointInfo holds a list of ver
 by the joint, the posistion of the joint relative to the asset, and an optional visual polygon, example:
 ```c++
 this->hostJoints = 
-{ jointInfo( {14, 15, 16, 17, 18, 19, 20, 21, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, { 0.13333, 0.0 }, hostEye), 
-    jointInfo( {13, 11}, { -0.06667, 0.0 }), 
-    jointInfo( {12}, {-0.5, 0.0}) };
+        { jointInfo( {14, 15, 16, 17, 18, 19, 20, 21, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, { 0.13333, 0.0 }, hostEye), 
+            jointInfo( {13, 11}, { -0.06667, 0.0 }), 
+            jointInfo( {12}, {-0.5, 0.0}) };
 ```
 so the 0th joint controls all vertices in the polygon except 11 12 and 13, it is posistioned at 
 (0.13333, 0.0) relative to the asset, and it has a visual polygon hostEye which it moves along with it.
@@ -269,10 +270,10 @@ rigidity of 5, and the 2nd joint is connected to nothing (the placeholder is sti
 
 the linking system can get more complicated, with branching as shown below:
 ```c++
-    this->skeleTestLinks = { linkInfo({1,4,7},{10,10,10}), 
-                            linkInfo({2},{7}), linkInfo({3},{5}),linkInfo({},{}),
-                            linkInfo({5},{7}), linkInfo({6},{5}),linkInfo({},{}),
-                            linkInfo({8},{7}), linkInfo({9},{5}),linkInfo({},{}) };
+this->skeleTestLinks = { linkInfo({1,4,7},{10,10,10}), 
+                        linkInfo({2},{7}), linkInfo({3},{5}),linkInfo({},{}),
+                        linkInfo({5},{7}), linkInfo({6},{5}),linkInfo({},{}),
+                        linkInfo({8},{7}), linkInfo({9},{5}),linkInfo({},{}) };
 ```
 here the 0th joint connects to joints 1,4,7, an important note is that each branch has its own rigidity so
 the rigidity vector should be the same length as the index vector. from here joints 1,4,7 are connected to 
