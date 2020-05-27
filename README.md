@@ -98,14 +98,14 @@ passed through its init method
 
 ### Polygon
 Also a collider, and controlled by a reference to a rigidBody. most of the external functionaly of this component
-is quite simple.
-### Assets
+is quite simple. Its specifics are numbered below
+#### 1. Assets
     See asssets section
-#### Movement
+#### 2. Movement
     with translate and rotate based on the movement of the rigidbody passed in init
-#### Collision
-    See section on collsion
-#### Visuals
+#### 3. Collision
+    See collision section
+#### 4. Visuals
     Simple stuff:
     - color is controlled by color member
     - transparency of each vertex is controlled by alphas vector (0 to 255 double)
@@ -116,7 +116,7 @@ is quite simple.
     to exach vertex in the polygon. changing these values will move the vertices around individually, the coordinates
     are relative to the asset and do not depend on the polygons current rotation (see asset loading for more info on
     how polygon assets are defined)
-#### Misc
+#### 5. Misc
     Polygon also has other utilities which are primarly used by collsion such as getNormal, getContainingCircle 
     (returns center and radius of the smallest circle which contains the polygon)
 
