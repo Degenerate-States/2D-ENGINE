@@ -1,5 +1,6 @@
 #include "engine.h"
 
+extern Audio* audio;
 //#define SOUND true
 
 class Engine{
@@ -38,7 +39,6 @@ class Engine{
 };
 
 
-
 int main(int argc, char **argv) {
     Assets* assets = new Assets();
     Config* cfg = new Config();
@@ -55,34 +55,16 @@ int main(int argc, char **argv) {
     free(assets);
     free(cfg);
     free(stats);
-
     #if SOUND
-        start_audio_thread();
+        audio->init();
+        audio->playSound(MUS_PATH);
+        unpauseAudio();
     #endif
-
-    /*
-    //  
-    float verts[6] = {
-        -0.5f, -0.5f, 
-        0.0f, 0.5f, 
-        0.5f, -0.5f
-    };
-
-    VertexBuffer* testBuffer = new VertexBuffer();
-    testBuffer->init(verts, 6 * sizeof(float));
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0); 
-
-    Shader* testShader = new Shader();
-    testShader->init("assets/shaders/test.vert", "assets/shaders/test.frag");
-    //testShader->Bind();
-    */
 
     engine.gameLoop();
 
     #if SOUND
-        audio_clean();
+        audio->clean();
     #endif
 
     End();
@@ -128,6 +110,13 @@ void Engine::events(double dt){
 
         //game object events
         Events(&(this->event),&this->screen,dt);
+    }
+
+    if (this->keys[SDL_SCANCODE_P]) {
+        unpauseAudio();
+    }
+    if (this->keys[SDL_SCANCODE_U]) {
+        pauseAudio();
     }
 
     // keypresses

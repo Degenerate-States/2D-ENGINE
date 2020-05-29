@@ -1,4 +1,29 @@
 #include "shader.h"
+    /* TEMP from engine.cpp
+    // 4 x 2
+    double* test2 = (double*)(void*)assets->plrAsset.data();
+        for(int x; x < assets->plrAsset.size()*2; x++) {
+        cout << test2[x] << endl;
+    }
+
+    //
+    float verts[6] = {
+        -0.5f, -0.5f, 
+        0.0f, 0.5f, 
+        0.5f, -0.5f
+    };
+
+    VertexBuffer* testBuffer = new VertexBuffer();
+    testBuffer->init(verts, 6 * sizeof(float));
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0,2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0); 
+
+    Shader* testShader = new Shader();
+    testShader->init("assets/shaders/test.vert", "assets/shaders/test.frag");
+    //testShader->Bind();
+    */
+
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source) {
 

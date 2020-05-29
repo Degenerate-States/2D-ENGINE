@@ -1,5 +1,7 @@
 #include "gun.h"
 
+extern Audio* audio;
+
 void Gun::init(RigidBody* shooterRb, Assets* assets,ProjectileManager* projMan, GunStats* stats, int ID){
     this->ID = ID;
     this->projMan = projMan;
@@ -51,14 +53,23 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
             switch(this->type){
                 case (bullet): 
                     this->projMan->fireBullet(white,orange, this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
+                    #if SOUND
+                    audio->playSound(PEW1);
+                    #endif
                 break;
 
                 case(spark):
                     this->projMan->fireSpark(orange,red, this->rb.pos, fireDirection, this->velVarience);
+                    #if SOUND
+                    audio->playSound(PEW1);
+                    #endif
                 break;
 
                 case(energyBall):
                     this->projMan->fireEngBall(orange,red,this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
+                    #if SOUND
+                    audio->playSound(PEW1);
+                    #endif
                 break;
             }
 

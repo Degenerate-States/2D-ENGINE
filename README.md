@@ -24,6 +24,8 @@ Run
     left-click: shoot
     UP/Down: camera zoom
     1-7: guns
+    p: pause audio
+    u: unpause audio
 
 ## Engine API
 ```c++

@@ -2,7 +2,7 @@
 #include "components.h"
 #include "projectileManager.h"
 #include "assets.h"
-
+#include "audio.h"
 
 class Gun{
     private:

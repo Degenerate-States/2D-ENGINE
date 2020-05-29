@@ -10,7 +10,7 @@
 #include "config.h"
 #include "assets.h"
 
-#include "sound.h"
+#include "audio.h"
 
 using namespace std;
 
