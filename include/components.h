@@ -113,7 +113,7 @@ class Polygon{
         vector<complex<double>> assetWR1;
         vector<complex<double>> assetWR2;
         
-        
+        double furthestDistance;
     public:
         int colliderID;
         //references to components which polygon depends on

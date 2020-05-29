@@ -36,7 +36,7 @@ class SkeletonTest{
     public: 
         Skeleton skele;
 
-        void init(Assets* assets);
+        void init(Assets* assets, double x, double y);
         void update(double dt);
         void render(Screen* screen);
 

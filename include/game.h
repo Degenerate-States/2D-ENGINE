@@ -21,6 +21,8 @@ class Game{
         Box box;
         SnakeTest snakeTest;
         SkeletonTest skeleTest;
+        SkeletonTest skeleTest1;
+        SkeletonTest skeleTest2;
         ProjectileManager projMan;
         EnemyManager enemyMan;
 

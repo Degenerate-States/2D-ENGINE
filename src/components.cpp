@@ -191,6 +191,17 @@ void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color)
 
         this->appendPoint((*asset)[i]);
     }
+
+    //finds furthest point distance
+    this->furthestDistance = 0;
+    double current;
+    for(int i=0; i<this->numVertices; i++){
+        //next asset
+        current = abs(this->assetRE[i] - this->rb->pos);
+        if(current>this->furthestDistance){
+            this->furthestDistance = current;
+        }
+    }
 }
 
 complex<double> Polygon::getNormal(int index){
@@ -199,35 +210,8 @@ complex<double> Polygon::getNormal(int index){
     normal/=abs(normal);
     return normal;
 }
-// TODO design better nessisary condition for collision
 tuple<double,complex<double>> Polygon::getContainingCircle(){
-    //radius
-    double furthest = 0;
-    double current;
-
-    //center
-    complex<double> center = 0;
-
-    //averages both current and next vertices
-    for(int i=0; i<this->numVertices; i++){
-        //next asset
-        current = abs((*this->nextAsset)[i]);
-        if(current>furthest){
-            furthest = current;
-        }
-        center+= (*this->nextAsset)[i];
-
-        //current asset
-        current = abs((*this->currentAsset)[i]);
-        if(current>furthest){
-            furthest = current;
-        }
-        center+= (*this->currentAsset)[i];
-    }
-
-
-    center /= 2*this->numVertices;
-    return make_tuple(furthest,center);
+    return make_tuple(this->furthestDistance,this->rb->pos);
 }
 
 void Polygon::resetVertexOffsets(){
@@ -237,11 +221,11 @@ void Polygon::resetVertexOffsets(){
 }
 
 void Polygon::init(vector<complex<double>>* asset,RigidBody* rb, tuple<int,int,int> color, int colliderID){
+    this->rb = rb;
     this->loadAsset(asset,color);
     this->currentAsset = &this->assetWR1;
     this->nextAsset = &this->assetWR2;
 
-    this->rb = rb;
     this->rotNegative90 = {0,-1};
     this->lineThickness = defaultLineThickness;
     this->scale = 1.0;

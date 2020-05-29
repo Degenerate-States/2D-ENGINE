@@ -26,8 +26,6 @@ class Joint{
 
 class RiggedPoly{
     public:
-        // rigidbody is required for collision engine to test if poly is active
-        RigidBody rb;
         Polygon poly;
         vector<Joint*> joints;
         int numJoints;

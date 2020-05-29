@@ -31,9 +31,6 @@ void Joint::update(double dt){
 }
 
 void RiggedPoly::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, tuple<int,int,int> color,int ID){
-    //Rigidbody reference is set to null, polygons behavior is largly overrided by joint
-    this->rb.init(1,0,0,0);
-    this->poly.init(polyAsset,&this->rb,color, ID);
     this->numJoints = jointData->size();
 
     for(int i = 0; i < this->numJoints; i++){
@@ -49,6 +46,8 @@ void RiggedPoly::init(vector<complex<double>>* polyAsset, vector<jointInfo>* joi
         }
     }
     this->numVisPolys = this->visPolys.size();
+    //polygons rigidbody is set to be the 0th joints rigidbody
+    this->poly.init(polyAsset,&this->joints[0]->rb,color, ID);
 }
 
 void RiggedPoly::update(double dt){
@@ -79,6 +78,7 @@ void RiggedPoly::render(Screen* screen){
 void Snake::init(vector<complex<double>>* polyAsset, vector<jointInfo>* jointData, 
                     tuple<int,int,int> color, double speed, double turnSpeed, int ID,double spf){
 
+    
     this->rp.init(polyAsset,jointData,color,ID);
     this->speed = speed;
     this->turnSpeed = turnSpeed;
@@ -279,7 +279,7 @@ void Skeleton::spawn(complex<double> pos, double rot){
 void Skeleton::update(double dt){
     //updating rb calcuates its rotation operator which is used to determine connected joint posisitons
     this->rp.joints[0]->update(0);
-
+    
     complex<double> equilibrumPos;
     complex<double> relPos;
     Joint* headJoint;

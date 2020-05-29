@@ -67,9 +67,9 @@ int SnakeTest::getDamage(){
 
 
 
-void SkeletonTest::init(Assets* assets){
+void SkeletonTest::init(Assets* assets,double x, double y){
     this->skele.init(&assets->sunPoly,&assets->sunJoints,&assets->sunLinks,red,assets->getID());
-    this->skele.spawn({1,1},0);
+    this->skele.spawn({x,y},0);
     //setsup poly collision callbacks
     this->skele.rp.poly.setCallBacks(
         bind(&SkeletonTest::onCollision,this,_1,_2),
