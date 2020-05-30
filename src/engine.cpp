@@ -58,8 +58,9 @@ int main(int argc, char **argv) {
 
     #if SOUND
         audio->init();
-        audio->playSound(MUS_PATH);
-        unpauseAudio();
+        //TODO: add a valid-formatted song for testing
+        //audio->playSound(MUS_PATH, VOLUME);
+        audio->unpauseAudio();
     #endif
 
     engine.gameLoop();
@@ -114,10 +115,10 @@ void Engine::events(double dt){
     }
 
     if (this->keys[SDL_SCANCODE_P]) {
-        unpauseAudio();
+        audio->pauseAudio();
     }
     if (this->keys[SDL_SCANCODE_U]) {
-        pauseAudio();
+        audio->unpauseAudio();
     }
 
     // keypresses

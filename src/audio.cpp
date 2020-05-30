@@ -19,7 +19,6 @@ void fx_callback(void *userdata, Uint8 *stream, int len) {
 
     // clear buffer
     SDL_memset(stream, 0, len);
-
     for (auto song : audio->fx){
         //cout << song->path << endl;
         for (int i = 0; i < MAX_PLAYHEADS; ++i){
@@ -29,7 +28,7 @@ void fx_callback(void *userdata, Uint8 *stream, int len) {
                 len = ( len > song->heads[i].len ? song->heads[i].len  : len );
 
                 // mix from one buffer into another
-                SDL_MixAudio(stream, song->heads[i].pos, len, VOLUME);
+                SDL_MixAudio(stream, song->heads[i].pos, len, song->heads[i].volume);
                 song->heads[i].pos += len;
                 song->heads[i].len -= len;
                 if (song->heads[i].len <= 0){
@@ -57,19 +56,17 @@ void Audio::init() {
       exit(-1);
     }
     
-    this->fx.push_back(load_wav(PEW1));
-    this->fx.push_back(load_wav(PEW2));
+    this->fx.push_back(load_wav(PEW1, VOLUME));
+    this->fx.push_back(load_wav(PEW2, VOLUME));
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0){
         std::cerr << "SDL couldn't initialize audio: " << SDL_GetError() << std::endl;
         exit(-1);
     }
-
-
-   
+    paused = true;
 }
 
-Wav* Audio::load_wav(char* path){
+Wav* Audio::load_wav(char* path, uint8_t vol){
     Wav* wav = new Wav();
     
     SDL_AudioSpec s;
@@ -83,19 +80,23 @@ Wav* Audio::load_wav(char* path){
     for (int i = 0; i<MAX_PLAYHEADS; ++i){
         wav->heads[i].pos = wav->buffer;
         wav->heads[i].len = wav->len;
+        wav->heads[i].volume = vol;
         wav->heads[i].on = false;
     }
     return wav;
 }
 
-void Audio::playSound(char* path){
-    for (auto song : this->fx){
-        //cout << path << " " << song->path<< endl;
-        if (strcmp(song->path, path) == 0){
-            for (int i = 0; i < MAX_PLAYHEADS; ++i){
-                if (!song->heads[i].on) {
-                    song->heads[i].on = true;
-                    break;
+void Audio::playSound(char* path, uint8_t vol){
+    if (!paused) {
+        for (auto fx : this->fx){
+            //cout << path << " " << fx->path<< endl;
+            if (strcmp(fx->path, path) == 0){
+                for (int i = 0; i < MAX_PLAYHEADS; ++i){
+                    if (!fx->heads[i].on) {
+                        fx->heads[i].volume = vol;
+                        fx->heads[i].on = true;
+                        break;
+                    }
                 }
             }
         }
@@ -108,11 +109,13 @@ void Audio::clean() {
         SDL_FreeWAV(song->buffer);
 }
 
-void pauseAudio() {
+void Audio::pauseAudio() {
+    paused = true; 
     SDL_PauseAudio(1);
 }
 
-void unpauseAudio() {
+void Audio::unpauseAudio() {
+    paused = false; 
     SDL_PauseAudio(0);
 }
 

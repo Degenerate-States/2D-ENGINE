@@ -1,12 +1,12 @@
 #pragma once
 #include <SDL.h>
 #include <iostream>// temp for errors
+#include <cstring>// strcmp
 // containers
-#include <cstring>
 #include <vector>
-#include <map>
 
 using namespace std;
+
 // TEMP
 #define MUS_PATH "assets/sound/music/metal.wav"
 #define PEW1 "assets/sound/fx/door1.wav"
@@ -44,40 +44,46 @@ using namespace std;
 #define SDL_AUDIO_ALLOW_CHANGES SDL_AUDIO_ALLOW_ANY_CHANGE
 
 
-
 void fx_callback(void *userdata, Uint8 *stream, int len);
 
+// Pinters into a wave buffer
 struct PlayHead {
-	uint8_t *pos; // global pointer to the audio buffer to be played
-	uint32_t len; // remaining length of the sample we have to play
-    bool on = false;
-	// volume
-	// loop
-	// fade
+	uint8_t *pos; // pointer to position in audio buffer
+	uint32_t len; // remaining length of the sample
+    bool on = false; // enable flag
+	uint8_t volume = SDL_MIX_MAXVOLUME; //0-127
+	// pan?
+	// loop?
+	// fade?
 };
 
+// Wave buffer structure
+// TODO: create unique structures for songs and fx waves
 struct Wav {
-	uint8_t *buffer; 
-	uint32_t len;
-	char* path;
+	uint8_t *buffer; // pointer to allocated buffer
+	uint32_t len; // length of buffer
+	char* path; // fx path
 	PlayHead heads[MAX_PLAYHEADS];
 };
 
+// Global audio object
 class Audio {
 public:
 	//TODO: replace with map
 	vector<Wav*> fx;
 
     SDL_AudioSpec device;
+	bool paused = false;
 
     void init();
 	void clean();
-    Wav* load_wav(char* path);
-	void playSound(char* path);
-
+    Wav* load_wav(char* path, uint8_t vol);
+	void playSound(char* path, uint8_t vol);
+	void unpauseAudio();
+	void pauseAudio();
 };
 
-// audio spec
+// SDL audio spec
 //typedef struct SDL_AudioSpec
 //{
 //    int freq;                   /**< DSP frequency -- samples per second */
@@ -90,7 +96,3 @@ public:
 //    SDL_AudioCallback callback; /**< Callback that feeds the audio device (NULL to use SDL_QueueAudio()). */
 //    void *userdata;             /**< Userdata passed to callback (ignored for NULL callbacks). */
 //} SDL_AudioSpec;
-
-
-void unpauseAudio();
-void pauseAudio();
