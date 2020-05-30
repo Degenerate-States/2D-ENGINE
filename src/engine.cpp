@@ -55,6 +55,7 @@ int main(int argc, char **argv) {
     free(assets);
     free(cfg);
     free(stats);
+
     #if SOUND
         audio->init();
         audio->playSound(MUS_PATH);
@@ -69,7 +70,7 @@ int main(int argc, char **argv) {
 
     End();
 
-    engine.clean();
+    //engine.clean();
     return 0;
 }
 
@@ -159,12 +160,14 @@ void Engine::Check_Quit(){
     switch(this->event.type) {
         case SDL_QUIT:
             running = false;
+            exit(0);
             break;
 
         case SDL_KEYDOWN:
             switch(this->event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 running = false;
+                exit(0);
                 break;
             }
     }
