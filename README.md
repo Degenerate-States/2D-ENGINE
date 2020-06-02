@@ -10,13 +10,18 @@ Inject the vc build environment:
 
     scripts\shell
 
-Compile
+Compile - Debug build
 
     nmake 
 
 Run
 
     nmake run 
+
+Build and package into zip
+
+    nmake exe
+    nmake zip
 
 ## Demo Controls
 

@@ -4,6 +4,7 @@ CFLAGS = -EHsc -Z7 -FC $(INC)
 LIBS = Shell32.lib SDL2.lib opengl32.lib
 SRC = src
 BUILD = build
+ASSETS = assets
 
 INC = -I lib/SDL2/include -I lib/GLAD/include -I include
 PROGRAM_NAME = POLYGUN
@@ -37,9 +38,12 @@ exe: *.*
 
 clean:
 	del /s /q "build\*"
+	@if exist $(PROGRAM_NAME)_test.zip del $(PROGRAM_NAME)_test.zip 
 
 run:
 	@if exist $(BUILD)\$(PROGRAM_NAME).exe $(BUILD)\$(PROGRAM_NAME).exe 
 
 zip:
-	@if not exist $(PROGRAM_NAME).zip powershell "Compress-Archive build POLYGUN.zip"
+	@if not exist $(PROGRAM_NAME)_test.zip powershell "Compress-Archive -Path $(BUILD)/$(PROGRAM_NAME).exe -DestinationPath $(PROGRAM_NAME)_test.zip"
+	@if exist $(PROGRAM_NAME)_test.zip powershell "Compress-Archive -Path $(BUILD)/SDL2.dll -Update -DestinationPath $(PROGRAM_NAME)_test.zip"
+	@if exist $(PROGRAM_NAME)_test.zip powershell "Compress-Archive -Path $(ASSETS) -Update -DestinationPath $(PROGRAM_NAME)_test.zip"

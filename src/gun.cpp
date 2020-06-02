@@ -68,7 +68,7 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
                 case(energyBall):
                     this->projMan->fireEngBall(orange,red,this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
                     #if SOUND
-                    audio->playSound(PEW1, SDL_MIX_MAXVOLUME);
+                    audio->playSound(PEW1, SDL_MIX_MAXVOLUME/2);
                     #endif
                 break;
             }
