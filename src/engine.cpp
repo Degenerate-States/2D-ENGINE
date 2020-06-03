@@ -1,43 +1,56 @@
 #include "engine.h"
 
-extern Audio* audio;
 //#define SOUND true
 
 class Engine{
-    public:
-        int fps;
-        //seconds per frame, used as internal time step dt
-        double spf;
-        int tickNumber;
-        bool running;
-        
-        SDL_Event event;
-        SDL_GLContext gl_context;
-        Screen screen;
-        // holds state of current keys
-        const Uint8* keys;
+public:
+    ~Engine();
+    static Engine* instance();
+    //disable copying
+	Engine(const Engine&);
+    Engine& operator= (const Engine&);
 
-        void init(Config* cfg, Assets* assets,Stats* stats);
-        void events(double dt);
-        void render();
-        //also increases ticknumber
-        void fixFramerate();
-        void gameLoop();
-        void clean();
+
+
+    int fps;
+    //seconds per frame, used as internal time step dt
+    double spf;
+    int tickNumber;
+    bool running;
     
-    private:
-        //both used by fixFramerate
-        Uint32 frameTime;
-        //miliseconds per frame
-        int mspf;
+    SDL_Event event;
+    SDL_GLContext gl_context;
+    Screen screen;
+    // holds state of current keys
+    const Uint8* keys;
 
-        //used in init,returns window and renderer also assigns gl_context
-        tuple<SDL_Window*,SDL_Renderer*> SDL_Visuals_Boilerplate(Config* cfg);
+    void init(Config* cfg, Assets* assets,Stats* stats);
+    void events(double dt);
+    void render();
+    //also increases ticknumber
+    void fixFramerate();
+    void gameLoop();
+    void clean();
 
-        void Check_Quit();
+private:
+    //both used by fixFramerate
+    Uint32 frameTime;
+    //miliseconds per frame
+    int mspf;
+
+    //used in init,returns window and renderer also assigns gl_context
+    tuple<SDL_Window*,SDL_Renderer*> SDL_Visuals_Boilerplate(Config* cfg);
+
+    void Check_Quit();
+
+    Engine() { }
 
 };
 
+Engine* Engine::instance() {
+    static Engine* a = new Engine();
+    return a;
+}
 
 int main(int argc, char **argv) {
     Assets* assets = new Assets();
@@ -47,26 +60,25 @@ int main(int argc, char **argv) {
     cfg->init();
     stats->init();
 
-    Engine engine;
-    engine.init(cfg,assets,stats);
+    Engine::instance()->init(cfg,assets,stats);
 
-    Start(&engine.screen, assets, stats,cfg->spf);
+    Start(&Engine::instance()->screen, assets, stats,cfg->spf);
 
     free(assets);
     free(cfg);
     free(stats);
 
     #if SOUND
-        audio->init();
+        Audio::instance()->init();
         //TODO: add a valid-formatted song for testing
         //audio->playSound(MUS_PATH, VOLUME);
-        audio->unpauseAudio();
+        Audio::instance()->unpauseAudio();
     #endif
 
-    engine.gameLoop();
+    Engine::instance()->gameLoop();
 
     #if SOUND
-        audio->clean();
+        Audio::instance()->clean();
     #endif
 
     End();
@@ -115,10 +127,10 @@ void Engine::events(double dt){
     }
 
     if (this->keys[SDL_SCANCODE_P]) {
-        audio->pauseAudio();
+        Audio::instance()->pauseAudio();
     }
     if (this->keys[SDL_SCANCODE_U]) {
-        audio->unpauseAudio();
+        Audio::instance()->unpauseAudio();
     }
 
     // keypresses

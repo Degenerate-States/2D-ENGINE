@@ -1,7 +1,5 @@
 #include "audio.h"
 
-// Global audio object
-Audio* audio = new Audio();
 
 void printSpec(SDL_AudioSpec s){
     cout << "---Audio Spec:" << endl;
@@ -41,6 +39,11 @@ void fx_callback(void *userdata, Uint8 *stream, int len) {
     }
     //cout << "frame done ---" << endl;
     //exit(0);
+}
+
+Audio* Audio::instance() {
+    static Audio* a = new Audio();
+    return a;
 }
 
 void Audio::init() {

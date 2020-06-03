@@ -8,7 +8,7 @@
 using namespace std;
 
 // TEMP
-#define MUS_PATH "assets/sound/music/metal.wav"
+//#define MUS_PATH "assets/sound/music/metal.wav"
 #define PEW1 "assets/sound/fx/door1.wav"
 #define PEW2 "assets/sound/fx/door2.wav"
 #define VOLUME SDL_MIX_MAXVOLUME/4
@@ -69,6 +69,14 @@ struct Wav {
 // Global audio object
 class Audio {
 public:
+	~Audio();
+
+	static Audio* instance();
+
+	//disable copying
+	Audio(const Audio&);
+    Audio& operator= (const Audio&);
+
 	//TODO: replace with map
 	vector<Wav*> fx;
 
@@ -81,6 +89,8 @@ public:
 	void playSound(char* path, uint8_t vol);
 	void unpauseAudio();
 	void pauseAudio();
+private:
+	Audio() { }
 };
 
 // SDL audio spec
