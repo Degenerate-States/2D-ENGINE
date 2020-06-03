@@ -11,6 +11,7 @@
 #include "assets.h"
 
 #include "audio.h"
+#include "events.h"
 
 using namespace std;
 

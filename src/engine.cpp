@@ -47,10 +47,6 @@ private:
 
 };
 
-Engine* Engine::instance() {
-    static Engine* a = new Engine();
-    return a;
-}
 
 int main(int argc, char **argv) {
     Assets* assets = new Assets();
@@ -61,6 +57,7 @@ int main(int argc, char **argv) {
     stats->init();
 
     Engine::instance()->init(cfg,assets,stats);
+    EventDispatcher::instance()->init();
 
     Start(&Engine::instance()->screen, assets, stats,cfg->spf);
 
@@ -89,6 +86,11 @@ int main(int argc, char **argv) {
 
 
 
+
+Engine* Engine::instance() {
+    static Engine* a = new Engine();
+    return a;
+}
 
 //************************//
 //**  Engine Methods    **//
