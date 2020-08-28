@@ -25,11 +25,11 @@ void RigidBody::setPos(double x,double y){
 }
 
 void RigidBody::displace(double dx,double dy){
-    this->pos += {dx,dx};
+    this->pos += complex<double>(dx,dx);
 }
 
 void RigidBody::fixedDisplace(double vx,double vy, double dt){
-    this->pos += {vx*dt,vy*dt};
+    this->pos += complex<double>(vx*dt,vy*dt);
 }
 
 void RigidBody::setVel(double vx,double vy){
@@ -39,7 +39,7 @@ void RigidBody::setVel(double vx,double vy){
 
 void RigidBody::applyForce(double fx, double fy,double dt){
     double coeff = dt / this->mass;
-    this->vel += {fx*coeff,fy*coeff};
+    this->vel += complex<double>(fx*coeff,fy*coeff);
 }
 
 void RigidBody::update(double dt){

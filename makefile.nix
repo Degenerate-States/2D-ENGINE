@@ -1,4 +1,4 @@
-CC = clang
+CC = g++
 CFLAGS= $(INC)
 LIBS = -lSDL2 -ldl
 SRC = src

@@ -297,7 +297,7 @@ void Skeleton::update(double dt){
         
         //moves towards proper angle
         theta = smallestAngle(arg(equilibrumPos),arg(relPos)) * dt * this->links[i]->rigidity;
-        relPos*={cos(theta),sin(theta)};
+        relPos*=complex<double>(cos(theta),sin(theta));
         
 
         tailJoint->rb.pos = headJoint->rb.pos + relPos;

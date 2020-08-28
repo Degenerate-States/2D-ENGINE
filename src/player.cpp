@@ -94,16 +94,16 @@ void Player::keys(const Uint8* keys,Screen* screen,double dt){
     complex<double> direction = 0.0;
     // TODO: move key specifics to the Keys callback in game.cpp
     if (keys[SDL_SCANCODE_D]){
-        direction += {1,0};
+        direction += complex<double>(1,0);
     }
     if (keys[SDL_SCANCODE_A]){
-        direction += {-1,0};
+        direction +=complex<double>(-1,0);
     }
     if (keys[SDL_SCANCODE_W]){
-        direction += {0,1};
+        direction +=complex<double>(0,1);
     }
     if (keys[SDL_SCANCODE_S]){
-        direction += {0,-1};
+        direction +=complex<double>(0,-1);
     }
 
     // TEMP
