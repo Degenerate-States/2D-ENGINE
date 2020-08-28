@@ -3,7 +3,7 @@
 #include <vector>
 
 
-const enum Event_Type{
+enum Event_Type{
     EVENT_DIE,
     EVENT_TEST
 };

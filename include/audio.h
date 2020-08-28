@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL.h>
+#include <sdl.h>
 #include <iostream>// temp for errors
 #include <cstring>// strcmp
 // containers

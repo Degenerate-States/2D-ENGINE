@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include <SDL.h>
+#include <sdl.h>
 #include <glad/glad.h>
 
 #include <complex>

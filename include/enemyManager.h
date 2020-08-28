@@ -91,5 +91,5 @@ class EnemyManager{
         //collider iteration
         int totalColliders;
         Polygon* getNextCollider();
-        void EnemyManager::skipCollider();
+        void skipCollider();
 };

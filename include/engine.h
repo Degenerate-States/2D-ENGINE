@@ -1,6 +1,6 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#include <SDL.h>
+#include <sdl.h>
 #include <glad/glad.h>
 
 #include <tuple> // sdl boilerplate

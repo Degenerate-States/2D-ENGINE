@@ -20,7 +20,6 @@ Run
 
 Build and package into zip
 
-    nmake exe
     nmake zip
 
 ## Demo Controls

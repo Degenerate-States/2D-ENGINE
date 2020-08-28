@@ -1,5 +1,4 @@
-#ifndef game_h
-#define game_h
+#pragma once
 #include "config.h"
 #include "assets.h"
 #include "components.h"
@@ -29,5 +28,3 @@ class Game{
         //TODO find better collision organization
         vector<Polygon*> nonEnemyPolys;
 };
-
-#endif
