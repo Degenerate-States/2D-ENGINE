@@ -1,11 +1,12 @@
 # POLYGUN
-2D geometry game and engine for x64 Windows 10
+2D geometry game and engine for x64 Windows 10 and Ubuntu
 
 ## Setup
 Clone
 
     git clone --recursive git@github.com:Degenerate-States/POLYGUN.git
 
+### Windows
 Inject the vc build environment:
 
     scripts\shell
@@ -18,9 +19,19 @@ Run
 
     nmake run 
 
-Build and package into zip
+Production build and package into zip
 
     nmake zip
+
+### Ubuntu
+Compile - Debug build
+
+    make -f makefile.nix
+
+Run
+
+    make -f makefile.nix run
+
 
 ## Demo Controls
 
