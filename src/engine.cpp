@@ -10,8 +10,6 @@ public:
 	Engine(const Engine&);
     Engine& operator= (const Engine&);
 
-
-
     int fps;
     //seconds per frame, used as internal time step dt
     double spf;
@@ -47,7 +45,7 @@ private:
 
 };
 
-
+// NOTE: entry for the debug build
 int main(int argc, char **argv) {
     Assets* assets = new Assets();
     Config* cfg = new Config();
@@ -84,7 +82,10 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-
+// NOTE: entry for the prod build
+int WinMain(int argc, char **argv) {
+    return main(argc, argv);
+}
 
 
 Engine* Engine::instance() {

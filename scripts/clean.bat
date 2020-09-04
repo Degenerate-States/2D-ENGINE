@@ -1,2 +1,2 @@
 @echo off
-nmake clean
+nmake -nologo clean
