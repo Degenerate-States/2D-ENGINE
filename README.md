@@ -24,6 +24,8 @@ Production build and package into zip
     nmake zip
 
 ### Ubuntu
+Get SDL2
+    sudo apt-get install libsdl2-dev
 Compile - Debug build
 
     make -f makefile.nix

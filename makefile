@@ -4,10 +4,11 @@ CFLAGS = -nologo -EHsc -Z7 -FC $(INC)
 LIBS = Shell32.lib SDL2.lib opengl32.lib
 PROD_LIBS = SDL2.lib opengl32.lib
 SRC = src
+IMGUI = lib\IMGUI
 BUILD = build
 ASSETS = assets
 
-INC = -I lib/SDL2/include -I lib/GLAD/include -I include
+INC = -I lib/SDL2/include -I lib/GLAD/include -I lib/IMGUI -I include
 PROGRAM_NAME = POLYGUN
 
 # global defines
@@ -29,6 +30,15 @@ glad.obj:
 {$(SRC)}.cpp{$(BUILD)}.obj:: 
 	@if not exist $(BUILD) mkdir $(BUILD)
 	$(CC) $(CFLAGS) $(DEBUG_DEFINES) -Fo:$(BUILD)\ -c $<
+
+# demo imgui build
+imgui: *.*
+	@if not exist $(BUILD) mkdir $(BUILD)
+	$(CC) -EHsc -O2 \
+    lib\GLAD\src\glad.c lib\IMGUI\*.cpp lib\IMGUI\examples\main.cpp \
+	$(PROD_DEFINES) -Fe:$(BUILD)\$(PROGRAM_NAME).exe -Fo:$(BUILD)\ $(INC) $(LIBS) \
+    -link -LIBPATH:lib/SDL2/lib/win64 -SUBSYSTEM:WINDOWS
+	@if not exist $(BUILD)\SDL2.dll xcopy.exe lib\SDL2\lib\win64\SDL2.dll $(BUILD)
 
 # single pass production build
 prod: *.*
