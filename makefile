@@ -13,8 +13,8 @@ INC = -I lib/SDL2/include -I lib/GLAD/include -I lib/IMGUI -I include
 PROGRAM_NAME = POLYGUN
 
 # global defines
-DEBUG_DEFINES = -D SOUND=true -D RENDER_SPINE=ture -D COLLISION_PRINT=false
-PROD_DEFINES = -D SOUND=true -D RENDER_SPINE=false -D COLLISION_PRINT=false
+DEBUG_DEFINES = -D SOUND=false -D RENDER_SPINE=ture -D COLLISION_PRINT=false -D RENDER_GUI=true
+PROD_DEFINES = -D SOUND=true -D RENDER_SPINE=false -D COLLISION_PRINT=false -D RENDER_GUI=false
 
 
 # debug build

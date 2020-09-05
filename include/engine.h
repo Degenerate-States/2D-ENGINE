@@ -2,6 +2,10 @@
 #define SDL_MAIN_HANDLED
 #include <sdl.h>
 #include <glad/glad.h>
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_impl_opengl3.h>
+
 
 #include <tuple> // sdl boilerplate
 #include <iostream>  // fps prints and 

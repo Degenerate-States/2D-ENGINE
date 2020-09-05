@@ -123,6 +123,9 @@ void Engine::events(double dt){
     //Also updates key state array
     while (SDL_PollEvent(&(this->event)))
     {
+        #if RENDER_GUI
+            ImGui_ImplSDL2_ProcessEvent(&(this->event));
+        #endif
         this->Check_Quit();
 
         //game object events
@@ -141,10 +144,21 @@ void Engine::events(double dt){
 }
 
 void Engine::render(){
+
+    #if RENDER_GUI
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame(this->screen.window);
+        ImGui::NewFrame();
+        // TODO: create render GUI
+        ImGui::ShowDemoWindow(); // Demo window
+        ImGui::Render();
+    #endif
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    #if RENDER_GUI
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    #endif
     Render(this->spf);
-
     SDL_GL_SwapWindow(this->screen.window);
 }
 
@@ -212,15 +226,35 @@ tuple<SDL_Window*,SDL_Renderer*> Engine::SDL_Visuals_Boilerplate(Config* cfg){
                   << endl;
         exit(1);
     }
+    // Set GL+GLSL versions
+    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
+
+    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL |
+                                                     SDL_WINDOW_RESIZABLE |
+                                                     SDL_WINDOW_ALLOW_HIGHDPI);
     SDL_Window* window = SDL_CreateWindow("2D-Engine",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          windowSizeX, windowSizeY, SDL_WINDOW_SHOWN |
-                                          SDL_WINDOW_OPENGL);
+                                          windowSizeX,
+                                          windowSizeY,
+                                          window_flags);
+    this->gl_context = SDL_GL_CreateContext(window); // Create a OpenGL context on SDL2
+    SDL_GL_MakeCurrent(window, this->gl_context);
+    SDL_GL_SetSwapInterval(0); // 1 -> vsync : 0 -> NO vsync 
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
-                                                SDL_RENDERER_ACCELERATED);
+    // Load GL extensions using glad
+    if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
+        cerr << "Failed to initialize the OpenGL context." << endl;
+        exit(1);
+    }
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     
     if (renderer == nullptr) {
         cerr << "SDL2 Renderer couldn't be created. Error: "
@@ -229,17 +263,21 @@ tuple<SDL_Window*,SDL_Renderer*> Engine::SDL_Visuals_Boilerplate(Config* cfg){
         exit(1);
     }
 
-    // Create a OpenGL context on SDL2
-    this->gl_context = SDL_GL_CreateContext(window);
+    #if RENDER_GUI
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        const char* glsl_version = "#version 410";
+        ImGui_ImplOpenGL3_Init(glsl_version);
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+        // ImGui::StyleColorsClassic();
+        ImGui_ImplSDL2_InitForOpenGL(window, this->gl_context);
+        IMGUI_CHECKVERSION();
+    #endif
 
-    // 1 -> vsync : 0 -> NO vsync 
-    SDL_GL_SetSwapInterval(0);
-    
-    // Load GL extensions using glad
-    if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-        cerr << "Failed to initialize the OpenGL context." << endl;
-        exit(1);
-    }
 
     // Loaded OpenGL successfully.
     cout << "OpenGL version loaded: " << GLVersion.major << "."
@@ -254,8 +292,8 @@ tuple<SDL_Window*,SDL_Renderer*> Engine::SDL_Visuals_Boilerplate(Config* cfg){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    //blur and AA
-    //glEnable(GL_MULTISAMPLE);
+    // blur and AA
+    // glEnable(GL_MULTISAMPLE);
 
     return make_tuple(window,renderer);
 }
