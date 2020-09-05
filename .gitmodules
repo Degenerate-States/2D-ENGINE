@@ -4,3 +4,6 @@
 [submodule "lib/GLAD"]
 	path = lib/GLAD
 	url = git@github.com:Degenerate-States/GLAD
+[submodule "lib/IMGUI"]
+	path = lib/IMGUI
+	url = https://github.com/Degenerate-States/IMGUI
