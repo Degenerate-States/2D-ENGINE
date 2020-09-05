@@ -25,6 +25,7 @@ Production build and package into zip
 
 ### Ubuntu
 Get SDL2
+
     sudo apt-get install libsdl2-dev
 Compile - Debug build
 
