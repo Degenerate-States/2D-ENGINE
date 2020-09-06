@@ -1,6 +1,11 @@
 #include "engine.h"
 
 //#define SOUND true
+//#define RENDER_GUI true
+
+struct GuiState {
+    bool showDemo;
+};
 
 class Engine{
 public:
@@ -21,6 +26,7 @@ public:
     Screen screen;
     // holds state of current keys
     const Uint8* keys;
+    GuiState guiState;
 
     void init(Config* cfg, Assets* assets,Stats* stats);
     void events(double dt);
@@ -117,6 +123,8 @@ void Engine::init(Config* cfg,Assets* assets,Stats* stats){
     //event is initalized in header file
     this->screen.zoom = stats->defaultZoom;
 
+    //Debug gui
+    this->guiState.showDemo = false;
 }
 
 void Engine::events(double dt){
@@ -150,15 +158,18 @@ void Engine::render(){
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(this->screen.window);
         ImGui::NewFrame();
-        // TODO: create render GUI
-        ImGui::ShowDemoWindow(); // Demo window
-        ImGui::Render();
+        // TODO: create render GUI callback
+        if (this->guiState.showDemo) ImGui::ShowDemoWindow(&this->guiState.showDemo); // Demo window
+        ImGui::Begin("Engine Debug");
+        ImGui::Checkbox("Show ImGui Demo", &this->guiState.showDemo);
     #endif
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Render(this->spf);
     #if RENDER_GUI
+        ImGui::End();
+        ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     #endif
-    Render(this->spf);
     SDL_GL_SwapWindow(this->screen.window);
 }
 
@@ -178,6 +189,12 @@ void Engine::gameLoop(){
 
 void Engine::clean(){
     // Destroy everything to not leak memory.
+    #if RENDER_GUI
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
+    #endif
+
     SDL_GL_DeleteContext(this->gl_context);
     SDL_DestroyRenderer(this->screen.renderer);
     SDL_DestroyWindow(this->screen.window);

@@ -19,7 +19,6 @@
 
 using namespace std;
 
-
 // Engine Callback API
 // Called once
 extern void Start(Screen* screen, Assets* assets, Stats* stats,double dt);

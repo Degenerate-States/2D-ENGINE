@@ -1,5 +1,6 @@
 #include "game.h"
 #include "engine.h"
+#include <imgui.h>
 Game* game = new Game();
 
 //TODO replace box and rigged box when testing is done
@@ -101,6 +102,18 @@ void Render(double dt) {
     game->skeleTest.render(game->screen);
     game->skeleTest1.render(game->screen);
     game->skeleTest2.render(game->screen);
+    #if RENDER_GUI
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once); // default to open
+        if (ImGui::TreeNode("Player")) {
+            ImGui::Text("Pos: %.2lf, %.2lf", game->plr.rb.pos.real(), game->plr.rb.pos.imag());
+            ImGui::Text("Vel: %.2lf, %.2lf", game->plr.rb.vel.real(), game->plr.rb.vel.imag());
+            ImGui::Text("Rot: %.2lf", game->plr.rb.rot);
+            ImGui::Text("topSpeed: %.2lf", game->plr.topSpeed);
+            ImGui::Text("acceleration: %.2lf", game->plr.acceleration);
+            ImGui::Text("Health: %d", game->plr.health);
+            ImGui::TreePop();
+        }
+    #endif
 }
 
 void Events(SDL_Event* event, Screen* screen,double dt) {
