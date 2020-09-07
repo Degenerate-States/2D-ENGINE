@@ -187,8 +187,7 @@ void Polygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> color)
     this->assetWR2.clear();
     this->vertexOffsets.clear();
     this->numVertices = 0;
-    for(int i = 0; i < asset->size(); i++){
-
+    for(long unsigned int i = 0; i < asset->size(); i++){
         this->appendPoint((*asset)[i]);
     }
 
@@ -253,7 +252,7 @@ void Polygon::render(Screen* screen){
 
     glLineWidth(this->lineThickness*screen->zoom);
     glBegin(GL_LINE_LOOP);
-    for(int i=0; i < this->currentAsset->size(); i++){
+    for(long unsigned int i=0; i < this->currentAsset->size(); i++){
         coord = screen->worldToScreen((*this->currentAsset)[i]);
         glColor4ub(get<0>(color),get<1>(color),get<2>(color),this->alphas[i]);
         glVertex2d(get<0>(coord), get<1>(coord));
@@ -287,7 +286,7 @@ void VisualPolygon::loadAsset(vector<complex<double>>* asset,tuple<int,int,int> 
 
     this->vertexOffsets.clear();
     this->numVertices = 0;
-    for(int i = 0; i < asset->size(); i++){
+    for(long unsigned int i = 0; i < asset->size(); i++){
 
         this->appendPoint((*asset)[i]);
     }
@@ -325,7 +324,7 @@ void VisualPolygon::render(Screen* screen){
 
     glLineWidth(this->lineThickness*screen->zoom);
     glBegin(GL_LINE_LOOP);
-    for(int i=0; i < this->currentAsset.size(); i++){
+    for(long unsigned int i=0; i < this->currentAsset.size(); i++){
         coord = screen->worldToScreen((this->currentAsset)[i]);
         glColor4ub(get<0>(color),get<1>(color),get<2>(color),this->alphas[i]);
         glVertex2d(get<0>(coord), get<1>(coord));

@@ -8,7 +8,6 @@
 using namespace std;
 
 // TEMP
-//#define MUS_PATH "assets/sound/music/metal.wav"
 #define PEW1 "assets/sound/fx/door1.wav"
 #define PEW2 "assets/sound/fx/door2.wav"
 #define VOLUME SDL_MIX_MAXVOLUME/4
@@ -62,7 +61,7 @@ struct PlayHead {
 struct Wav {
 	uint8_t *buffer; // pointer to allocated buffer
 	uint32_t len; // length of buffer
-	char* path; // fx path
+	char const *path; // fx path
 	PlayHead heads[MAX_PLAYHEADS];
 };
 
@@ -85,8 +84,8 @@ public:
 
     void init();
 	void clean();
-    Wav* load_wav(char* path, uint8_t vol);
-	void playSound(char* path, uint8_t vol);
+    Wav* load_wav(char const *path, uint8_t vol);
+	void playSound(char const *path, uint8_t vol);
 	void unpauseAudio();
 	void pauseAudio();
 private:
@@ -99,10 +98,3 @@ private:
 //    int freq;                   /**< DSP frequency -- samples per second */
 //    SDL_AudioFormat format;     /**< Audio data format */
 //    Uint8 channels;             /**< Number of channels: 1 mono, 2 stereo */
-//    Uint8 silence;              /**< Audio buffer silence value (calculated) */
-//    Uint16 samples;             /**< Audio buffer size in sample FRAMES (total samples divided by channel count) */
-//    Uint16 padding;             /**< Necessary for some compile environments */
-//    Uint32 size;                /**< Audio buffer size in bytes (calculated) */
-//    SDL_AudioCallback callback; /**< Callback that feeds the audio device (NULL to use SDL_QueueAudio()). */
-//    void *userdata;             /**< Userdata passed to callback (ignored for NULL callbacks). */
-//} SDL_AudioSpec;

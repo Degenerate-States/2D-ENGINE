@@ -12,18 +12,13 @@ void printSpec(SDL_AudioSpec s){
 
 
 void fx_callback(void *userdata, Uint8 *stream, int len) {
-
     Audio* audio = (Audio*)userdata;
-
     // clear buffer
     SDL_memset(stream, 0, len);
     for (auto song : audio->fx){
-        //cout << song->path << endl;
         for (int i = 0; i < MAX_PLAYHEADS; ++i){
             if(song->heads[i].on){
-                //cout << "on" << endl;
-
-                len = ( len > song->heads[i].len ? song->heads[i].len  : len );
+                len = ( len > (int)song->heads[i].len ? song->heads[i].len  : len );
 
                 // mix from one buffer into another
                 SDL_MixAudio(stream, song->heads[i].pos, len, song->heads[i].volume);
@@ -37,8 +32,6 @@ void fx_callback(void *userdata, Uint8 *stream, int len) {
             }
         }
     }
-    //cout << "frame done ---" << endl;
-    //exit(0);
 }
 
 Audio* Audio::instance() {
@@ -69,7 +62,7 @@ void Audio::init() {
     paused = true;
 }
 
-Wav* Audio::load_wav(char* path, uint8_t vol){
+Wav* Audio::load_wav(char const *path, uint8_t vol){
     Wav* wav = new Wav();
     
     SDL_AudioSpec s;
@@ -89,10 +82,9 @@ Wav* Audio::load_wav(char* path, uint8_t vol){
     return wav;
 }
 
-void Audio::playSound(char* path, uint8_t vol){
+void Audio::playSound(char const *path, uint8_t vol){
     if (!paused) {
         for (auto fx : this->fx){
-            //cout << path << " " << fx->path<< endl;
             if (strcmp(fx->path, path) == 0){
                 for (int i = 0; i < MAX_PLAYHEADS; ++i){
                     if (!fx->heads[i].on) {

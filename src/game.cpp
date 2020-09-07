@@ -14,7 +14,7 @@ void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, vecto
             pointPolyCollision(enemyMan->getNextCollider(),pntPointer,pntPointer->collisType);
         }
         //non enemy / projectile
-        for(int j = 0; j<nonEnemyPolys->size(); j++){
+        for(long unsigned int j = 0; j<nonEnemyPolys->size(); j++){
             pointPolyCollision((*nonEnemyPolys)[j],pntPointer,pntPointer->collisType);
         }
     }
@@ -25,7 +25,7 @@ void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, vecto
         enemyPointer = enemyMan -> getNextCollider();
 
         //non enemy / enemy
-        for(int j = 0; j<nonEnemyPolys->size(); j++){
+        for(long unsigned int j = 0; j<nonEnemyPolys->size(); j++){
             polyPolyCollision((*nonEnemyPolys)[j],enemyPointer);
         }
 
@@ -38,8 +38,8 @@ void checkAllCollision(ProjectileManager* projman, EnemyManager* enemyMan, vecto
     }
 
     //non enemy / non enemy
-    for(int i = 0; i<nonEnemyPolys->size()-1; i++){
-        for(int j = i+1; j<nonEnemyPolys->size();j++){
+    for(long unsigned int i = 0; i<nonEnemyPolys->size()-1; i++){
+        for(long unsigned int j = i+1; j<nonEnemyPolys->size();j++){
             polyPolyCollision((*nonEnemyPolys)[i],(*nonEnemyPolys)[j]);
         }
     }

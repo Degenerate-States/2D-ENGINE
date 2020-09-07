@@ -44,7 +44,7 @@ void Swarmer::update(double dt){
     if (abs(this->rb.vel) > this->topSpeed){
         this->rb.vel *= this->topSpeed/abs(this->rb.vel);
     }
-    double speed = abs(this->rb.vel);
+    // double speed = abs(this->rb.vel);
     this->rb.vel -= this->drag*dt*this->rb.vel;
 
     //animates

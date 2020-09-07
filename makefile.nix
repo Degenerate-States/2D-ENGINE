@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS= $(INC)
+CFLAGS= -Wall -g $(INC)
 LIBS = -lSDL2 -ldl
 SRC = src
 BUILD = build
@@ -16,12 +16,12 @@ DEBUG_DEFINES = -DSOUND=false -DRENDER_SPINE=false -DCOLLISION_PRINT=false -DREN
 all: debug
 
 debug: $(FILES)
-	mkdir -p build
-	$(CC) $(CFLAGS) $(DEBUG_DEFINES) $(FILES) lib/GLAD/src/glad.c lib/IMGUI/*.cpp -g -o $(BUILD)/$(PROGRAM_NAME) $(LIBS)
+	@mkdir -p build
+	$(CC) $(CFLAGS) $(DEBUG_DEFINES) $(FILES) lib/GLAD/src/glad.c lib/IMGUI/*.cpp -o $(BUILD)/$(PROGRAM_NAME) $(LIBS)
 
 
 .PHONY: clean run
 run:
 	./$(BUILD)/$(PROGRAM_NAME)
 clean:
-	rm -f $(BUILD)/*
+	rm -rf $(BUILD)/*

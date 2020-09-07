@@ -100,8 +100,8 @@ complex<double> endLine1,complex<double> endLine2){
             double lineScalar1 = (-b + sqrt(determinant))/(2*a);
             double lineScalar2 = (-b - sqrt(determinant))/(2*a);
 
-            double denom1 = -real(v)+ real(q) +real(deltaQ)*lineScalar1;
-            double denom2 = -real(v)+ real(q) +real(deltaQ)*lineScalar2;
+            denom1 = -real(v)+ real(q) +real(deltaQ)*lineScalar1;
+            denom2 = -real(v)+ real(q) +real(deltaQ)*lineScalar2;
 
             // if either denom is zero then the respective t will remain as -1
             if (abs(denom1) > reallySmall){
@@ -172,7 +172,7 @@ willPointHitPoly(Polygon* poly,tuple<double,complex<double>> polyCircle,
         tuple<bool, double ,complex<double>> helperReturnVal;
         //updated if a line was hit, updated further if another line was hit with smaller t
         int iPlus1;
-        for(int i = 0; i < poly->currentAsset->size(); i++){
+        for(long unsigned int i = 0; i < poly->currentAsset->size(); i++){
         
             iPlus1 = (i+1)%poly->currentAsset->size();
 
@@ -223,10 +223,8 @@ void pointPolyCollision(Polygon* poly,Point* pnt,collisionType type){
         tuple<double, complex<double>> polyCircle = poly->getContainingCircle();
         double possibleCollisonRad = abs(get<1>(polyCircle) - pnt->rb->pos) + pntCollisionPadSpatial;
         if (possibleCollisonRad < get<0>(polyCircle) +abs(pnt->rb->pos -pnt->rb->prevPos)){
-            switch(type){
-
-                case(pointHitPoly):
-                {   
+            switch(type) {
+                case(pointHitPoly): {   
                     tuple<bool,int,complex<double>> returnVal = willPointHitPoly(poly,polyCircle,pnt->rb->prevPos,pnt->rb->pos);
                     if (get<0>(returnVal)){
                         //disables future collision
@@ -239,18 +237,22 @@ void pointPolyCollision(Polygon* poly,Point* pnt,collisionType type){
                         poly->collisionCallback(pnt->getDamageCallback(),-normal);
                         pnt->collisionCallback(poly->getDamageCallback(),normal);
                     }
-                break;
+                    break;
                 }
-                case(pointInPoly):
-                {
+                case(pointInPoly): {
                     bool collisionOccured = isPointInPoly(poly, pnt->rb->pos);
                     if (collisionOccured){
                         complex<double> direction = pnt->rb->pos - poly->rb->pos;
                         poly->collisionCallback(pnt->getDamageCallback(),-direction);
                         pnt->collisionCallback(poly->getDamageCallback(),direction);
                     }
+                    break;
                 }
-                break;
+                case(polyPoly): {
+                    // Ignore handled in polyPolyCollision
+                    break;
+                }
+
             }
         }
     }
@@ -260,8 +262,7 @@ void pointPolyCollision(Polygon* poly,Point* pnt,collisionType type){
 
 void polyPolyCollision(Polygon* poly1, Polygon* poly2, collisionType type){
     switch(type){
-        case(polyPoly):
-        {
+        case(polyPoly): {
             if(poly1->rb->active && poly2->rb->active && poly1->collisionCallback != NULL && 
                 poly2->collisionCallback != NULL && poly1->colliderID != poly2->colliderID){
                 
@@ -287,8 +288,16 @@ void polyPolyCollision(Polygon* poly1, Polygon* poly2, collisionType type){
                     }
                 }
             }
+            break;
         }
-        break;
         //put additional poly poly collision types here
+        case(pointHitPoly): {
+            // TODO
+            break;
+        }
+        case(pointInPoly): {
+            // TODO
+            break;
+        }
     }
 }
