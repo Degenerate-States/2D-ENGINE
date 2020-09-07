@@ -5,18 +5,19 @@ SRC = src
 BUILD = build
 ASSETS = assets
 
-INC = -Iinclude -Ilib/GLAD/include -I/usr/include/SDL2
+INC = -Iinclude -Ilib/GLAD/include -I/usr/include/SDL2 -Ilib/IMGUI
 FILES = $(wildcard src/*.cpp)
 PROGRAM_NAME = POLYGUN
 
 # global defines
-DEBUG_DEFINES = -DSOUND=false -DRENDER_SPINE=ture -DCOLLISION_PRINT=false
+DEBUG_DEFINES = -DSOUND=false -DRENDER_SPINE=false -DCOLLISION_PRINT=false -DRENDER_GUI=true
 
 
 all: debug
 
 debug: $(FILES)
-	$(CC) $(CFLAGS) $(DEBUG_DEFINES) $(FILES) lib/GLAD/src/glad.c -o $(BUILD)/$(PROGRAM_NAME) $(LIBS)
+	mkdir -p build
+	$(CC) $(CFLAGS) $(DEBUG_DEFINES) $(FILES) lib/GLAD/src/glad.c lib/IMGUI/*.cpp -g -o $(BUILD)/$(PROGRAM_NAME) $(LIBS)
 
 
 .PHONY: clean run
