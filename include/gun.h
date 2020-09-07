@@ -22,7 +22,7 @@ class Gun{
         // in miliseconds
         double coolDown;
         double projVel;
-        double velVarience;
+        double velVariance;
         int projNum;
         double homingRate;
         double baseDamage;

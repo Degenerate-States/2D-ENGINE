@@ -15,7 +15,7 @@ void Gun::equip(GunStats* stats) {
     this->type = stats->type;
     this->baseDamage = stats->baseDamage;
     this->projVel = stats->projVel;
-    this->velVarience = stats->projVarience;
+    this->velVariance = stats->projVarience;
     this->fullAuto = stats->fullAuto;
     this->coolDown = stats->coolDown;
     this->projNum = stats->projNum;
@@ -51,21 +51,21 @@ void Gun::fire(complex<double> fireDirection, RigidBody* target){
             // its more efficet to put loop inside switch, but less legable 
             switch(this->type){
                 case (bullet): 
-                    this->projMan->fireBullet(white,orange, this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
+                    this->projMan->fireBullet(white,orange, this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVariance,target,this->homingRate);
                     #if SOUND
                     Audio::instance()->playSound(PEW1, VOLUME);
                     #endif
                 break;
 
                 case(spark):
-                    this->projMan->fireSpark(orange,red, this->rb.pos, fireDirection, this->velVarience);
+                    this->projMan->fireSpark(orange,red, this->rb.pos, fireDirection, this->velVariance);
                     #if SOUND
                     Audio::instance()->playSound(PEW1, VOLUME);
                     #endif
                 break;
 
                 case(energyBall):
-                    this->projMan->fireEngBall(orange,red,this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVarience,target,this->homingRate);
+                    this->projMan->fireEngBall(orange,red,this->ID,this->baseDamage, this->rb.pos, fireDirection, this->velVariance,target,this->homingRate);
                     #if SOUND
                     Audio::instance()->playSound(PEW1, SDL_MIX_MAXVOLUME/2);
                     #endif

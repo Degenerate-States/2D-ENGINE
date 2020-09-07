@@ -207,6 +207,7 @@ void Engine::Check_Quit(){
     switch(this->event.type) {
         case SDL_QUIT:
             running = false;
+            Engine::clean();
             exit(0);
             break;
 
@@ -214,6 +215,7 @@ void Engine::Check_Quit(){
             switch(this->event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 running = false;
+                Engine::clean();
                 exit(0);
                 break;
             }
