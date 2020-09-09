@@ -115,14 +115,13 @@ void Render(double dt) {
         }
         ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         if (ImGui::TreeNode("Player Gun")) {
-            ImGui::Text("Projctile Number: %d", game->plr.gun.projNum);
-            ImGui::Text(game->plr.gun.fullAuto ? "Automatic": "Not Automatic");
-            ImGui::Text("Cooldown: %.2lf", game->plr.gun.coolDown);
-            ImGui::Text("Projectile Velocity: %.2lf", game->plr.gun.projVel);
-            ImGui::Text("Velocity variance: %.2lf", game->plr.gun.velVariance);
-            ImGui::Text("Homing Rate: %.2lf", game->plr.gun.homingRate);
-            ImGui::Text("Damage: %.2lf", game->plr.gun.baseDamage);
-            ImGui::Text("Projctile Number: %d", game->plr.gun.projNum);
+            ImGui::InputInt("Projectile #", &game->plr.gun.projNum);
+            ImGui::Checkbox(game->plr.gun.fullAuto ? "Automatic": "Not Automatic" , &game->plr.gun.fullAuto);
+            ImGui::InputDouble("Cooldown", &game->plr.gun.coolDown, 0.001f, 1000.0f, "%.2lf");
+            ImGui::InputDouble("Velocity", &game->plr.gun.projVel, 0.001f, 1000.0f, "%.2lf");
+            ImGui::InputDouble("Vel variance", &game->plr.gun.velVariance, 0.001f, 1000.0f, "%.2lf");
+            ImGui::InputDouble("Homing Rate", &game->plr.gun.homingRate, 0.0f, 1000.0f, "%.2lf");
+            ImGui::InputDouble("Damage", &game->plr.gun.baseDamage, 0.01f, 1000.0f, "%.2lf");
             ImGui::TreePop();
         }
     #endif
