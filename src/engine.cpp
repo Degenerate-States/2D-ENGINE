@@ -27,6 +27,7 @@ public:
     // holds state of current keys
     const Uint8* keys;
     GuiState guiState;
+    Shader globalShader;
 
     void init(Config* cfg, Assets* assets,Stats* stats);
     void events(double dt);
@@ -41,6 +42,7 @@ private:
     Uint32 frameTime;
     //miliseconds per frame
     int mspf;
+    bool isPaused;
 
     //used in init,returns window and renderer also assigns gl_context
     tuple<SDL_Window*,SDL_Renderer*> SDL_Visuals_Boilerplate(Config* cfg);
@@ -78,13 +80,8 @@ int main(int argc, char **argv) {
 
     Engine::instance()->gameLoop();
 
-    #if SOUND
-        Audio::instance()->clean();
-    #endif
-
     End();
-
-    //engine.clean();
+    Engine::instance()->clean();
     return 0;
 }
 
@@ -125,6 +122,7 @@ void Engine::init(Config* cfg,Assets* assets,Stats* stats){
 
     //Debug gui
     this->guiState.showDemo = false;
+    this->isPaused = false;
 }
 
 void Engine::events(double dt){
@@ -142,9 +140,11 @@ void Engine::events(double dt){
 
     if (this->keys[SDL_SCANCODE_P]) {
         Audio::instance()->pauseAudio();
+        this->isPaused = true;
     }
     if (this->keys[SDL_SCANCODE_U]) {
         Audio::instance()->unpauseAudio();
+        this->isPaused = false;
     }
 
     // keypresses
@@ -152,7 +152,9 @@ void Engine::events(double dt){
 }
 
 void Engine::render(){
-
+    globalShader.Use();
+    globalShader.setBool("isPaused", this->isPaused);
+    globalShader.setFloat("time",sin(SDL_GetTicks()/10000.0f));
     #if RENDER_GUI
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -162,6 +164,7 @@ void Engine::render(){
         if (this->guiState.showDemo) ImGui::ShowDemoWindow(&this->guiState.showDemo); // Demo window
         ImGui::Begin("Engine Debug");
         ImGui::Checkbox("Show ImGui Demo", &this->guiState.showDemo);
+        ImGui::Checkbox("Is Gray", &this->isPaused);
     #endif
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     Render(this->spf);
@@ -193,6 +196,9 @@ void Engine::clean(){
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
+    #endif
+    #if SOUND
+        Audio::instance()->clean();
     #endif
 
     SDL_GL_DeleteContext(this->gl_context);
@@ -281,7 +287,7 @@ tuple<SDL_Window*,SDL_Renderer*> Engine::SDL_Visuals_Boilerplate(Config* cfg){
                   << endl;
         exit(1);
     }
-
+    globalShader.Load("assets/shaders/main.vert", "assets/shaders/main.frag");
     #if RENDER_GUI
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();

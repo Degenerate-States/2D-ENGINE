@@ -14,6 +14,7 @@
 #include "config.h"
 #include "assets.h"
 
+#include "shader.h"
 #include "audio.h"
 #include "events.h"
 
