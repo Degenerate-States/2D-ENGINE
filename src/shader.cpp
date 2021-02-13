@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "shader.h"
 
 unsigned int Shader::GetCompiledShader(unsigned int shader_type, const std::string& shader_source)
 {
